@@ -1,38 +1,46 @@
 
 
 ==============================================================================
-                           UWC3 v0.1.7c Installation 
-                              For Amx Mod X 0.16
+                          UWC3 v0.1.6b Installation 
 ==============================================================================
 ------------------------------------------------------------------------------
 
-The included uwc3.amx file was compiled by sc for Linux with amxx version 0.16
-If you run amxx version 0.20 please use the appropriate version of UWC3. This version
-supports vault storage only, if you want Mysql storage please upgrade to the amxx 0.20
-version of UWC3.
+I. The included uwc3.amxx file was compiled by amxxsc for Linux with 
+AMX Mod X version 0.20 RC6
 
 Included files and where they should go:
 
-Copy uwc3.amx  => amxx/plugins ( add uwc3.amx to your plugins.ini file )
-Copy UWC3.cfg  => amxx/custom/UWC3
-Copy sound/*   => cstrike/sound (or) czero/sound
-Copy sprites/* => valve/sprites and cstrike/sprites (or) czero/sprites
-Copy models/*  => cstrike/models (or) czero/models
+Copy   uwc3.amxx    (to)  amxmodx/plugins ( add uwc3.amxx to your plugins.ini file )
+Copy   UWC3.cfg     (to)  amxmodx/configs/UWC3
+Copy   UWC3_sql.cfg (to)  amxmodx/configs/UWC3
+Copy   sound/*      (to)  cstrike/sound (or) czero/sound
+Copy   sprites/*    (to)  valve/sprites (and) cstrike/sprites
+Copy   models/*     (to)  cstrike/models
 
-The following AmxModx modules must be loaded for UWC3 to run:
+
+II. The following AMX Mod X modules must be loaded for UWC3 to run:
 
 > fun
 > engine
 > cstrike
+> mysql
+
+
+(Note: Mysql is required even if you do not plan to use Mysql as the plugin was
+compiled with the dbi library)
 
 Note for Windows Users: You may need to add this to the end of your 
                         server.cfg file
 
-exec addons/amxx/custom/UWC3/UWC3.cfg
+exec addons/amxmodx/configs/UWC3/UWC3.cfg
 
 It appears some windows beta admins are reporting on server startup the
 plugin does not execute the cfg file, but apparently map changes after the
 initial startup do auto-exec the .cfg file.
+
+III. If you plan to use AMXX's dbi sql storage instead of the vault be sure to
+configure the UWC3_sql.cfg file and be sure it is in amxmodx/configs/UWC3
+along with the UWC3.cfg file.
 
 ==============================================================================
                               UWC3 Shop Item Prices:
@@ -70,6 +78,21 @@ UW_price_MOLE 16000
 The following cvars are available in the UWC3.cfg file, it is recommended that
 you go through them and make adjustments accordingly.
 
+UW_admin_flag 1048576           // Access Flag for Giving XP, Default is ADMIN_MENU
+                                // The Custom flag values are listed below
+                                // ADMIN_LEVEL_A = 4096
+                                // ADMIN_LEVEL_B = 8192
+                                // ADMIN_LEVEL_C = 16384
+                                // ADMIN_LEVEL_D = 32768
+                                // ADMIN_LEVEL_E = 65536
+                                // ADMIN_LEVEL_F = 131072
+                                // ADMIN_LEVEL_G = 262144
+                                // ADMIN_LEVEL_H = 524288
+                                // ADMIN_MENU    = 1048576
+
+UW_lowres_default 0		// Set 1 to make lowres display setting default
+UW_disable_givexp 0		// Set 1 to turn the amx_givexp command off
+UW_disable_adminmenu 0		// Set 1 to turn off the XP portion of the admin menu
 UW_underdog_kills 1             // Set 1 to Give XP bonus for underdog kills
 UW_dmgxpbonus 1                 // Set 1 to Give XP bonus for doing most dmg
                                 // to enemy (serious injury bonuses)
@@ -119,7 +142,7 @@ you! :)
 ==============================================================================
 ------------------------------------------------------------------------------
 
-We hope that you enjoy this plugin.
+The UWC3 Dev Team hopes you find this plugin enjoyable.
 
--K2
+-K2mia
 
