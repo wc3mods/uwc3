@@ -1,0 +1,125 @@
+
+
+==============================================================================
+                           UWC3 v0.1.7c Installation 
+                              For Amx Mod X 0.16
+==============================================================================
+------------------------------------------------------------------------------
+
+The included uwc3.amx file was compiled by sc for Linux with amxx version 0.16
+If you run amxx version 0.20 please use the appropriate version of UWC3. This version
+supports vault storage only, if you want Mysql storage please upgrade to the amxx 0.20
+version of UWC3.
+
+Included files and where they should go:
+
+Copy uwc3.amx  => amxx/plugins ( add uwc3.amx to your plugins.ini file )
+Copy UWC3.cfg  => amxx/custom/UWC3
+Copy sound/*   => cstrike/sound (or) czero/sound
+Copy sprites/* => valve/sprites and cstrike/sprites (or) czero/sprites
+Copy models/*  => cstrike/models (or) czero/models
+
+The following AmxModx modules must be loaded for UWC3 to run:
+
+> fun
+> engine
+> cstrike
+
+Note for Windows Users: You may need to add this to the end of your 
+                        server.cfg file
+
+exec addons/amxx/custom/UWC3/UWC3.cfg
+
+It appears some windows beta admins are reporting on server startup the
+plugin does not execute the cfg file, but apparently map changes after the
+initial startup do auto-exec the .cfg file.
+
+==============================================================================
+                              UWC3 Shop Item Prices:
+==============================================================================
+------------------------------------------------------------------------------
+
+Shop item prices are configurable in the UWC3.cfg file, here are some
+examples:
+
+UW_price_ANKH 1500
+UW_price_BOOTS 1500
+UW_price_CLAWS 1000
+UW_price_CLOAK 800
+UW_price_MASK 2000
+UW_price_IMMUNITY 800
+UW_price_FROST 2000
+UW_price_HEALTH 1000
+UW_price_TOME 4000
+UW_price_RESPAWN 11000
+UW_price_PROTECTANT 1500
+UW_price_HELM 1550
+UW_price_CAT 1500
+UW_price_FEATHER 1500
+UW_price_INFERNO 1750
+UW_price_REGEN 1000
+UW_price_CHAMELEON 9000
+UW_price_MOLE 16000
+
+
+==============================================================================
+                     UWC3 CVARS :: Configuration (UWC3.cfg):
+==============================================================================
+------------------------------------------------------------------------------
+
+The following cvars are available in the UWC3.cfg file, it is recommended that
+you go through them and make adjustments accordingly.
+
+UW_underdog_kills 1             // Set 1 to Give XP bonus for underdog kills
+UW_dmgxpbonus 1                 // Set 1 to Give XP bonus for doing most dmg
+                                // to enemy (serious injury bonuses)
+UW_medicalerts 2                // Set 1 to have text Medic Alerts sent from
+                                // injured teammates, 2 to have text and
+                                // graphical alerts, 0 for no alerts.
+UW_mend_XP 60                   // XP bonus amount for mending teammate wounds
+UW_repair_XP 60                 // XP bonus amount for repairing armor 
+UW_phoenix_XP 90                // XP bonus amount for reviving a teammate
+                                // with Phoenix
+UW_force_vengeance 1            // Set 1 to allow Vengeance to work within
+                                // ultimate delay (otherwise it doesn't
+                                // respawn you unless you havent used an
+                                // ultimate recently)
+UW_luck_skill 1                 // Set 1 to allow Beginner's Luck skill for
+                                // players lvl 0-4
+UW_use_enh 1                    // Set 1 to allow attributes/resistances to be
+                                // enhanced and used in game-play
+UW_enh_minlevel 1               // Min. level to start buying enhancements
+UW_max_resistvalue 100          // Max. allowable value each resistance can be
+                                // trained
+UW_max_attribpts 25             // Max. number of obtainable attribute pts
+                                // (max is 40)
+UW_max_resistpts 300            // Max. number of obtainable resistance pts
+                                // (max is 500)
+UW_attrib_xpmodifier 1.0        // This is a good setting for Long Term XP
+UW_resist_xpmodifier 1.0        // This is a good setting for Long Term XP
+//UW_attrib_xpmodifier 0.3      // This is a good setting for Fast XP Mode
+//UW_resist_xpmodifier 0.1      // This is a good setting for Fast XP Mode
+UW_vengeance_cooldown 35.0      // The time in secs for ultimates to be used
+                                // after Vengeance
+
+// The following cvars allow you to ovveride the built-in settings of some
+// shop-purchased items, these values are the default (carried from War3FT)
+
+UW_BOOTSPEED 275.0		// Boots speed setting
+UW_FROSTSPEED 125.0		// Frost slowdown (reduced speed)
+UW_MASKPERCENT 0.3		// Mask damage percentage
+UW_CLAWSOFATTACK 6		// Claws of Attack damage amount
+UW_CLOAKINVISIBILITY 150	// Cloak invisibility setting
+UW_HEALTHBONUS 15		// Health bonus amount
+
+
+Please let me know what could go here to make install any easier for
+you! :)
+
+==============================================================================
+------------------------------------------------------------------------------
+
+We hope that you enjoy this plugin.
+
+-K2
+
