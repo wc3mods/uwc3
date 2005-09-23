@@ -2,16 +2,16 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Main 
+*** UWC3 Module:   Main
 *** Date:          May 25, 2004
 *** Last Update:   October 08, 2004
 *
 *   This plugin is a new approach to the War3 and War3FT plugins created by
-*  SpaceDude and Pimp Daddy. UWC3 provides a raceless, skill/level based 
-*  system. Much of the internal workings of Warcraft3FT skills and items were 
+*  SpaceDude and Pimp Daddy. UWC3 provides a raceless, skill/level based
+*  system. Much of the internal workings of Warcraft3FT skills and items were
 *  kept intact from Pimp Daddy's version, though the overall player structures
 *  have been changed to allow a flexible skill-based system. This version of UWC3
-*  was built for AMX Mod X v0.20 
+*  was built for AMX Mod X v0.20
 *
 *  Module: Main
 *  Plugin initialization routines, client connection/disconnection routines as
@@ -20,7 +20,7 @@
 *
 *  UWC3 is written exclusively for AMX Mod X
 *
-*  Ultimate Warcraft3 Dev. Team 
+*  Ultimate Warcraft3 Dev. Team
 *  ------------------------------
 *   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
 *   Graphics:         steve french < garbageweed@hotmail.com >
@@ -64,6 +64,11 @@
 *               ^^plan.los^^
 ****************************************************************************/
 
+/*
+	Compiled for amxx 1.60 by Geesu on 9/22/2005
+	- Renamed log_error to log_sql_error to avoid conflicts
+*/
+
 #include <amxmodx>
 #include <amxmisc>
 #include <engine>
@@ -71,21 +76,21 @@
 #include <fun>
 #include <dbi>
 
-#include "uwc3_defs.inc"	// Include the UWC3 #defines file
-#include "uwc3_vars.inc"	// Include the UWC3 global variables file
-#include "uwc3_ultimates.inc"	// Include the UWC3 ultimate subroutines file
-#include "uwc3_abilities.inc"	// Include the UWC3 abilities subroutines file
-#include "uwc3_enh.inc"		// Include the UWC3 enhancements subroutines file
-#include "uwc3_utility.inc"	// Include the UWC3 utilities subroutines file
-#include "uwc3_storage.inc"	// Include the UWC3 storage subroutines file
-#include "uwc3_infohelp.inc"	// Include the UWC3 help/info subroutines file
-#include "uwc3_dmgevents.inc"	// Include the UWC3 damage events subroutines file
-#include "uwc3_mole.inc"	// Include the UWC3 mole subroutines file
-#include "uwc3_respawn.inc"	// Include the UWC3 respawn subroutines file
-#include "uwc3_items.inc"	// Include the UWC3 items subroutines file
-#include "uwc3_skills.inc"	// Include the UWC3 skills subroutines file
-#include "uwc3_xp.inc"		// Include the UWC3 xp subroutines file
-#include "uwc3_events.inc"	// Include the UWC3 events subroutines file
+#include "uwc3/uwc3_defs.inc"		// Include the UWC3 #defines file
+#include "uwc3/uwc3_vars.inc"		// Include the UWC3 global variables file
+#include "uwc3/uwc3_ultimates.inc"	// Include the UWC3 ultimate subroutines file
+#include "uwc3/uwc3_abilities.inc"	// Include the UWC3 abilities subroutines file
+#include "uwc3/uwc3_enh.inc"		// Include the UWC3 enhancements subroutines file
+#include "uwc3/uwc3_utility.inc"	// Include the UWC3 utilities subroutines file
+#include "uwc3/uwc3_storage.inc"	// Include the UWC3 storage subroutines file
+#include "uwc3/uwc3_infohelp.inc"	// Include the UWC3 help/info subroutines file
+#include "uwc3/uwc3_dmgevents.inc"	// Include the UWC3 damage events subroutines file
+#include "uwc3/uwc3_mole.inc"		// Include the UWC3 mole subroutines file
+#include "uwc3/uwc3_respawn.inc"	// Include the UWC3 respawn subroutines file
+#include "uwc3/uwc3_items.inc"		// Include the UWC3 items subroutines file
+#include "uwc3/uwc3_skills.inc"		// Include the UWC3 skills subroutines file
+#include "uwc3/uwc3_xp.inc"			// Include the UWC3 xp subroutines file
+#include "uwc3/uwc3_events.inc"		// Include the UWC3 events subroutines file
 
 
 #pragma dynamic 65536 		// Give the plugin some extra memory to use
@@ -106,8 +111,19 @@ public plugin_init(){
 
    register_plugin( "UWC3", VER, "K2mia")
 
-   // Set messagning variables  
-   gMsgScreenFade = get_user_msgid("ScreenFade") 
+   // Added by JGHG: Check if we're using Sqlite
+   new dbitype[16]
+   dbi_type(dbitype, 15)
+   server_print("[UWC3] Using database type %s.", dbitype)
+   if (equal(dbitype, "sqlite"))
+      g_sqlite = true
+   else
+      g_sqlite = false
+
+   g_MAXPLAYERS = get_maxplayers() // Added by JGHG (instead of doing this in EACH iteration in the 0.1 looping set task, we retrieve the value here; it won't change..!)
+
+   // Set messagning variables
+   gMsgScreenFade = get_user_msgid("ScreenFade")
    gmsgDeathMsg = get_user_msgid("DeathMsg")
    gmsgFade = get_user_msgid("ScreenFade")
    gmsgShake = get_user_msgid("ScreenShake")
@@ -116,7 +132,7 @@ public plugin_init(){
 
    // [09-13-04] Nasty exploit, this prevents it - K2mia
    register_clcmd("fullupdate", "fullupdate")
- 
+
    // Client command entries follow
    register_clcmd( "war3menu", "main_menu", -1,
       "- Display the UWC3 Main Menu")
@@ -124,16 +140,16 @@ public plugin_init(){
       "- Display the UWC3 Main Menu")
    register_clcmd( "warcraft", "main_menu", -1,
       "- Display the UWC3 Main Menu")
-   register_clcmd( "help", "help_menu", -1, 
+   register_clcmd( "help", "help_menu", -1,
       "- Displays the main help menu")
-   register_clcmd( "news", "show_news", -1, 
+   register_clcmd( "news", "show_news", -1,
       "- Displays news about the Ultimate Warcraft3 plugin")
-   register_clcmd( "war3help", "war3_info", -1, 
+   register_clcmd( "war3help", "war3_info", -1,
       "- Displays help information for the UWC3 module")
-   register_clcmd( "wc3start", "restart_round", ADMIN_MENU, 
+   register_clcmd( "wc3start", "restart_round", ADMIN_MENU,
       "- Restarts the UWC3 mod fresh")
 
-   register_clcmd( "charsheet", "character_sheet", -1, 
+   register_clcmd( "charsheet", "character_sheet", -1,
       "- Displays your character sheet")
 
    register_clcmd("savexp", "uwc3_savexp", -1,
@@ -142,15 +158,13 @@ public plugin_init(){
       "-In long term XP mode, saves your Attributes")
    register_clcmd("saveresists", "uwc3_saveresists", -1,
       "-In long term XP mode, saves your Resistances")
-   register_clcmd("saveall", "uwc3_saveall", -1,
-      "-In long term XP mode, saves your XP / Skills / Attributes / Resistances")
-   register_clcmd("resetskills", "resetskills", -1,
-      "-Resets your skills while keeping your XP")
+   //register_clcmd("saveall", "uwc3_saveall", -1, "-In long term XP mode, saves your XP / Skills / Attributes / Resistances")
+   register_clcmd("resetskills", "resetskills", -1, "-Resets your skills while keeping your XP")
    register_clcmd("resetattribs", "resetattribs", -1,
       "-Resets your attributes while keeping your XP")
    register_clcmd("resetresists", "resetresists", -1,
       "-Resets your resistances while keeping your XP")
-   register_clcmd("deletexp", "amx_deletexp", -1, 
+   register_clcmd("deletexp", "amx_deletexp", -1,
       "- Deletes all skills and sets your XP to 0")
    register_clcmd("saveskills", "uwc3_saveskills", -1,
       "-In long term XP mode, saves your skills to the vault")
@@ -159,28 +173,28 @@ public plugin_init(){
    register_clcmd("admin_loadskills", "admin_loadskills", ADMIN_MENU,
       "-Loads a saved set of skills")
 
-   register_clcmd("admin_showxp", "admin_showxp", ADMIN_MENU, 
+   register_clcmd("admin_showxp", "admin_showxp", ADMIN_MENU,
       "-Admin Cmd: Displays a player's XP")
 
-   register_clcmd("examine", "do_examine", -1, 
+   register_clcmd("examine", "do_examine", -1,
       "-Allows a player to examine the health and armor of a teammate")
-   register_clcmd("/examine", "do_examine", -1, 
+   register_clcmd("/examine", "do_examine", -1,
       "-Allows a player to examine the health and armor of a teammate")
 
-   register_clcmd("toggle_lowres", "toggle_lowres", -1, 
+   register_clcmd("toggle_lowres", "toggle_lowres", -1,
       "-Toggle low-res mode on/off")
 
-   register_clcmd("xp_table", "xp_table", -1, 
+   register_clcmd("xp_table", "xp_table", -1,
       "-Displays the XP table")
 
    // ******************** TEST COMMANDS *******************
-   register_clcmd("admin_loadxp", "get_xp_id", ADMIN_MENU, 
+   register_clcmd("admin_loadxp", "get_xp_id", ADMIN_MENU,
       "-Debug cmd for testing load data from vault routine")
-   register_clcmd("debug_info", "debug_info", ADMIN_MENU, 
+   register_clcmd("debug_info", "debug_info", ADMIN_MENU,
       "-Dumps some debug info to the admin")
-   register_clcmd("debuginfo", "debug_info", ADMIN_MENU, 
+   register_clcmd("debuginfo", "debug_info", ADMIN_MENU,
       "-Dumps some debug info to the admin")
-   register_clcmd("loc", "admin_loc", ADMIN_MENU, 
+   register_clcmd("loc", "admin_loc", ADMIN_MENU,
       "-Displays your coordinate location")
    // ****************** END TEST COMMANDS ******************
 
@@ -214,18 +228,18 @@ public plugin_init(){
    register_clcmd("wcvoodoo", "ultimate_wcvoodoo", -1, "-Big Bad Voodoo Ultimate Skill")
    register_clcmd("wclocust", "ultimate_wclocust", -1, "-Locust Swarm Ultimate Skill")
    register_clcmd("wcflash", "ultimate_wcflash", -1, "-Flash of Light Ultimate Skill")
-   register_clcmd("wcdecoy", "ultimate_wcdecoy", -1, 
+   register_clcmd("wcdecoy", "ultimate_wcdecoy", -1,
       "-Decoy Ultimate Skill, spawns a decoy to briefly fool your enemies")
    register_clcmd("wcgate", "ultimate_wcgate", -1,
       "-Gate Ultimate Skill, Opens a gateway back to your spawn")
 
    register_clcmd("wcward", "ability_wcward", -1, "-Serpant Ward Ultimate Skill")
-   register_clcmd("wcrepair", "ability_wcrepair", -1, 
+   register_clcmd("wcrepair", "ability_wcrepair", -1,
       "-Special Ability: Repair Armor (aim at teammate and trigger the wcrepair cmd)")
-   register_clcmd("wcmend", "ability_wcmend", -1, 
+   register_clcmd("wcmend", "ability_wcmend", -1,
       "-Special Ability: Mend Wounds (aim at teammate and trigger the wcmend command)")
 
-    
+
    // Console command entries follow
    register_concmd("amx_givexp", "amx_givexp", -1,"-Console command used to give XP")
    register_concmd("amx_givemole", "amx_givemole", -1, "-Admin make a mole command")
@@ -233,7 +247,7 @@ public plugin_init(){
 
 
    // Menu related entries follow
-   register_menucmd(register_menuid("\yUWC3: Main Menu"), 1023, "do_wc3menu") 
+   register_menucmd(register_menuid("\yUWC3: Main Menu"), 1023, "do_wc3menu")
    register_menucmd(register_menuid("\ySelect an Attribute"), 1023, "do_attribmenu")
    register_menucmd(register_menuid("\ySelect a Resistance"), 1023, "do_resistmenu")
    register_menucmd(register_menuid("\yHelp Menu"), 1023, "do_helpmenu")
@@ -248,9 +262,9 @@ public plugin_init(){
    register_menucmd(register_menuid("BuyItem"),(1<<2),"flashbuy")
    register_menucmd(register_menuid("BuyItem"),(1<<3),"hebuy")
    register_menucmd(-34,(1<<2),"flashbuy")
-   register_menucmd(-34,(1<<3),"hebuy")                         
+   register_menucmd(-34,(1<<3),"hebuy")
    register_clcmd("flash",  "flashbuy")
-   register_clcmd("hegren", "hebuy")                          
+   register_clcmd("hegren", "hebuy")
 
 
    // Event related entries follow
@@ -338,9 +352,9 @@ public plugin_init(){
    register_cvar("FT_blink_diziness","1")
    register_cvar("FT_blink_cooldown","3.0")
    register_cvar("FT_blinkenabled","1")
-   register_cvar("FT_blinkstartdisabled","0")             
+   register_cvar("FT_blinkstartdisabled","0")
    register_cvar("FT_spec_info","1")   // Show spectating information
-   register_cvar("FT_items_in_hud","0")                    
+   register_cvar("FT_items_in_hud","0")
    register_cvar("mp_savexp","1", FCVAR_SERVER)
    register_cvar("mp_sql","1")
    register_cvar("mp_sql_saveby","1")
@@ -462,7 +476,7 @@ public plugin_modules()
 
 // **************************************************************************
 // BEGIN plugin_precache subroutine
-// Specify resources to be precached on client side 
+// Specify resources to be precached on client side
 // **************************************************************************
 public plugin_precache() {
 
@@ -589,7 +603,7 @@ public plugin_precache() {
 
 // **************************************************************************
 // BEGIN set_variables subroutine
-// Setup variables and use cvar data where applicable 
+// Setup variables and use cvar data where applicable
 // **************************************************************************
 public set_variables(){
    MOD = "UWC3"
@@ -621,8 +635,8 @@ public set_variables(){
    if (get_cvar_num("UW_use_enh")){
       USE_ENH = 1
       if (get_cvar_num("UW_enh_minlevel"))
-         enh_minlevel = get_cvar_num("UW_enh_minlevel") 
-      else 
+         enh_minlevel = get_cvar_num("UW_enh_minlevel")
+      else
          enh_minlevel = ENH_MIN_LEVEL
       log_amx("Enhancements ON with minimum level set to [%d]", enh_minlevel)
 
@@ -742,7 +756,7 @@ public set_variables(){
       itemcost2[MOLE-1] = get_cvar_num("UW_price_MOLE")
       log_amx("Item Price Override Detected : MOLE [%d]", itemcost2[MOLE-1])
    }
- 
+
 
    return PLUGIN_CONTINUE
 }
@@ -763,13 +777,13 @@ public client_connect(id){
 
    if (get_cvar_num("UW_DEBUG_code")){
       // Server set to start w/ XP and max. attribs/resists
-      playerxp[id] = DEBUG_STARTXP 
+      playerxp[id] = DEBUG_STARTXP
 
       for (new j=0; j<MAX_ATTRIBS; j++)
          p_attribs[id][j] = ATTRIB_MAX_VALUE
 
       for (new j=0; j<MAX_RESISTS; j++)
-         p_resists[id][j] = RESIST_MAX_VALUE 
+         p_resists[id][j] = RESIST_MAX_VALUE
    }
 
    if (get_cvar_num("mp_savexp"))
@@ -828,8 +842,10 @@ public client_disconnect(id){
       return PLUGIN_CONTINUE
 
    if (get_cvar_num("mp_savexp") && !is_user_bot(id) && playerxp[id]){
-      if (get_cvar_num("mp_sql"))
+      if (get_cvar_num("mp_sql")) {
          sqlwrite_xp_id(id)
+         purge(id)
+      }
       else
          write_xp_id(id)
       xpreadytoload[id] = 0
@@ -844,7 +860,7 @@ public client_disconnect(id){
 
 // **************************************************************************
 // BEGIN client_prethink subroutine
-// Prethink routines 
+// Prethink routines
 // **************************************************************************
 public client_PreThink(id) {
 
@@ -861,15 +877,22 @@ public client_PreThink(id) {
 // BEGIN plugin_end  routine
 // End of the plugin
 // **************************************************************************
-public plugin_end(){
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
+public plugin_end() {
+	if (!warcraft3)
+		return PLUGIN_CONTINUE
 
-   if (get_cvar_num("mp_savexp"))
-      write_all()
+	if (get_cvar_num("mp_savexp")) {
+		// Make sure to sync any remaining data before plugin ends!
+		if (task_exists(TASKID_SYNCSQL)) {
+			remove_task(TASKID_SYNCSQL)
+			sync_sql()
+		}
+		//write_all()
+	}
 
-   return PLUGIN_CONTINUE
+	return PLUGIN_CONTINUE
 }
+
 // **************************************************************************
 // END plugin_end  routine
 // **************************************************************************

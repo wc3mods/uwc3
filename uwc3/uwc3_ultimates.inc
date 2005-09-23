@@ -3,12 +3,12 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Ultimate Abilities and Support Routines 
+*** UWC3 Module:   Ultimate Abilities and Support Routines
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Ultimate Abilities and Support Routines 
-*  All ultimates and their supporting routines are defined in this file. 
+*  Module: Ultimate Abilities and Support Routines
+*  All ultimates and their supporting routines are defined in this file.
 *----------------------------------------------------------------------------
 *
 *  UWC3 is written exclusively for AMX Mod X
@@ -36,12 +36,12 @@
 // Handle the ultimate skill
 // **************************************************************************
 public ultimate(id){
-   if (!warcraft3) 
+   if (!warcraft3)
       return PLUGIN_CONTINUE
-      
-      
+
+
    return PLUGIN_CONTINUE
-}     
+}
 // **************************************************************************
 // END ultimate subroutine
 // **************************************************************************
@@ -71,11 +71,11 @@ public ultimate_wcsuicide(id){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
-   } 
+   }
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcsuicide() <%s> invoked Suicide Bomber", name )
    }
 
@@ -115,19 +115,19 @@ public implosion(parm[]){
    write_byte(20)
    write_byte(5)
    message_end()
-   
+
    return PLUGIN_CONTINUE
-}     
-  
+}
+
 public apacheexplode(parm[]){
    // Suicide Bomber
    new id = parm[0]
    if (get_user_team(id)==SPEC)
       return PLUGIN_CONTINUE
-   
+
    new origin[3]
    get_user_origin(id,origin)
-      
+
    // random explosions
    message_begin( MSG_PVS, SVC_TEMPENTITY, origin )
    write_byte( TE_EXPLOSION) // This just makes a dynamic light now
@@ -139,7 +139,7 @@ public apacheexplode(parm[]){
    write_byte( 12  ) // framerate
    write_byte( TE_EXPLFLAG_NONE )
    message_end()
-         
+
    // lots of smoke
    message_begin( MSG_PVS, SVC_TEMPENTITY, origin )
    write_byte( TE_SMOKE )
@@ -305,7 +305,7 @@ public ultimate_wcflame(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcflame() <%s> invoked Flame Strike", name )
    }
 
@@ -665,7 +665,7 @@ public ultimate_wcteleport(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcteleport() <%s> invoked Teleport", name )
    }
 
@@ -707,7 +707,7 @@ public ultimate_wcteleport(id){
 
          for (new i=0; i<numplayers; ++i){
             targetid=players[i]
-            
+
             if ( get_user_team(id) == get_user_team(targetid) ||
                  get_user_team(targetid) == SPEC ||
                  !is_user_alive(targetid) )
@@ -724,7 +724,7 @@ public ultimate_wcteleport(id){
                   if ( get_cvar_num("UW_DEBUG") == 5 ){
                      new tname[32]
                      get_user_name( targetid, tname, 31 )
-                     
+
                      log_amx( "DEBUG: TELEPORT_FAILED_IMMUNITY_2 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                      client_print( id, print_console, "DEBUG: TELEPORT_FAILED_IMMUNITY_2 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                   }
@@ -822,11 +822,11 @@ public ultimate_wcteleport(id){
          icon_controller(id,ICON_HIDE)
 
          if (file_exists("sound/warcraft3/blinkarrival.wav")==1)
-            emit_sound(id,CHAN_ITEM, "warcraft3/blinkarrival.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)  
+            emit_sound(id,CHAN_ITEM, "warcraft3/blinkarrival.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
          else
             emit_sound(id,CHAN_ITEM, "x/x_shoot1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
-         
-         
+
+
          message_begin( MSG_PAS, SVC_TEMPENTITY, newLocation )
          write_byte( TE_BEAMCYLINDER )
          write_coord( newLocation[0])
@@ -847,16 +847,16 @@ public ultimate_wcteleport(id){
          write_byte( 255 ) //brightness
          write_byte( 0 ) // speed
          message_end()
-      }else{       
-         new i    
-         new j 
-         new tmp  
+      }else{
+         new i
+         new j
+         new tmp
          new numberofplayers
          new targetid
          new targetid2
          new teamname[32]
          new distancebetween
-         new distancebetween2 
+         new distancebetween2
          new origin[3]
          new targetorigin[3]
          new targetorigin2[3]
@@ -867,7 +867,7 @@ public ultimate_wcteleport(id){
          for (i=0; i<numberofplayers; i++) {     // Sort by closest to furthest
             for (j=i+1; j<numberofplayers; j++){
                targetid=teleportid[id][i]
-         
+
                if ( get_user_team(id) != get_user_team(targetid) ) continue
 
                get_user_origin(targetid,targetorigin)
@@ -902,7 +902,7 @@ public ultimate_wcteleport(id){
             set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
             show_hudmessage(id,"No valid targets found!")
          }
-      }        
+      }
    }
 
    return PLUGIN_HANDLED
@@ -921,7 +921,7 @@ public ceiling_check(parm[2]){
         get_mapname(mapname,32)
 
         if ( !is_user_connected( id ) )
-           return 
+           return
 
         new Float:porigin[3]
         entity_get_vector(id,EV_VEC_origin,porigin)
@@ -1127,7 +1127,7 @@ public blink_controller(parm[2]){
                   if ( get_cvar_num("UW_DEBUG") == 5 ){
                      new tname[32]
                      get_user_name( targetid, tname, 31 )
-                     
+
                      log_amx( "DEBUG: TELEPORT_FAILED_IMMUNITY_1 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                      client_print( id, print_console, "DEBUG: TELEPORT_FAILED_IMMUNITY_1 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                   }
@@ -1307,7 +1307,7 @@ public ultimate_wcchain(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcchain() <%s> invoked Chain Lightning", name )
    }
 
@@ -1429,7 +1429,7 @@ public lightningnext(parm[4]){
       new actual_damage = damage
       // [08-05-04] - Added Electricity resistance check - K2mia
       if (USE_ENH && p_resists[closestid][RESISTIDX_ELECTRIC]){
-         actual_damage -= (p_resists[closestid][RESISTIDX_ELECTRIC] / 100) * actual_damage 
+         actual_damage -= (p_resists[closestid][RESISTIDX_ELECTRIC] / 100) * actual_damage
          if (p_resists[closestid][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
             client_print(closestid, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
          else
@@ -1464,7 +1464,7 @@ public lightningeffect(id,targetid,linewidth,damage,caster){
       set_user_armor_log(targetid, 0, true, "lightningeffect()-1")
       //set_user_armor(targetid,0)
    else
-      set_user_armor_log(targetid, (get_user_armor(targetid)-damage), 
+      set_user_armor_log(targetid, (get_user_armor(targetid)-damage),
                          true, "lightningeffect()-2")
       //set_user_armor(targetid,get_user_armor(targetid)-damage)
 
@@ -1543,7 +1543,7 @@ public ultimate_wcentangle(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcentangle() <%s> invoked Entangle Roots", name )
    }
 
@@ -1746,7 +1746,7 @@ public ultimate_wcvoodoo(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcvoodoo() <%s> invoked Voodoo", name )
    }
 
@@ -1783,7 +1783,7 @@ public ultimate_wcvoodoo(id){
 
       new pname[32]
       get_user_name(id, pname, 31)
-      log_amx( "In ultimate_wcvoodoo() :: [%s] Voodoo Activated (for %d secs)", 
+      log_amx( "In ultimate_wcvoodoo() :: [%s] Voodoo Activated (for %d secs)",
          pname, duration)
 
 
@@ -1851,7 +1851,7 @@ public ultimate_wclocust(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wclocust() <%s> invoked Locust Swarm", name )
    }
 
@@ -1885,23 +1885,23 @@ public calllocustfunction(id){
       show_hudmessage(id,"No valid targets found!")
       return PLUGIN_CONTINUE
    }
-   
+
    parm[6] = 0 // Initialize target parameter
-      
+
    //client_print(0, print_console, "DEBUG: before-count=(%d) parm6=(%d)", count, parm[6])
-   
+
    // Prevents target from being the server
    while (parm[6] == 0)
       parm[6] = possibility[random_num(0, count)]
-   
+
    //client_print(0, print_console, "DEBUG: after-count=(%d) parm6=(%d)", count, parm[6])
-      
+
    if (parm[6] > numberofplayers){
       set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
       show_hudmessage(id,"No valid targets found!")
       return PLUGIN_CONTINUE
    }
-      
+
    new origin[3], origin2[3]
    get_user_origin(id,origin)
    get_user_origin(parm[6],origin2)
@@ -1909,24 +1909,24 @@ public calllocustfunction(id){
    parm[1]=origin[1]
    parm[2]=origin[2]
    ultimateused[id]=true
-   
+
    if (file_exists("sound/warcraft3/locustswarmloopwav.wav")==1)
       emit_sound(id, CHAN_ITEM, "warcraft3/locustswarmloopwav.wav", 1.0,
                  ATTN_NORM, 0, PITCH_NORM)
 
    drawfunnels(parm)
    return PLUGIN_CONTINUE
-}  
+}
 
 public drawfunnels(parm[]){
    new MULTIPLIER = 150 // the lower the number the faster it reaches the target
    new id = parm[6]
    new caster = parm[7]
-         
+
    if ( (p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
         magic_saving_throw(id))
-   {  
-      client_print(id, print_chat, 
+   {
+      client_print(id, print_chat,
          "[%s] Your magic resistance protects you from a Locust Swarm", MOD)
       ultimateused[caster]=false
       icon_controller(caster,ICON_SHOW)
@@ -2052,7 +2052,7 @@ public ultimate_wcflash(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcflash() <%s> invoked Flash of Light", name )
    }
 
@@ -2159,7 +2159,7 @@ public ultimate_wcdecoy(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcdecoy() <%s> invoked Decoy", name )
    }
 
@@ -2187,7 +2187,7 @@ public ultimate_wcdecoy(id){
    }
 
    if ( skinchanged[id] ){
-      client_print(id, print_chat, 
+      client_print(id, print_chat,
          "[%s] You are currently a Goombah and unable to create a decoy.", MOD)
       return PLUGIN_HANDLED
    }
@@ -2247,7 +2247,7 @@ public ultimate_wcdecoy(id){
    }
 
    entity_set_model(decoyEnt, pmodel)
-   
+
    entity_set_float(decoyEnt, EV_FL_health,99999200.0)
    entity_set_float(decoyEnt, EV_FL_takedamage, 1.0)
    entity_set_float(decoyEnt, EV_FL_dmg_take, 1.0)
@@ -2293,7 +2293,7 @@ public cleanup_decoy(args[]){
 
 public check_duck() {
 
-   for(new i = 1; i <= get_maxplayers(); ++i) {
+   for(new i = 1; i <= g_MAXPLAYERS; ++i) {
       if (is_user_alive(i)) {
          if (decoy[i]) {
             //client_print(i, print_chat, "MIH2")
@@ -2478,7 +2478,7 @@ public ultimate_wcgate(id){
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
-      get_user_name( id, name, 31) 
+      get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcgate() <%s> invoked Gate", name )
    }
 

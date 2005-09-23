@@ -6,8 +6,8 @@
 *** Date:          May 25, 2004
 *** Last Update:   September 27, 2004
 *
-*  Module: Damage and Damage Events 
-*  Subroutines for handling damage, death, and uwc3-skills related damage 
+*  Module: Damage and Damage Events
+*  Subroutines for handling damage, death, and uwc3-skills related damage
 *----------------------------------------------------------------------------
 *
 *  UWC3 is written exclusively for AMX Mod X
@@ -118,7 +118,7 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
    if (get_cvar_num("UW_DEBUG") == 1){
       client_print(0, print_console, "[%s DEBUG In do_damage()] <%s => %s> dmg=(%d) deathby=(%s) userdead=(%d) victim_evade?=(%d)", MOD, ename, idname, damage, string, userdead, p_evadethisshot[id])
    }else if (get_cvar_num("UW_DEBUG") == 6){
-      log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)", 
+      log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)",
                ename, idname, damage, string )
    }
 
@@ -127,7 +127,7 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
       return PLUGIN_HANDLED
    }
 
-   if ( hasblink[id] && 
+   if ( hasblink[id] &&
         (weapon ==10 || weapon==11 || weapon==12 || weapon==13 || weapon==15))
    {
       return PLUGIN_HANDLED
@@ -280,8 +280,8 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
             weaponname = "p90"
       }
 
-      //client_print(0, print_console, 
-      //   "[%s DEBUG] [do_damage()-3] <%s => %s> weapon=(%s)", 
+      //client_print(0, print_console,
+      //   "[%s DEBUG] [do_damage()-3] <%s => %s> weapon=(%s)",
       //   MOD, ename, idname, weaponname)
 
       //logKill(enemy,id, weaponname)
@@ -293,7 +293,7 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
       {
          playerxp[enemy]+=xpgiven
          if (get_cvar_num("FT_kill_objectives")){
-            client_print(enemy, print_chat, 
+            client_print(enemy, print_chat,
               "[%s] You just gained %d XP for killing %s with %s",MOD,xpgiven,name,string)
          }
       }else if(get_user_team(id)!=get_user_team(enemy)){
@@ -715,7 +715,7 @@ public damage_event(id){
          client_print(enemy, print_chat,
             "[%s] Your Carrion Beetles infect %s with disease", MOD, idname)
          client_print(id, print_chat,
-            "[%s] Carrion Beetles from %s infect you with disease, seek a medic quickly!", 
+            "[%s] Carrion Beetles from %s infect you with disease, seek a medic quickly!",
             MOD, ename)
 
          // 6-19-2004 - Carrion Beetles damage modified, now based on level (K2mia)
@@ -1175,7 +1175,7 @@ public damage_event(id){
 
       // [09-29-04] Rewrote Vampiric ceiling checks - K2mia
       // Set max_health to be the lesser of p_vampiric or maxhealth[enemy]
-      new max_health = 
+      new max_health =
          ( (maxhealth[enemy] > p_vampirichealth[p_skills[enemy][SKILLIDX_VAMPIRIC]-1]) ?
            p_vampirichealth[p_skills[enemy][SKILLIDX_VAMPIRIC]-1] : maxhealth[enemy] )
 
@@ -1185,7 +1185,7 @@ public damage_event(id){
 
       new new_health = ( get_user_health(enemy) + damage )
 
-      if ( new_health > max_health ) 
+      if ( new_health > max_health )
          new_health = max_health
 
       set_user_health_log(enemy, new_health, true, "damage_event() VAMPIRIC")
@@ -1208,7 +1208,7 @@ public damage_event(id){
 
          atotal = (NORMALARMORMAX + abonus)
 
-         if (get_user_armor(enemy) > atotal) 
+         if (get_user_armor(enemy) > atotal)
             set_user_armor_log(enemy, atotal, true, "sskin-2")
             //set_user_armor(enemy, atotal)
 
@@ -1340,13 +1340,13 @@ public damage_event(id){
          damage = read_data(2)
          // Changed to only do double damage
          //damage = floatround(float(damage) * 2)
-            
+
          new idname[32], ename[32]
          get_user_name(id, idname, 31)
          get_user_name(enemy, ename, 31)
 
          if (hasgodmode[id]){
-            client_print(enemy, print_chat,  
+            client_print(enemy, print_chat,
                "[%s] Your critical strike is deflected by Big Bad Voodoo", MOD )
             client_print(id, print_chat,
                "[%s] Your Big Bad Voodoo protects you from a critical strike", MOD )
@@ -1357,9 +1357,9 @@ public damage_event(id){
             client_print(id, print_chat,
                "[%s] You were hit by a critical strike from %s", MOD, ename)
          }
-         
+
          //client_print(0, print_console,
-         //  "[%s DEBUG] In Critical Strike (%s => %s) Skills Dump Follows", MOD, ename, idname)   
+         //  "[%s DEBUG] In Critical Strike (%s => %s) Skills Dump Follows", MOD, ename, idname)
 
          if (iglow[id][0] < 1){
             new parm[2]
@@ -1375,7 +1375,7 @@ public damage_event(id){
          if (iglow[id][0]>MAXGLOW)
             iglow[id][0]=MAXGLOW
 
-         
+
          message_begin(MSG_ONE,gmsgFade,{0,0,0},id)
          write_short( 1<<10 ) // fade lasts this long duration
          write_short( 1<<10 ) // fade lasts this long hold time
@@ -1391,7 +1391,7 @@ public damage_event(id){
 
    // [08-10-04] - Evasion now protects against Critical Grenades - K2mia
    if (p_skills[enemy][SKILLIDX_CRITGREN] && !p_evadethisshot[id] ){
-      // Critical Grenade 
+      // Critical Grenade
       new bool:allow=true
       if(playeritem2[enemy]==INFERNO){
          if(get_cvar_num("FT_glove_orc_damage"))
@@ -1400,26 +1400,26 @@ public damage_event(id){
             allow=false
       }else{
          allow=true
-      }  
-            
+      }
+
       if(no_he)
          allow=false
-               
+
       if ( (weapon == 4) &&
-          ((p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) || magic_saving_throw(id)))           
-      {        
+          ((p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) || magic_saving_throw(id)))
+      {
          allow = false
-         client_print(id, print_chat,  
+         client_print(id, print_chat,
             "[%s] Your magic resistance protects you from Critical Grenade damage", MOD)
-      }  
-         
+      }
+
       if (weapon == 4 && allow){
          damage = read_data(2)
-         damage = floatround(float(damage)*p_grenade[p_skills[enemy][SKILLIDX_CRITGREN]-1])        
+         damage = floatround(float(damage)*p_grenade[p_skills[enemy][SKILLIDX_CRITGREN]-1])
          do_damage(id, enemy,damage,7,1, weapon, bodypart,0)
-         new name[32] 
+         new name[32]
          get_user_name(id,name,31)
-         
+
          if (iglow[id][0] < 1){
             new parm[2]
             parm[0] = id
@@ -1430,10 +1430,10 @@ public damage_event(id){
          iglow[id][1] = 0
          iglow[id][2] = 0
          iglow[id][3] = 0
-         
+
          if (iglow[id][0]>MAXGLOW)
-            iglow[id][0]=MAXGLOW 
-         
+            iglow[id][0]=MAXGLOW
+
          message_begin(MSG_ONE,gmsgFade,{0,0,0},id)
          write_short( 1<<10 ) // fade lasts this long duration
          write_short( 1<<10 ) // fade lasts this long hold time
@@ -1450,9 +1450,9 @@ public damage_event(id){
    // [08-10-04] - Evasion now protects against Napalm Grenades - K2mia
    if (p_skills[enemy][SKILLIDX_NAPALM] && !p_evadethisshot[id] ){
       // Napalm Grenade
-         
+
       if (threwnapalm[enemy]) return PLUGIN_CONTINUE
-         
+
       new bool:allow=true
       if(playeritem2[enemy]==INFERNO){
          if(get_cvar_num("FT_glove_napalm_damage"))
@@ -1462,46 +1462,46 @@ public damage_event(id){
       }else{
          allow = true
       }
-          
+
       if(no_he)
          allow = false
-         
-         
-      // Necklace of Immunity now protects against Napalm 
+
+
+      // Necklace of Immunity now protects against Napalm
       if (playeritem[id] == IMMUNITY)
          allow = false
-      
+
       if (weapon == 4 && allow){
          threwnapalm[enemy] += 1
 
          damage = read_data(2)
          do_damage(id, enemy,damage, 17, 1, weapon, bodypart,0)
-         
+
          emit_sound(id, CHAN_WEAPON , "scientist/scream07.wav", 1.0,
             ATTN_NORM, 0, PITCH_HIGH)
-            
+
          // [09-05-04] Attach fireball sprite to player for 1 cycle
          message_begin(MSG_ALL, SVC_TEMPENTITY )
          write_byte(TE_PLAYERATTACHMENT)
          write_byte(id)
          write_coord( 0 )      // z axis for sprite
          write_short( blast )  // blast sprite
-         write_short(9) 
+         write_short(9)
          message_end()
-         
+
          burn_victim_napalm(id, enemy, 0)
-            
+
          new name[32], ename[32]
          get_user_name(id,name,31)
          get_user_name(enemy,ename,31)
-         
-         client_print(id, print_chat, 
+
+         client_print(id, print_chat,
             "[%s] %s has burned you with a Napalm Grenade, Eeek!", MOD, ename)
          client_print(enemy, print_chat, "[%s] Your Napalm Grenade burns %s", MOD, name)
-      }  
+      }
       // End of Napalm Grenade
-   }     
-      
+   }
+
    // [08-10-04] - Evasion now protects against all item-based attacks - K2mia
    if ((playeritem[enemy] == CLAWS) && !p_evadethisshot[id] ){
       // Claws of Attack
@@ -1730,7 +1730,7 @@ public death(){
          // Only check for end of round
          if( !endround && !vengeance_used[victim_id] ){
             vengeance_used[victim_id] = 1
-            vengeance_state[victim_id] = VENG_WAIT 
+            vengeance_state[victim_id] = VENG_WAIT
             set_task(1.2,"func_spawn",2,parm,2)
             ultimateused[victim_id]=true
          }
@@ -1738,7 +1738,7 @@ public death(){
          // Restrict Vengeance if another ultimate was recently used
          if( !endround && !ultimateused[victim_id] && !vengeance_used[victim_id] ){
             vengeance_used[victim_id] = 1
-            vengeance_state[victim_id] = VENG_WAIT 
+            vengeance_state[victim_id] = VENG_WAIT
             set_task(1.2,"func_spawn",2,parm,2)
             ultimateused[victim_id]=true
          }

@@ -2,11 +2,11 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Global Variables 
+*** UWC3 Module:   Global Variables
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Global Variables 
+*  Module: Global Variables
 *  All global variables are defined in this module.
 *----------------------------------------------------------------------------
 *
@@ -287,7 +287,7 @@ new RESIST_MAX_PTS = 500                        // Max. number of resist pts ear
 new sqlhost[64]
 new sqluser[32]
 new sqlpass[32]
-new sqldb[32]
+new sqldb[1024]
 new sqlerror[128]
 new sqltable_xp[32] = "uwc3_xp"
 //new sqltable_skills[32] = "uwc3_skills"
@@ -296,6 +296,13 @@ new sqltable_skills1[32] = "uwc3_skills1"
 new sqltable_skills2[32] = "uwc3_skills2"
 new sqltable_skills3[32] = "uwc3_skills3"
 new sqltable_skills4[32] = "uwc3_skills4"
+new bool:g_sqlite = false 				// added by JGHG
+new g_MAXPLAYERS 						// added by JGHG
+new g_pendingXP[32][1024]				// added by JGHG
+new g_pendingSkills[32][4][1024]		// added by JGHG
+new g_pendingEnh[32][1024]				// added by JGHG
+new bool:g_purgeMe[32] = {false, ...}	// added by JGHG
+new g_roundCounter = 0					// added by JGHG
 // [9-08-2004] End of Added SQL variables - K2mia
 
 // Code taken from plmenu.sma (default AMX file)
@@ -305,7 +312,7 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
-new VER[12] = {"1.0.0-RC6j"}
+new VER[32] = {"1.6.0-unofficial"}
 new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS

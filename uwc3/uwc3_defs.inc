@@ -2,11 +2,11 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Global Defines 
+*** UWC3 Module:   Global Defines
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Global Defines 
+*  Module: Global Defines
 *  All #defines are included in this module.
 *----------------------------------------------------------------------------
 *
@@ -174,6 +174,10 @@
 #define SQL_SAVEBY_NAME 2	// Save SQL data by name
 
 #define CSW_WORLD 0		// World Spawn death, for weapon xp multiplier
+
+#define SAVEFREQUENCY	10		// added by JGHG: defines how many rounds must pass before write_all() is performed
+#define TASKID_SYNCSQL	6666	// added by JGHG: always use defined taskids to avoid collisions
+#define TIMEBEFORESYNC	2.0		// added by JGHG: seconds
 // **************************************************************************
 // END UWC3 Defs
 // **************************************************************************
