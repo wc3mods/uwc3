@@ -4,7 +4,7 @@
 *** Plugin Author: K2mia
 *** UWC3 Module:   Main
 *** Date:          May 25, 2004
-*** Last Update:   October 08, 2004
+*** Last Update:   November 29, 2005
 *
 *   This plugin is a new approach to the War3 and War3FT plugins created by
 *  SpaceDude and Pimp Daddy. UWC3 provides a raceless, skill/level based
@@ -38,8 +38,6 @@
 *  Original War3FT Credits Follow:
 *  Warcraft 3: Frozen Throne
 *  by Pimp Daddy (OoTOAoO)
-*  email: PimpDaddy@cinci.rr.com
-*  MSN: PimpDaddy@cinci.rr.com
 
 *
 *  Credits to:
@@ -65,12 +63,19 @@
 ****************************************************************************/
 
 /*
-	Compiled for amxx 1.60 by Geesu on 9/22/2005
-	- Renamed log_error to log_sql_error to avoid conflicts
+	1.6.1-unofficial
+	 - Updated some DBI code b/c it was giving me errors (on dbi_free_result)
+	 - Used fakemeta with Helm instead of set_user_hitzones (screen will now flash orange when a user evades a HS)
+	 - Fixed create table statements for SQL
+
+	1.6.0
+	 - Compiled for amxx 1.60 by Geesu on 9/22/2005
+	 - Renamed log_error to log_sql_error to avoid conflicts
 */
 
 #include <amxmodx>
 #include <amxmisc>
+#include <fakemeta>
 #include <engine>
 #include <cstrike>
 #include <fun>
@@ -423,6 +428,9 @@ public plugin_init(){
    register_cvar("UW_attrib_xpmodifier","1.0")
    register_cvar("UW_resist_xpmodifier","1.0")
 
+   register_forward(FM_TraceLine, "traceline");
+
+
    // set_task calls for functions needed by init or to run continuously
    set_task(10.0, "check_war3",456,"",0,"b")
    set_task(1.0, "check_war3",457)
@@ -453,24 +461,6 @@ public plugin_init(){
 }
 // **************************************************************************
 // END plugin_init subroutine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN plugin_modules subroutine
-// Specify which modules are required by UWC3
-// **************************************************************************
-public plugin_modules()
-{
-
-   require_module("engine")	// Requires the engine module
-   require_module("fun")	// Requires the fun module
-   require_module("cstrike")	// Requires the cstrike module
-   require_module("dbi")	// Requires the dbi module
-
-}
-// **************************************************************************
-// END plugin_modules subroutine
 // **************************************************************************
 
 
