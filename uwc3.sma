@@ -755,6 +755,25 @@ public set_variables(){
 
 
 // **************************************************************************
+// BEGIN client_authorized subroutine
+// A connected client has been steam authenticated - Marticus 11/15/05
+// **************************************************************************
+
+/* Added support to fix players losing XP to 
+   STEAM_ID_PENDING -Marticus 11/15/05 */
+
+public client_authorized(id){
+   if (get_cvar_num("mp_savexp")){
+      xpreadytoload[id] = 1
+   }
+   return PLUGIN_CONTINUE
+}
+// **************************************************************************
+// END client_authorized subroutine
+// **************************************************************************
+
+
+// **************************************************************************
 // BEGIN client_connect subroutine
 // A new client has connected
 // **************************************************************************
@@ -775,8 +794,12 @@ public client_connect(id){
          p_resists[id][j] = RESIST_MAX_VALUE 
    }
 
+   /* Removed to support fix players losing xp to
+      STEAM_ID_PENDING -Marticus 11/15/05
+      Moved this to client_authorized
    if (get_cvar_num("mp_savexp"))
       xpreadytoload[id] = 1
+    */
 
    client_cmd(id, "echo ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
