@@ -161,6 +161,7 @@ new damageto[MAX_PLAYERS][MAX_PLAYERS]  // Damage dealt table for added XP
 new bool:spawnedfromitem[MAX_PLAYERS] = false   // Is player spawned from item
 new bool:gotShield[MAX_PLAYERS]                 // Does player have tactical shield
 new bool:resetskill[MAX_PLAYERS]                // Is player waiting to reset skills
+new bool:dropskill[MAX_PLAYERS]                 // Is player currently dropping skills
 new bool:resetattrib[MAX_PLAYERS]               // Is player waiting to reset attributes
 new bool:resetresist[MAX_PLAYERS]               // Is player waiting to reset resists
 new bool:teleportmenu[MAX_PLAYERS]              // Is player viewing teleport menu

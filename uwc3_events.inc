@@ -390,6 +390,10 @@ public new_round(id){
 
          displaylevel(id, 3)
       }
+
+      // Reset dropskill for id to allow for selecting new skills - Marticus 
+      if (dropskill[id])
+         dropskill[id]=false
    }
 
    vengeance_used[id] = 0

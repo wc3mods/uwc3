@@ -432,6 +432,11 @@ public set_skill(id, key){
          log_amx( "DEBUG #4: In set_skill() Mapname=(%s) Player=(%s) skill_key=(%d)<%s> Level=(%d) #Skills=(%d), skillpts=(%d)", mapname, name, key, skillname, p_level[id], skillcount, skillpts )
       }
 
+      // Prevent player from selecting new skills after dropping them - Marticus
+      if (dropskill[id]) {
+         client_print(id, print_chat, "[%s] You must wait one round to select new skills after dropping them", MOD)
+         return PLUGIN_HANDLED
+      }
 
       // One of the skills was selected, check applicability
       if ( skillpts <= 0 ){
@@ -608,6 +613,177 @@ public set_skill(id, key){
 // END set_skill subroutine
 // **************************************************************************
 
+
+// **************************************************************************
+// BEGIN drop_skill subroutine
+// Skill drop menu - Marticus 2005-06-24
+// **************************************************************************
+public drop_skill(id, page){
+   if (!warcraft3)
+      return PLUGIN_CONTINUE
+
+   new skillname[32] = ""
+   new keys = (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9)
+   new message[2048] = ""
+   new temp2[256] = ""
+   new temp3[32] = ""
+
+   page = (page > 0) ? page : 1
+   nSkillsPage[id] = page
+
+   format(temp2, 256,"\yDrop Skill: (pg-%d)\w^n", page)
+   add(message, 2048, temp2)
+
+   new startidx = ((page-1) * SKILLS_PER_SET) + 1
+   new endidx = startidx + (SKILLS_PER_SET - 1)
+
+   for (new i=startidx; i <= endidx; i++){
+      new vis_i = (i - startidx) + 1
+      new j = sortedskills[i]
+      new idx = j
+
+      new sLevelText[32] = ""
+      new admstr[32] = ""
+
+      if (skill_minlev[j] == 0) continue
+
+      if (j <= 8) copy(skillname, 31, skillset1[j])
+      else if (j <= 16) copy(skillname, 31, skillset2[j-8])
+      else if (j <= 24) copy(skillname, 31, skillset3[j-16])
+      else if (j <= 32) copy(skillname, 31, skillset4[j-24])
+      else if (j <= 40) copy(skillname, 31, skillset5[j-32])
+
+      if ( p_level[id] < skill_minlev[idx] ){
+         // Blank out option of level not high enough to train
+         format(temp3, 32, "\d")
+         add(message, 2048, temp3)
+
+         if (get_cvar_num("UW_admin_mode"))
+            format(sLevelText, 32, "[ Lvl %d ]", skill_minlev[idx])
+         else
+            format(sLevelText, 32, "[Lvl %d required]", skill_minlev[idx])
+
+         if (equali(skillname,"NOSKILL"))
+            copy(skillname, 31, "coming soon")
+
+         format(temp2, 256, "\d^n%d. %s %s %s   %s\w",
+            vis_i, admstr, skillname, " - ", sLevelText)
+      }else if (equali(skillname,"NOSKILL")){
+         // Special Case - skill not ready yet
+         format(temp2, 256, "^n%d. skill being developed \w", vis_i)
+      }else{
+         format(temp2, 256, "^n%d. %s %s %s %d/%d  %s\w", vis_i, admstr, skillname,
+            " - ", p_skills[id][idx], skill_limits[idx], sLevelText)
+      }
+
+      add(message, 2048, temp2)
+   }
+
+   format(temp3, 32, "^n^n9. Next Page")
+   add(message, 2048, temp3)
+      
+   format(temp3, 32, "^n^n0. Exit")
+   add(message, 2048, temp3)
+      
+   show_menu(id, keys, message, -1)
+
+   return PLUGIN_HANDLED
+}
+// **************************************************************************
+// END drop_skill subroutine
+// **************************************************************************
+
+
+// **************************************************************************
+// BEGIN unset_skill subroutine
+// Drop a specific skill for a player
+// **************************************************************************
+public unset_skill(id, key){
+
+   new skillname[32]
+
+   if ( (key >= 0) && (key <= 7) ){
+      // Player chose one of the skill dropping keys
+      new sorted_idx = ((nSkillsPage[id]-1) * SKILLS_PER_SET) + key + 1
+      new skill_idx = sortedskills[sorted_idx]
+      new j = skill_idx
+
+      if (j <= 8) copy(skillname, 31, skillset1[j])
+      else if (j <= 16) copy(skillname, 31, skillset2[j-8])
+      else if (j <= 24) copy(skillname, 31, skillset3[j-16])
+      else if (j <= 32) copy(skillname, 31, skillset4[j-24])
+      else if (j <= 40) copy(skillname, 31, skillset5[j-32])
+
+      if (!get_skillcount(id)){
+         // Player has no skill pts to drop
+         client_print(id, print_chat, "[%s] You have no skill points to drop", MOD)
+         return PLUGIN_HANDLED
+      }
+
+      if ( get_availskillpts(id) && !dropskill[id]) {
+         
+         // Player has no skill pts to drop
+         client_print(id, print_chat, "[%s] You must first spend your available skill points", MOD)
+         return PLUGIN_HANDLED
+      } 
+
+      // Fix Steel Skin Bug: do not drop vamp or leather below steel skin
+      // prerequisites. -Marticus, 19 Feb 2006
+      if ((p_skills[id][SKILLIDX_SSKIN] == 1) && (((skill_idx == SKILLIDX_LSKIN) && (p_skills[id][SKILLIDX_LSKIN] == 3)) || ((skill_idx == SKILLIDX_VAMPIRIC) && (p_skills[id][SKILLIDX_VAMPIRIC] == 1)))) {
+         client_print(id, print_chat, "[%s] You must first drop Steel Skin", MOD)
+         return PLUGIN_HANDLED
+      }
+
+      // Do not drop below 0 in index skill_idx
+      if ( p_skills[id][skill_idx] == 0 ) {
+         client_print(id, print_chat, "[%s] You have no points in %s",
+            MOD, skillname)
+         return PLUGIN_HANDLED
+      } else {
+
+         // Prevent skill points from being reselected this round
+         dropskill[id]=true
+
+         // Decrease the player's skill level in the skill at index skill_idx
+         p_skills[id][skill_idx] -= 1
+
+         if ( get_cvar_num("mp_sql") && !get_cvar_num("mp_sql_saveoncmdonly") )
+            sqlwrite_skills_id( id, skill_idx, 1)
+         else
+            write_skills_id( id, 1 )
+
+         // if its an ultimate we are dropping - Lantz69, 22 Feb 2006
+         if (skill_ultimates[skill_idx][0])
+            ultlearned[id]--; 
+
+         if ( p_skills[id][skill_idx] == 0 )
+            client_print(id, print_chat, "[%s] You are no longer trained in %s",
+               MOD, skillname)
+	 else
+            client_print(id, print_chat, "[%s] You have decreased your knowledge of %s", MOD, skillname)
+
+         if (get_skillcount(id)){
+            // Player still has skillpts to drop, return to skill menu
+            drop_skill(id, nSkillsPage[id])
+            return PLUGIN_HANDLED
+         }
+      }
+   }
+
+   if (key == 8){
+      // Set global skills page variable
+      nSkillsPage[id] = (nSkillsPage[id] < MAX_SKILL_PAGES) ? nSkillsPage[id] + 1 : 1
+      drop_skill(id, nSkillsPage[id])
+      return PLUGIN_HANDLED
+   }
+
+   return PLUGIN_HANDLED
+
+}
+// **************************************************************************
+// END unset_skill subroutine
+// **************************************************************************
+ 
 
 // **************************************************************************
 // BEGIN get_skillcount subroutine

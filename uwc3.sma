@@ -192,6 +192,8 @@ public plugin_init(){
    register_clcmd("/selectskill", "select_skill", -1, "-Displays the skills menu")
    register_clcmd("selectattrib", "select_attrib", -1, "-Displays the attributes menu")
    register_clcmd("/selectattrib", "select_attrib", -1, "-Displays the attributes menu")
+   register_clcmd("dropskill", "drop_skill", -1, "-Displays the drop skills menu")
+   register_clcmd("/dropskill", "drop_skill", -1, "-Displays the drop skills menu")
    register_clcmd("selectresist", "select_resist", -1, "-Displays the resistances menu")
    register_clcmd("/selectresist", "select_resist", -1, "-Displays the resistances menu")
 
@@ -243,6 +245,7 @@ public plugin_init(){
    register_menucmd(register_menuid("\yGive Players XP"), 1023,"do_playerxpmenu")
    register_menucmd(register_menuid("\yTeam XP Menu"), 1023, "do_teamxpmenu")
    register_menucmd(register_menuid("Select Skill: "), (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9), "set_skill")
+   register_menucmd(register_menuid("Drop Skill: "), (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9), "unset_skill")
    register_menucmd(register_menuid("\yBuy An Item"), 1023, "buy_item2")
    register_menucmd(register_menuid("\yBuy Item"), 1023, "buy_item")
    register_menucmd(register_menuid("BuyItem"),(1<<2),"flashbuy")

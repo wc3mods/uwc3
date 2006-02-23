@@ -167,6 +167,8 @@ public check_say(id){
       return PLUGIN_HANDLED
    }else if (equali(said,"^"/selectskill^"") || equali(said,"^"selectskill^""))
       select_skill(id,1)
+   else if (equali(said,"^"/dropskill^"") || equali(said,"^"dropskill^""))
+      drop_skill(id,1)
    else if (equali(said,"^"/selectattrib^"") || equali(said,"^"selectattrib^""))
       select_attrib(id)
    else if (equali(said,"^"/selectresist^"") || equali(said,"^"selectresist^""))
