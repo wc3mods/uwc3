@@ -1183,6 +1183,10 @@ public damage_event(id){
       if ( playeritem[enemy]==HEALTH )
          max_health += HEALTHBONUS
 
+      // [05-13-05] Added check to see if enemy health above Vampiric maximum - Roland of Gilead
+      if ( get_user_health(enemy) < max_health )
+      {
+
       new new_health = ( get_user_health(enemy) + damage )
 
       if ( new_health > max_health ) 
@@ -1190,6 +1194,8 @@ public damage_event(id){
 
       set_user_health_log(enemy, new_health, true, "damage_event() VAMPIRIC")
 
+      }
+ 
       if (p_skills[enemy][SKILLIDX_SSKIN]){
          // Steel Skin, give armor to the enemy
          set_user_armor_log(enemy, (get_user_armor(enemy)+damage), true, "sskin-1")
