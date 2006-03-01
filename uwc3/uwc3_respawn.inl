@@ -2,12 +2,12 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Respawn and Related Subroutines 
+*** UWC3 Module:   Respawn and Related Subroutines
 *** Date:          May 25, 2004
 *** Last Update:   September 27, 2004
 *
 *  Module: Respawn and Related Subroutines
-*  Subroutines for handling respawning 
+*  Subroutines for handling respawning
 *----------------------------------------------------------------------------
 *
 *  UWC3 is written exclusively for AMX Mod X
@@ -36,7 +36,7 @@ public check_for_reviving(victim_id){
    if(get_user_team(victim_id)==TEAM_T && pheonixexistsT>0){
       for (y = 0; y < numberofplayers; ++y){
          new id = players[y]
-         if (phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && (get_user_team(id)==get_user_team(victim_id)) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPEC)
+         if (phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && (get_user_team(id)==get_user_team(victim_id)) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPECTATOR)
          {
             phoenix[id]=false
             new parm[2], name[32]
@@ -68,7 +68,7 @@ public check_for_reviving(victim_id){
    }else if(get_user_team(victim_id)==TEAM_CT && pheonixexistsCT>0){
       for (y = 0; y < numberofplayers; ++y){
          new id = players[y]
-         if (phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && get_user_team(id)==get_user_team(victim_id) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPEC)
+         if (phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && get_user_team(id)==get_user_team(victim_id) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPECTATOR)
          {
             phoenix[id]=false
             new parm[2], name[32]
@@ -116,7 +116,7 @@ public func_spawn(parm[2]){
    if ( endround )
       return PLUGIN_CONTINUE
 
-   if( get_user_team( id ) == SPEC )
+   if( get_user_team( id ) == SPECTATOR )
       return PLUGIN_CONTINUE
 
    playeritem[id]=0
@@ -126,7 +126,7 @@ public func_spawn(parm[2]){
    if ( is_user_alive( id ) )
       return PLUGIN_CONTINUE
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
 
@@ -135,7 +135,7 @@ public func_spawn(parm[2]){
    playerhasspawned[id]=true
    deathmessageshown[id]=false
    icon_controller(id,ICON_SHOW)
-   user_spawn(id)
+   //user_spawn(id)
    slowed[id]=false
    stunned[id]=false
 
@@ -171,11 +171,11 @@ public func_spawn(parm[2]){
 public spawn_player(parm[2]){
    new id = parm[0]
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    playerhasspawned[id]=true
-   user_spawn(id)
+   //user_spawn(id)
    give_item(id, "item_suit")
    give_item(id, "weapon_knife")
 
@@ -198,7 +198,7 @@ public spawn_player(parm[2]){
 public reset_respawngod(args[]){
    new id = args[0]
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    set_user_godmode( id, 0 )

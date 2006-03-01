@@ -67,17 +67,19 @@ public ultimate_wcsuicide(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcsuicide() <%s> invoked Suicide Bomber", name )
    }
+   #endif
 
    if (is_user_alive(id)){
     if (get_cvar_num("FT_warn_suicide")){
@@ -103,7 +105,7 @@ public ultimate_wcsuicide(id){
 public implosion(parm[]){
    new id = parm[0]
 
-   if (get_user_team(id)==SPEC)
+   if (get_user_team(id)==SPECTATOR)
       return PLUGIN_CONTINUE
 
    message_begin( MSG_BROADCAST, SVC_TEMPENTITY )
@@ -122,7 +124,7 @@ public implosion(parm[]){
 public apacheexplode(parm[]){
    // Suicide Bomber
    new id = parm[0]
-   if (get_user_team(id)==SPEC)
+   if (get_user_team(id)==SPECTATOR)
       return PLUGIN_CONTINUE
 
    new origin[3]
@@ -166,7 +168,7 @@ public apacheexplode(parm[]){
       distancebetween=get_distance(origin,targetorigin)
 
       if (distancebetween < get_cvar_num("FT_explosion_range") &&
-          get_user_team(id)!=get_user_team(targetid) && get_user_team(id)!=SPEC &&
+          get_user_team(id)!=get_user_team(targetid) && get_user_team(id)!=SPECTATOR &&
           playeritem[targetid]!=IMMUNITY && !hasblink[targetid])
       {
 
@@ -196,7 +198,7 @@ public apacheexplode(parm[]){
             multiplier = get_cvar_num("FT_explosion_max_damage") *
                get_cvar_num("FT_explosion_max_damage") / get_cvar_num("FT_explosion_range")
             damage=(get_cvar_num("FT_explosion_range")-distancebetween)*multiplier
-            damage = sqrt(damage)
+            damage = sqroot(damage)
             if (is_user_alive(targetid))
                do_damage(targetid,id, damage,12, 3, 0, 0, 0)
          }
@@ -222,7 +224,7 @@ public apacheexplode(parm[]){
 
 public blastcircles(parm[]){
         new id = parm[0]
-        if(get_user_team(id)==SPEC)
+        if(get_user_team(id)==SPECTATOR)
                 return PLUGIN_CONTINUE
 
         new origin[3]
@@ -297,17 +299,19 @@ public ultimate_wcflame(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcflame() <%s> invoked Flame Strike", name )
    }
+   #endif
 
    if (is_user_alive(id) && !ultimateused[id]){
       //Flame Strike
@@ -422,7 +426,7 @@ fire_flamethrower(id){
    velocityvec[0]=aimvec[0]-vec[0]
    velocityvec[1]=aimvec[1]-vec[1]
    velocityvec[2]=aimvec[2]-vec[2]
-   length=sqrt(velocityvec[0]*velocityvec[0]+velocityvec[1]*velocityvec[1]+velocityvec[2]*velocityvec[2])
+   length=sqroot(velocityvec[0]*velocityvec[0]+velocityvec[1]*velocityvec[1]+velocityvec[2]*velocityvec[2])
    velocityvec[0]=velocityvec[0]*speed/length
    velocityvec[1]=velocityvec[1]*speed/length
    velocityvec[2]=velocityvec[2]*speed/length
@@ -469,8 +473,10 @@ burn_victim(id,killer,tk){
 
       new Float:randomnumber = random_float(0.0,1.0)
 
+      #if defined DEBUG
       client_print(id, print_console, "DEBUG: fresist=(%d) chance_to_avoid=(%f) rnum=(%f)",
          p_resists[id][RESISTIDX_FIRE], chance_to_avoid, randomnumber)
+      #endif
 
       if (randomnumber < chance_to_avoid){
          do_burn = false
@@ -489,7 +495,7 @@ burn_victim(id,killer,tk){
       args[0] = id
       args[1] = killer
       args[2] = tk
-      set_task(ftimer, "on_fire", 451, args, 4, "a", (hp / 10))
+      set_task(ftimer, "on_fire", 451+id, args, 4, "a", (hp / 10))
    }else{
       isburning[id] = 0
    }
@@ -542,11 +548,10 @@ public on_fire(args[]){
 }
 
 check_burnzone(id,vec[],aimvec[],speed1,speed2,radius){
-   new maxplayers = get_maxplayers()+1
    new tbody,tid
    get_user_aiming(id,tid,tbody,550)
 
-   if((tid > 0) && (tid < maxplayers)){
+   if((tid > 0) && (tid <= g_MAXPLAYERS)){
       if(cvar_exists("mp_friendlyfire")){
          new ffcvar = get_cvar_num("mp_friendlyfire")
          if( (ffcvar == 0) || (ffcvar == 1)){
@@ -569,7 +574,7 @@ check_burnzone(id,vec[],aimvec[],speed1,speed2,radius){
    burnvec1[1]=aimvec[1]-vec[1]
    burnvec1[2]=aimvec[2]-vec[2]
 
-   length1=sqrt(burnvec1[0]*burnvec1[0]+burnvec1[1]*burnvec1[1]+burnvec1[2]*burnvec1[2])
+   length1=sqroot(burnvec1[0]*burnvec1[0]+burnvec1[1]*burnvec1[1]+burnvec1[2]*burnvec1[2])
    burnvec2[0]=burnvec1[0]*speed2/length1
    burnvec2[1]=burnvec1[1]*speed2/length1
    burnvec2[2]=burnvec1[2]*speed2/length1
@@ -584,7 +589,7 @@ check_burnzone(id,vec[],aimvec[],speed1,speed2,radius){
    burnvec2[2] += vec[2]
 
    new origin[3]
-   for (new i=1; i<=maxplayers; i++) {
+   for (new i=1; i<= g_MAXPLAYERS; i++) {
       if(cvar_exists("mp_friendlyfire")){
          new ffcvar = get_cvar_num("mp_friendlyfire")
          if( (ffcvar == 0) || (ffcvar == 1) ){
@@ -656,18 +661,20 @@ public ultimate_wcteleport(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcteleport() <%s> invoked Teleport", name )
    }
+   #endif
 
 
    if (is_user_alive(id) && !ultimateused[id]){
@@ -709,7 +716,7 @@ public ultimate_wcteleport(id){
             targetid=players[i]
 
             if ( get_user_team(id) == get_user_team(targetid) ||
-                 get_user_team(targetid) == SPEC ||
+                 get_user_team(targetid) == SPECTATOR ||
                  !is_user_alive(targetid) )
                continue
 
@@ -720,7 +727,7 @@ public ultimate_wcteleport(id){
                get_user_origin(targetid, targetorigin)
                if (get_distance(oldLocation, targetorigin)<=get_cvar_num("FT_blink_radius"))
                {
-
+	             #if defined DEBUG
                   if ( get_cvar_num("UW_DEBUG") == 5 ){
                      new tname[32]
                      get_user_name( targetid, tname, 31 )
@@ -728,7 +735,7 @@ public ultimate_wcteleport(id){
                      log_amx( "DEBUG: TELEPORT_FAILED_IMMUNITY_2 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                      client_print( id, print_console, "DEBUG: TELEPORT_FAILED_IMMUNITY_2 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                   }
-
+                  #endif
 
                   set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2,5)
                   show_hudmessage(id,"Teleport Failed^nA Nearby Enemy Has Immunity")
@@ -920,7 +927,7 @@ public ceiling_check(parm[2]){
         new z = origin[2]
         get_mapname(mapname,32)
 
-        if ( !is_user_connected( id ) )
+        if ( !is_connected[ id ] )
            return
 
         new Float:porigin[3]
@@ -1105,7 +1112,7 @@ public blink_controller(parm[2]){
             targetid=players[i]
 
             if ( get_user_team(id) == get_user_team(targetid) ||
-                 get_user_team(targetid) == SPEC ||
+                 get_user_team(targetid) == SPECTATOR ||
                  !is_user_alive(targetid) )
                continue
 
@@ -1124,6 +1131,7 @@ public blink_controller(parm[2]){
                   //   effects=0, Float:fxtime=6.0, Float:holdtime=12.0,
                   //   Float:fadeintime=0.1, Float:fadeouttime=0.2,channel=4);
 
+                  #if defined DEBUG
                   if ( get_cvar_num("UW_DEBUG") == 5 ){
                      new tname[32]
                      get_user_name( targetid, tname, 31 )
@@ -1131,6 +1139,7 @@ public blink_controller(parm[2]){
                      log_amx( "DEBUG: TELEPORT_FAILED_IMMUNITY_1 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                      client_print( id, print_console, "DEBUG: TELEPORT_FAILED_IMMUNITY_1 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid) )
                   }
+                  #endif
 
                   set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2,5);
                   show_hudmessage(id,"Teleport Failed^nAn Enemy Near Your Destination Has Immunity");
@@ -1152,10 +1161,12 @@ public blink_controller(parm[2]){
 
             if (USE_ENH && (p_attribs[id][ATTRIBIDX_INT] >= INT_TELEPORT_LEVEL)){
                tele_cool = INT_TELEPORT_COOL
+               #if defined DEBUG
                if (get_cvar_num("UW_DEBUG") == 1){
                   client_print(id, print_console,
                      "[%s DEBUG] Tele_Cool=(%f)", MOD, tele_cool)
                }
+               #endif
             }
 
             set_task(tele_cool, "cooldown", 500 + id, coolparm, 1)
@@ -1299,17 +1310,19 @@ public ultimate_wcchain(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcchain() <%s> invoked Chain Lightning", name )
    }
+   #endif
 
 
    if (is_user_alive(id) && !issearching[id] && !ultimateused[id]){
@@ -1344,8 +1357,10 @@ public lightsearchtarget(parm[2]){
 
          actual_damage = actual_damage - floatround((float(p_resists[enemy][RESISTIDX_ELECTRIC]) / float(RESIST_MAX_VALUE)) * float(actual_damage) )
 
+         #if defined DEBUG
          client_print(enemy, print_console, "DEBUG: orig_ltning_dmg=(%d) modified_dmg=(%d)",
             damage, actual_damage)
+         #endif
 
          if (p_resists[enemy][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
             client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
@@ -1534,18 +1549,20 @@ public ultimate_wcentangle(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcentangle() <%s> invoked Entangle Roots", name )
    }
+   #endif
 
 
    if (is_user_alive(id) && !issearching[id] && !ultimateused[id]){
@@ -1564,7 +1581,7 @@ public searchtarget(parm[2]){
    new enemy, body
    get_user_aiming(id,enemy,body)
 
-   if ( (0<enemy<=32) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+   if ( (0<enemy<=g_MAXPLAYERS) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
         (!temp_immunity[enemy] && magic_saving_throw(enemy)) )
    {
       temp_immunity[enemy] = true
@@ -1576,7 +1593,7 @@ public searchtarget(parm[2]){
       set_task(5.0, "reset_immunity", 201+id, iparm, 2)
    }
 
-   if ( 0<enemy<=32 && !stunned[enemy] && get_user_team(id)!=get_user_team(enemy) &&
+   if ( 0<enemy<=g_MAXPLAYERS && !stunned[enemy] && get_user_team(id)!=get_user_team(enemy) &&
         playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
         is_user_alive(enemy) && !temp_immunity[enemy] )
    {
@@ -1709,8 +1726,8 @@ public destroy_roots(args[]){
 
    new ent = args[0]
 
-   remove_entity(ent)
-
+   if(pev_valid(ent))
+      remove_entity(ent)
 }
 // **************************************************************************
 // END ultimate_wcentangle and supporting routines
@@ -1737,18 +1754,20 @@ public ultimate_wcvoodoo(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcvoodoo() <%s> invoked Voodoo", name )
    }
+   #endif
 
 
    if (!ultimateused[id]){
@@ -1842,18 +1861,20 @@ public ultimate_wclocust(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wclocust() <%s> invoked Locust Swarm", name )
    }
+   #endif
 
 
    if (is_user_alive(id) && !ultimateused[id])
@@ -1993,8 +2014,10 @@ public drawfunnels(parm[]){
 
             actual_damage = actual_damage - floatround((float(p_resists[id][RESISTIDX_DISEASE]) / float(RESIST_MAX_VALUE)) * float(actual_damage) )
 
+            #if defined DEBUG
             client_print(id, print_console, "DEBUG: orig_locust_dmg=(%d) mod_dmg=(%d)",
                35, actual_damage)
+            #endif
 
             if (p_resists[id][RESISTIDX_DISEASE] == RESIST_MAX_VALUE)
                client_print(id, print_chat,
@@ -2043,18 +2066,20 @@ public ultimate_wcflash(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcflash() <%s> invoked Flash of Light", name )
    }
+   #endif
 
 
    if (is_user_alive(id) && !issearching[id] && !ultimateused[id]){
@@ -2150,18 +2175,20 @@ public ultimate_wcdecoy(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcdecoy() <%s> invoked Decoy", name )
    }
+   #endif
 
 
 
@@ -2201,9 +2228,13 @@ public ultimate_wcdecoy(id){
 
    get_user_aiming(id, target, body)
 
-   if ((0 < target <= MAX_PLAYERS)){
+   if ((0 < target < MAX_PLAYERS)){
       entity_get_string(target, EV_SZ_classname, sClass, 32)
+
+      #if defined DEBUG
       client_print(id, print_console, "[%s DEBUG] Decoy triggered on class %s", MOD, sClass)
+      #endif
+
       if (equal(sClass, "player")){
          client_print(id, print_chat, "[%s] You cannot create a Decoy on a player.", MOD)
          return PLUGIN_HANDLED
@@ -2286,8 +2317,8 @@ public cleanup_decoy(args[]){
    message_end()
 
    decoy[id] = 0
-
-   remove_entity(ent)
+   if(pev_valid(ent))
+      remove_entity(ent)
    client_print(id, print_chat, "Your decoy has expired")
 }
 
@@ -2317,6 +2348,7 @@ public check_duck() {
    return PLUGIN_CONTINUE
 }
 
+/* Just use PreThink since it already used*/
 public server_frame(){
    new id
    new Float:vel[3]
@@ -2343,7 +2375,7 @@ public server_frame(){
    last_frame = new_frame
 
    for( id=0; id<MAX_PLAYERS; id++) {
-      if ( !decoy[id] || !is_user_connected(id) ) continue
+      if ( !decoy[id] || !is_connected[id] ) continue
 
       //new Float:health = entity_get_float(decoy[id],EV_FL_health)
       //client_print(id, print_chat, "decoy health: %f", health)
@@ -2469,24 +2501,25 @@ public ultimate_wcgate(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
 
-
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
       get_user_name( id, name, 31)
       log_amx( "DEBUG: In ultimate_wcgate() <%s> invoked Gate", name )
    }
+   #endif
 
 
    if (!is_user_alive(id)){
       client_print(id, print_chat, "[%s] Shhhh, you are dead, act like it.", MOD)
       return PLUGIN_HANDLED
-   }else if (numgates[id] == 0){
+   }else if (!numgates[id]){
       client_print(id, print_chat, "[%s] You have used up your available Gateways this round.", MOD)
       return PLUGIN_HANDLED
    }else if (ultimateused[id]){
@@ -2690,16 +2723,19 @@ public cooldown2(parm[1]){
    return PLUGIN_CONTINUE
 }
 
-public udelay_cooldown(){
-   u_delay = false
+public udelay_cooldown(ULTIMATE)
+{
+   new id = ULTIMATE - UTLIMATE_DELAY
+   u_delay[id] = false
 
-   new numplayers, players[32]
-   get_players(players, numplayers)
+   //new numplayers, players[32]
+   //get_players(players, numplayers)
 
-   for (new i=0; i<numplayers; i++){
-      icon_controller(players[i],ICON_SHOW)
-   }
-   return PLUGIN_CONTINUE
+   icon_controller(id,ICON_SHOW)
+   //for (new i=0; i<numplayers; i++){
+      //icon_controller(players[i],ICON_SHOW)
+   //}
+   //return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END cooldown and cooldown2 subroutines

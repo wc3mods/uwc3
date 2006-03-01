@@ -18,7 +18,7 @@
 *   Graphics:         steve french < garbageweed@hotmail.com >
 *   Website Design:   Jim Rhoades < jim@radzone.org >
 *
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
+*  strbreak() routine provided by BAILOPAN from AMXX0.20 to replace parse()
 *  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
 *    some decoy concepts from AMXX forums posts by jjkiller
 *
@@ -169,7 +169,7 @@ public grab_sql_vars(){
 // Call purge() on a client.
 // If TIMEBEFORESYNC ends anyone who is g_purgeMe[x] == true will synced updated with db.
 public purge(id) {
-	if (is_user_bot(id))
+	if (is_bot[id])
 		return
 
 	if (task_exists(TASKID_SYNCSQL))
@@ -196,8 +196,8 @@ public sync_sql() {
 		return
 	}
 
-	server_print("[%s] Performing sync to db.", "UWC3")
-	//client_print(0, print_chat, "[%s] Performing sync to db.", "UWC3")
+	server_print("[%s] Performing sync to db.", MOD)
+	//client_print(0, print_chat, "[%s] Performing sync to db.", MOD)
 	new Result:result = dbi_query(sql, "BEGIN;")
 	if (result > RESULT_NONE)
 		dbi_free_result(result)
@@ -259,7 +259,7 @@ public sync_sql() {
 		dbi_free_result(result)
 
 	server_print("[%s] Sync completed.", "UWC3")
-	//client_print(0, print_chat, "[%s] Sync completed.", "UWC3")
+	//client_print(0, print_chat, "[%s] Sync completed.", MOD)
 
 	dbi_close(sql)
 }
@@ -269,7 +269,7 @@ public sync_sql() {
 // Write a player's xp / info to the SQL table
 // **************************************************************************
 public sqlwrite_xp_id(id){
-   if (is_user_bot(id)) {
+   if (is_bot[id]) {
       server_print("UWC3: Aren't saving bots...")
       return PLUGIN_CONTINUE
    }
@@ -326,7 +326,7 @@ public sqlwrite_xp_id(id){
 
 /*
 sqlgetsql_xp_id(id, sqlline[], const LEN){
-   if (is_user_bot(id)) {
+   if (is_bot[id]) {
       server_print("UWC3: Aren't saving bots...")
       return
    }

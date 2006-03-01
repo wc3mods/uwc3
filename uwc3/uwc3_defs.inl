@@ -29,7 +29,6 @@
 // The following #defines control various aspects of the plugin
 // It is not recommended changing anything in this section
 // **************************************************************************
-
 #define DEBUG_STARTXP 250000    // If in DEBUG mode, starting XP for players
 #define DEBUG_CASH 16000        // If in DEBUG mode, starting Cash for players
 
@@ -166,10 +165,6 @@
 #define VENG_WAIT 1		// Vengeance state is waiting to be revived
 #define VENG_DONE 2		// Vengeance state is done for this round
 
-#define BOMB_NOTPLANTED 0
-#define BOMB_PLANTED 1
-#define BOMB_DEFUSED 2
-
 #define SQL_SAVEBY_STEAMID 1	// Save SQL data by steamid
 #define SQL_SAVEBY_NAME 2	// Save SQL data by name
 
@@ -223,11 +218,6 @@
 #define ARMORBONUS2 15
 #define NORMALARMORMAX 100
 
-// Team Numbers for get_user_team(id)
-#define SPEC 0
-#define TEAM_T 1
-#define TEAM_CT 2
-
 // NEVER CHANGE THESE !!! DISASTEROUS RESULTS (Message Defines)
 #define TE_BEAMPOINTS 0
 #define TE_EXPLOSION 3
@@ -253,5 +243,3 @@
 // **************************************************************************
 // END Backwards-Compatible Defs from War3 and War3FT
 // **************************************************************************
-
-

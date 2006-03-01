@@ -31,6 +31,8 @@
 // Global booleans for server operations
 new bool:warcraft3                              // Is Warcraft mod enabled?
 new bool:buytime                                // Chceck for buying time in round
+
+// This need to be fixed. Game Commence
 new bool:game_commence[MAX_PLAYERS]=false       // Has game begun for player?
 
 // WC3 based variables (not for player data)
@@ -46,8 +48,7 @@ new xpgiven                    // Used to store current level of XP given
 new Float:weaponxpmultiplier[31] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0}
 
 // UWC3 Rank titles
-new ranktitles[11][] = { "Orc Fodder", "Elf Acolyte", "Human Squire", "Undead Soldier", "Skilled Combatant", "Crypt Lord Zealot", "Arch Lich", "Blood Elf Champion", "Demon Hunter", "Emissary of Death", "Warchief" }
-
+new const ranktitles[11][] = { "Orc Fodder", "Elf Acolyte", "Human Squire", "Undead Soldier", "Skilled Combatant", "Crypt Lord Zealot", "Arch Lich", "Blood Elf Champion", "Demon Hunter", "Emissary of Death", "Warchief" }
 
 // **************************************************************************
 // BEGIN skills related variables declarations
@@ -56,11 +57,11 @@ new ranktitles[11][] = { "Orc Fodder", "Elf Acolyte", "Human Squire", "Undead So
 
 new sortedskills[MAX_SKILLS]                    // Contains re-indexing after sort
 
-new skillset1[9][] = {"NOSKILL", "Vampiric Aura", "Levitation", "Devotion Aura", "Equipment Reincarnation", "Healing Wave", "Siphon Mana", "Impale", "Leather Skin"}
-new skillset2[9][] = {"NOSKILL", "Unholy Aura", "Bash", "Critical Strike", "Repair Armor", "Banish","Hex", "Spiked Carapace", "Mend Wounds"}
-new skillset3[9][] = {"NOSKILL", "Evasion", "Trueshot Aura", "Steel Skin", "Carrion Beetles", "Shadow Strike", "Entangle Roots", "Flame Strike", "Flash of Light"}
-new skillset4[9][] = {"NOSKILL", "Critical Grenade", "Serpent Ward", "Thorns Aura", "Invisibility", "Teleport", "Big Bad Voodoo", "Fan of Knives", "Vengeance" }
-new skillset5[9][] = {"NOSKILL", "Locust Swarm", "Blink", "Phoenix", "Napalm Grenades", "Gate", "Suicide Bomber", "Chain Lightning", "Decoy" }
+new const skillset1[9][] = {"NOSKILL", "Vampiric Aura", "Levitation", "Devotion Aura", "Equipment Reincarnation", "Healing Wave", "Siphon Mana", "Impale", "Leather Skin"}
+new const skillset2[9][] = {"NOSKILL", "Unholy Aura", "Bash", "Critical Strike", "Repair Armor", "Banish","Hex", "Spiked Carapace", "Mend Wounds"}
+new const skillset3[9][] = {"NOSKILL", "Evasion", "Trueshot Aura", "Steel Skin", "Carrion Beetles", "Shadow Strike", "Entangle Roots", "Flame Strike", "Flash of Light"}
+new const skillset4[9][] = {"NOSKILL", "Critical Grenade", "Serpent Ward", "Thorns Aura", "Invisibility", "Teleport", "Big Bad Voodoo", "Fan of Knives", "Vengeance" }
+new const skillset5[9][] = {"NOSKILL", "Locust Swarm", "Blink", "Phoenix", "Napalm Grenades", "Gate", "Suicide Bomber", "Chain Lightning", "Decoy" }
 
 new skill_minlev[MAX_SKILLS]                    // Minimum level to train skill
 new skill_limits[MAX_SKILLS]                    // Skill level limits for each skill
@@ -108,10 +109,10 @@ new Float:p_carrion[MAX_SKILL_LEVEL10]         // Carrion Beetle
 // Defines many variables needed for handling shopmenu items
 // **************************************************************************
 
-new itemname[9][] = {"Ankh of Reincarnation","Boots of Speed","Claws of Attack","Cloak of Shadows","Mask of Death","Necklace of Immunity","Orb of Frost","Periapt of Health","Tome of Experience"}
-new shortitemname[9][] = {"Ankh","Boots","Claws","Cloak","Mask","Necklace","Orb","Periapt","Tome"}
-new itemname2[9][] = {"Scroll of Respawning","Mole Protectant","Helm of Excellence","Amulet of the Cat","Sock of the Feather","Flaming Gloves of Warmth","Ring of Regeneration +1","Chameleon","Mole"}
-new shortitemname2[9][] = {"Scroll","Protectant","Helm","Amulet","Sock","Gloves","Ring","Chameleon","Mole"}
+new const itemname[9][] = {"Ankh of Reincarnation","Boots of Speed","Claws of Attack","Cloak of Shadows","Mask of Death","Necklace of Immunity","Orb of Frost","Periapt of Health","Tome of Experience"}
+new const shortitemname[9][] = {"Ankh","Boots","Claws","Cloak","Mask","Necklace","Orb","Periapt","Tome"}
+new const itemname2[9][] = {"Scroll of Respawning","Mole Protectant","Helm of Excellence","Amulet of the Cat","Sock of the Feather","Flaming Gloves of Warmth","Ring of Regeneration +1","Chameleon","Mole"}
+new const shortitemname2[9][] = {"Scroll","Protectant","Helm","Amulet","Sock","Gloves","Ring","Chameleon","Mole"}
 
 new itemcost[9] = {1500,1500,1000,800,2000,800,2000,1000,4000}
 new itemcost2[9] = {11000,1500,1550,1500,1500,1750,1000,9000,16000}
@@ -223,7 +224,7 @@ new savedweapons[MAX_PLAYERS][32]               // Saved weapons for player (equ
 new savednumber[MAX_PLAYERS] = 0                // Number of saved items (equip reinc)
 new rings[MAX_PLAYERS]                          // Number of rings a player has bought
 new nadetime[MAX_PLAYERS]                       // Timer or gloves of warmth
-new zoomed[MAX_PLAYERS]                         // Is player zoomed in w/ weapon
+//new zoomed[MAX_PLAYERS]                         // Is player zoomed in w/ weapon
 new alive_before_explosion[MAX_PLAYERS] = false // Was player alive before Bomb
 new serpentteam[MAX_PLAYERS]                    // Which team does a ward belong to
 new nSkillsPage[MAX_PLAYERS] = 1                // Global for skills selection pager
@@ -258,7 +259,8 @@ new bombdefuser                                 // Player ID thhat completed def
 new bombstate                                   // Bomb state (0, 1 or 2)
 
 new bool:endround                               // Hs round ended or still going
-new bool:u_delay = false                        // Is there an ultimate delay at round start
+new bool:u_delay[33]                            // Is there an ultimate delay at round start
+//new bool:ablity_delay[33];					//
 new bool:no_he = false                          // Orc nades allowed or not
 new bool:buycalled=false                        // Buytime over or not
 new bool:givenade                               // Do gloves give an orc nade or not
@@ -313,7 +315,6 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
-new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS
 new DEFUSER_KILL_BONUS
@@ -361,12 +362,6 @@ new gmsgFade
 new gmsgShake
 //new gmsgIcon
 
-// Team Ids
-#define UNASSIGNED 0
-#define TS 1
-#define CTS 2
-#define AUTO_TEAM 5
-
 // For Icon events
 #define ICON_HIDE 0
 #define ICON_SHOW 1
@@ -375,10 +370,6 @@ new gmsgShake
 // Temporary Fix for HE nades not being read in czero
 // new Float:he_origin[33][3]
 // End Temporary Fix
-
-// Model names for T and CT skins
-new CTSkins[4][]={"sas","gsg9","urban","gign"}
-new TSkins[4][]={"arctic","leet","guerilla","terror"}
 
 // **************************************************************************
 // END miscellaneous variables
@@ -391,3 +382,32 @@ new TSkins[4][]={"arctic","leet","guerilla","terror"}
 // Stores if the user should be immune to headshots or not
 new bool:bImmuneHeadshots[33];
 new Float:fLastShotFired[33];
+
+new bool:is_bot[33];
+
+new const deathbyweapon[][] =
+{
+	"",
+	"UWC3 Carrion Beetles",
+	"UWC3 Thorns Aura",
+	"UWC3 Trueshot Aura",
+	"UWC3 Spiked Carapace",
+	"UWC3 Banish",
+	"UWC3 Critical Strike",
+	"UWC3 Critical Grenade",
+	"UWC3 Claws of Attack",
+	"UWC3 Shadow Strike",
+	"UWC3 Blink",
+	"UWC3 Chain Lightning",
+	"UWC3 Suicide Bomber",
+	"UWC3 Flame Strike",
+	"UWC3 Serpant Ward",
+	"UWC3 Locust Swarm",
+	"UWC3 Necklace of Immunity",
+	"UWC3 Napalm Grenade",
+	"UWC3 Poison",
+	"UWC3 Disease",
+	"UWC3 Beginner's Luck",
+	"UWC3 Critical Backfire",
+	"UWC3 Magic Resistance"
+};

@@ -131,7 +131,7 @@ public check_say(id){
 
    tsaid = said
    remove_quotes(tsaid)
-   strbreak(tsaid, arg1, 32, arg2, 32)
+   str_break(tsaid, arg1, arg2, 32, 32)
 
    //client_print( 0, print_chat,
    //   "DEBUG: tsaid=(%s) arg1=(%s) arg2=(%s)", tsaid, arg1, arg2 )
@@ -245,7 +245,7 @@ public check_say(id){
 public set_user_armor_log(id, armor, blog, sdesc[]){
 
    // [10-05-04] Added the next check to prevent entity errors
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    new name[32]
@@ -278,12 +278,13 @@ public set_user_armor_log(id, armor, blog, sdesc[]){
 public set_user_health_log(id, health, blog, sdesc[]){
 
    // [10-05-04] Added the next check to prevent entity errors
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    new name[32]
    get_user_name(id, name, 31)
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 5 ){
       if ( health > maxhealth[id] ){
 
@@ -294,6 +295,7 @@ public set_user_health_log(id, health, blog, sdesc[]){
          }
       }
    }
+   #endif
 
    //if (blog)
    //   client_print(0, print_console,
@@ -330,146 +332,9 @@ public fullupdate(id) {
 // END fullupdate routine
 // **************************************************************************
 
-
 // **************************************************************************
-// BEGIN replaceall routine
-// Routine to replace all of a specified character in a string
+// BEGIN diff subroutine
 // **************************************************************************
-stock replaceall(text[], const LEN, const WHAT[], const WITH[]) {
-    while (contain(text, WHAT) != -1){
-        server_print("replacing a ' ...")
-        replace(text, LEN, WHAT, WITH)
-    }
-}
-// **************************************************************************
-// END replaceall routine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN str_break routine
-// Routine provided by BAILOPAN to replace parse()
-// **************************************************************************
-stock str_break(const String[], Left[], Right[], lMax, rMax)
-{
-    new bool:quote_flag = false
-    new bool:done_flag = false
-    new left_pos = 0
-    new right_pos = 0
-    new i
-    new hold[] = "'^"x"
-
-    copy(Left, lMax, "")
-    copy(Right, rMax, "")
-
-    for (i=0; i<=strlen(String)-1; i++) {
-        if (equali(String[i], "^"", 1)) {
-            quote_flag = true
-        } else if ((equali(String[i], "^"", 1)) && (quote_flag)) {
-            quote_flag = false
-        }
-        if ((equali(String[i], " ", 1)) && (!quote_flag) && (!done_flag)) {
-            done_flag = true
-            i++
-        }
-        if (!done_flag && !equali(String[i], "^"", 1)) {
-            if (left_pos < lMax) {
-                setc(Left[left_pos], 1, String[i])
-                if (equali(Left[left_pos], "'", 1)) {
-                    setc(Left[left_pos], 1, hold[1])
-                }
-                left_pos++
-            }
-        } else {
-            if (right_pos < rMax && !equali(String[i], "^"", 1)) {
-                setc(Right[right_pos], 1, String[i])
-                if (equali(Right[right_pos], "'", 1)) {
-                    setc(Right[right_pos], 1, hold[1])
-                }
-                right_pos++
-            }
-        }
-    }
-
-    Left[left_pos] = 0
-    Right[right_pos] = 0
-
-    return true
-}
-// **************************************************************************
-// END str_break routine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN count_T subroutine
-// Count the members of the T team - rewrite for buggy amxx function
-// **************************************************************************
-public count_T(){
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
-
-   new players[32]
-   new numberofplayers
-   get_players(players, numberofplayers)
-   new count = 0
-
-   for (new i = 0; i < numberofplayers; ++i){
-      new id = players[i]
-      if ( get_user_team(id)==TEAM_T )
-         count += 1
-   }
-
-   return count
-}
-// **************************************************************************
-// END count_T subroutine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN count_CT subroutine
-// Count the members of the CT team - rewrite for buggy amxx function
-// **************************************************************************
-public count_CT(){
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
-
-   new players[32]
-   new numberofplayers
-   get_players(players, numberofplayers)
-   new count = 0
-
-   for (new i = 0; i < numberofplayers; ++i){
-      new id = players[i]
-      if ( get_user_team(id)==TEAM_CT )
-         count += 1
-   }
-
-   return count
-}
-// **************************************************************************
-// END count_CT subroutine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN sqrt sq and diff subroutine
-// Calculate the square root
-// **************************************************************************
-public sqrt(num) {
-   new div = num
-   new result = 1
-   while (div > result) {        // end when div == result, or just below
-      div = (div + result) / 2   // take mean value as new divisor
-      result = num / div
-   }
-   return div
-}
-
-stock sq(num) {
-   return (num*num)
-}
 
 stock diff(num,num2){
    if(num>num2)
@@ -479,39 +344,21 @@ stock diff(num,num2){
    return 0
 }
 // **************************************************************************
-// END sqrt sq and diff subroutines
+// END diff subroutines
 // **************************************************************************
 
-
-// **************************************************************************
-// BEGIN zoomed2 and unzoomed subroutines
-// Not sure what they do, but needed for STEAM, copied from Wacrfat3FT
-// **************************************************************************
-public zoomed2(id){
-   zoomed[id]=1
-}
-
-public unzoomed(id){
-   zoomed[id]=0
-}
 
 public reset_maxspeed(parm[]){
    new enemy = parm[0]
 
-   if ( !is_user_connected(enemy) )
-      return PLUGIN_CONTINUE
+   if ( !is_connected[enemy] )
+      return;
 
    new normalspeed = parm[1]
    stunned[enemy]=false
    slowed[enemy]=false
    set_user_maxspeed(enemy, float(normalspeed))
-
-   return PLUGIN_CONTINUE
 }
-// **************************************************************************
-// END zoomed2 and unzoomed subroutines
-// **************************************************************************
-
 
 // **************************************************************************
 // BEGIN cmd_target2 subroutine
@@ -536,27 +383,7 @@ stock cmd_target2(id,const arg[]) {
 // **************************************************************************
 // END cmd_target2 subroutine
 // **************************************************************************
-
-
-// **************************************************************************
-// BEGIN admin_loc subroutine
-// Display your location in coordinates
-// **************************************************************************
-public admin_loc(id){
-
-   new origin[3]
-   get_user_origin(id,origin)
-
-   client_print(id, print_chat, "[%s] Your location is: <%d %d %d>",
-      MOD, origin[0], origin[1], origin[2])
-
-   return PLUGIN_HANDLED
-}
-// **************************************************************************
-// END admin_loc subroutine
-// **************************************************************************
-
-
+#if defined DEBUG
 // **************************************************************************
 // BEGIN debug_info subroutine
 // Dump debug info
@@ -606,7 +433,7 @@ public debug_info(id, enemy){
 // **************************************************************************
 // END debug_info subroutine
 // **************************************************************************
-
+#endif
 
 // **************************************************************************
 // BEGIN toggle_lowres subroutine
@@ -644,7 +471,7 @@ public do_examine(id){
    new friend, body
    get_user_aiming(id, friend, body)
 
-   if ((0 < friend <= MAX_PLAYERS) && (friend != id) && is_user_alive(id) &&
+   if ((0 < friend < MAX_PLAYERS) && (friend != id) && is_user_alive(id) &&
        is_user_alive(friend))
    {
       // id has a friend to examine
@@ -698,15 +525,15 @@ public setSpecMode(id){
 public showRank(id){
 
    if(!get_cvar_num("FT_spec_info"))
-      return PLUGIN_CONTINUE
+      return
 
    if(!g_specMode[id])
-      return PLUGIN_CONTINUE
+      return
 
    new a = read_data(2)
 
-   if (!is_user_connected(a))
-      return PLUGIN_CONTINUE          // not valid target
+   if (!is_connected[a])
+      return          // not valid target
 
    new name[32]
    get_user_name( a ,name,31)
@@ -720,9 +547,6 @@ public showRank(id){
       else
          break
    }*/
-
-   return PLUGIN_CONTINUE
-
 }
 
 public setTeam(id)
@@ -739,30 +563,57 @@ public hideStatus(id){
 public set_buytime()
    buytime=false
 
-public showStatus(id){
+public showStatus(id)
+{
+   if(!warcraft3)
+      return;
+
    new pid = read_data(2)
 
-   if (get_user_team(id)==get_user_team(pid) &&
-       (playeritem2[pid]==CHAMELEON || skinchanged[pid]) && is_user_alive(pid))
+   new teamone = get_user_team(id)
+   new teamtwo = get_user_team(pid)
+
+   if (teamone == teamtwo && (playeritem2[pid]==CHAMELEON || skinchanged[pid]) && is_user_alive(pid))
    {
       client_print(id,print_center,"He's on your team, DON'T SHOOT")
       if (file_exists("sound/warcraft3/antend.wav")==1)
          emit_sound(id,CHAN_ITEM, "warcraft3/antend.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
    }
 
-   if(get_cvar_num("FT_show_player") && !freezetime){
+   if(get_cvar_num("FT_show_player") && !freezetime)
+   {
       new name[32]
       get_user_name(pid,name,31)
-      new color1 = 0,color2 = 0
-      if ( get_user_team(pid)==1 )
-         color1 = 255
+      new color1 = 0, color2 = 0
+
+      if((teamone != teamtwo) && (playeritem2[pid] == CHAMELEON || skinchanged[pid]))
+      {
+         if(teamone == 1)
+         {
+            color1 = 255
+            color2 = 0
+         }
+         else if(teamone == 2)
+         {
+            color1 = 0
+            color2 = 255
+         }
+      }
       else
+      {
+         if(teamtwo == 1)
+            color1 = 255
+         else
          color2 = 255
-      if (g_friend[id]==1){ // friend
+      }
+
+      if (g_friend[id]==1 || (playeritem2[pid] == CHAMELEON || skinchanged[pid]))  // friend
+      {
          /*new clip = 0, ammo = 0, wpnid = 0
          wpnid = get_user_weapon(pid,clip,ammo)
          new wpnname[32]
          get_weaponname(wpnid,wpnname,31)*/
+
          set_hudmessage(color1,50,color2,-1.0,0.60,1, 0.01, 3.0, 0.01, 0.01, 4)
          new health = get_user_health(pid)
          if(health>1500)
@@ -770,116 +621,35 @@ public showStatus(id){
          else if (health>500)
             health = health-1024
          show_hudmessage(id,"%s -- %d HP / %d AP", name, health, get_user_armor(pid))
-      }else{
+      } else {
          set_hudmessage(color1,50,color2,-1.0,0.60,1, 0.01, 3.0, 0.01, 0.01, 4)
          show_hudmessage(id,name)
       }
+      displaylevel(id, 4)
    }
-
 }
 // **************************************************************************
 // END hideStatus and showStatus subroutines
 // **************************************************************************
 
-
-/*
-// **************************************************************************
-// BEGIN reset_he_origin subroutine
-// From Warcraft3FT - Temporary Fix for czero (HE nades not working)
-// **************************************************************************
-public reset_he_origin(parm[]){
-   new enemy = parm[0]
-   he_origin[enemy][0]=-1.234
-   he_origin[enemy][1]=-1.234
-   he_origin[enemy][2]=-1.234
-}
-// **************************************************************************
-// END reset_he_origin subroutine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN get_nade_origin subroutine
-// Orc nade, temp fix for CZ
-// **************************************************************************
-public get_nade_origin(parm[]){
-   new id = parm[0]
-   new grenadeid = parm[1]
-
-   new Float:origin[3]
-   new Float:porigin[3]
-   Entvars_Get_Vector(grenadeid,EV_VEC_origin,origin)
-   he_origin[id][0] = origin[0]
-   he_origin[id][1] = origin[1]
-   he_origin[id][2] = origin[2]
-
-   Entvars_Get_Vector(id,EV_VEC_origin,porigin)
-
-   set_task(0.1,"get_nade_origin",2,parm,2)
-}
-// **************************************************************************
-// END get_nade_origin subroutine
-// **************************************************************************
-*/
-
-
 // **************************************************************************
 // BEGIN check_alive subroutine
 // Check for player alive
 // **************************************************************************
-public check_alive(parm[]){
+public check_alive(id)
+{
    if (!warcraft3)
-      return PLUGIN_CONTINUE
+      return
 
-   new id = parm[0]
-
-   if(alive_before_explosion[id] && !is_user_alive(id)){
+   if(alive_before_explosion[id] && !is_user_alive(id))
+   {
       diedlastround[id]=true
       alive_before_explosion[id]=false
    }
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END check_alive subroutine
 // **************************************************************************
-
-
-// **************************************************************************
-// BEGIN changeskin subroutine
-// Routine to change a players skin as needed by item or skill
-// **************************************************************************
-public changeskin(id,reset){
-   if (reset==1){
-      cs_reset_user_model(id)
-      skinchanged[id]=false
-      return PLUGIN_HANDLED
-   }else if (reset==2){
-      //cs_set_user_model(id,"goomba")
-      cs_set_user_model(id,"zombie")
-      skinchanged[id]=true
-      return PLUGIN_HANDLED
-   }else{
-      //new newSkin[32]
-      new num = random_num(0,3)
-
-      if (get_user_team(id)==TEAM_T){
-         //add(newSkin,31,CTSkins[num])
-         cs_set_user_model(id,CTSkins[num])
-      }else{
-         //client_print(0, print_console, "CT mole, using new skin %s", TSkins[num])
-         //add(newSkin,31,TSkins[num])
-         cs_set_user_model(id,TSkins[num])
-      }
-
-      skinchanged[id]=true
-   }
-
-   return PLUGIN_CONTINUE
-}
-// **************************************************************************
-// END changeskin subroutine
-// **************************************************************************
-
 
 // **************************************************************************
 // BEGIN freezetimedone and unfreezespeed subroutine
@@ -888,7 +658,7 @@ public changeskin(id,reset){
 public freezetimedone() {
 
    if (!warcraft3)
-      return PLUGIN_CONTINUE
+      return
 
    freezetime = 0
 
@@ -898,8 +668,8 @@ public freezetimedone() {
    for (i = 0; i < numberofplayers; ++i){
       id = players[i]
 
-      if ( !is_user_connected(id) )
-         return PLUGIN_CONTINUE
+      if(!is_connected[id])
+         continue
 
       parm[0]=id
       set_user_maxspeed(id,240.0)
@@ -916,12 +686,11 @@ public freezetimedone() {
       }
       displaylevel(id,3)
    }
-   return PLUGIN_CONTINUE
 }
 
 public unfreezespeed() {
    if (!warcraft3)
-      return PLUGIN_CONTINUE
+      return;
 
    new players[32]
    new numberofplayers
@@ -932,7 +701,6 @@ public unfreezespeed() {
       id=players[i]
       change_weapon(id)
    }
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END freezetimedone and unfreezespeed subroutine
@@ -943,6 +711,7 @@ public unfreezespeed() {
 // BEGIN teamselect subroutine
 // Function determines if they are actually changing teams (untested in 1.5)
 // **************************************************************************
+// NOT EVEN REALLY USED
 public teamselect(id){
    new arg[2]
    read_argv(1,arg,1)
@@ -962,7 +731,7 @@ public teamselect(id){
 // Controls the icon to display for ultimate skills
 // **************************************************************************
 public icon_controller(id, value){
-   if (!get_cvar_num("FT_show_icons") || (freezetime) || (u_delay) ||
+   if (!get_cvar_num("FT_show_icons") || (freezetime) || (u_delay[id]) ||
       (p_skills[id][SKILLIDX_TELEPORT] && blinkdelayed[id] &&
        get_cvar_num("FT_blinkstartdisabled")))
          return PLUGIN_HANDLED
@@ -991,8 +760,8 @@ public glow_change(parm[]){
    new id = parm[0]
 
    // [10-05-04] Added the next check to prevent entity errors
-   if ( !is_user_connected( id ) )
-      return PLUGIN_CONTINUE
+   if ( !is_connected[ id ] )
+      return;
 
    if (p_skills[id][SKILLIDX_INVIS]){
       // Don't glow if player is invisible
@@ -1029,7 +798,6 @@ public glow_change(parm[]){
       iglow[id][3] = 0
       set_user_rendering(id)
    }
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END glow_change subroutine
@@ -1045,8 +813,6 @@ public BuyZone(id){
       isBuyzone[id] = true
    else
       isBuyzone[id] = false
-
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END BuyZone subroutine
@@ -1071,8 +837,6 @@ public check_for_living(){
          saveweapons(id)
       }
    }
-
-   return PLUGIN_CONTINUE
 }
 
 // [08-28-04] - Added post bomb explosion check, for equip recincarnation
@@ -1133,8 +897,6 @@ public monitor_players(){
    }
 
    set_task(10.0, "monitor_players", 358)
-
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END monitor_players
@@ -1145,8 +907,8 @@ public monitor_players(){
 // BEGIN stock user_spawn
 // Spawn a user
 // **************************************************************************
-stock user_spawn(index)
-   return spawn(index)
+//stock user_spawn(index)
+  // return spawn(index)
 // **************************************************************************
 // END stock user_spawn
 // **************************************************************************

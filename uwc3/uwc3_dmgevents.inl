@@ -24,75 +24,11 @@
 *
 ****************************************************************************/
 
-
-// **************************************************************************
-// BEGIN Damage/Events Subroutine Declarations
-// **************************************************************************
-
-// **************************************************************************
-// BEGIN get_deathbystr subroutine
-// Returns the deathby name in string format
-// **************************************************************************
-public get_deathbystr(deathby, string[], len){
-
-   switch (deathby){
-      case 1:
-         format(string, len, "%s", "Carrion Beetles")     // Carrion Beetles
-      case 2:
-         format(string, len, "%s", "Thorns Aura")         // Thorns Aura
-      case 3:
-         format(string, len, "%s", "Trueshot Aura")       // Trueshot Aura
-      case 4:
-         format(string, len, "%s", "Spiked Carapace")     // Spiked Carapace
-      case 5:
-         format(string, len, "%s", "Banish")              // Banish
-      case 6:
-         format(string, len, "%s", "Critical Strike")     // Critical Strike
-      case 7:
-         format(string, len, "%s", "Critical Grenade")    // Critical Grenade
-      case 8:
-         format(string, len, "%s", "Claws of Attack")     // Claws of Attack
-      case 9:
-         format(string, len, "%s", "Shadow Strike")       // Shadow Strike
-      case 10:
-         format(string, len, "%s", "Blink")               // Blink > Big Bad Voodoo
-      case 11:
-         format(string, len, "%s", "Chain Lightning")     // Chain Lightning Kill
-      case 12:
-         format(string, len, "%s", "Suicide Bomber")      // Suicide Bomber Kill
-      case 13:
-         format(string, len,"%s",  "Flame Strike")        // Flame Strike Kill
-      case 14:
-         format(string, len,"%s",  "Serpant Ward")        // Serpant Ward Kill
-      case 15:
-         format(string, len,"%s",  "Locust Swarm")        // Locust Kill
-      case 16:
-         format(string, len,"%s",  "Necklace of Immunity")// Necklace of Immunity
-      case 17:
-         format(string, len,"%s",  "Napalm Grenade")      // Napalm Grenade
-      case 18:
-         format(string, len,"%s",  "Poison")              // S. Strike Poison
-      case 19:
-         format(string, len,"%s",  "Disease")             // C. Beetles Disease
-      case 20:
-         format(string, len,"%s",  "Beginner's Luck")     // Beginner's Luck
-      case 21:
-         format(string, len,"%s",  "Critical Backfire")   // Critical Backfire
-      case 22:
-         format(string, len,"%s",  "Magic Resistance")    // Magic Resistance
-   }
-
-}
-// **************************************************************************
-// END get_deathbystr subroutine
-// **************************************************************************
-
-
 // **************************************************************************
 // BEGIN do_damage subroutine
 // Used by damage_event to deal out damage
 // **************************************************************************
-public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, userdead){
+public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, userdead){
    // id is attacked, attacker ,damage , victim = 1, enemy = 2
 
    if (!warcraft3)
@@ -111,16 +47,17 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
 
 
    new userkilled = 0
-   new string[48]
+   new string[30]
+   copy(string, 29, deathbyweapon[deathby]) // Not sure why there two.
 
-   get_deathbystr(deathby, string, 47)	// Get the string form of deathby
-
+   //get_deathbystr(deathby, string, 47)	// Get the string form of deathby
+   #if defined DEBUG
    if (get_cvar_num("UW_DEBUG") == 1){
       client_print(0, print_console, "[%s DEBUG In do_damage()] <%s => %s> dmg=(%d) deathby=(%s) userdead=(%d) victim_evade?=(%d)", MOD, ename, idname, damage, string, userdead, p_evadethisshot[id])
    }else if (get_cvar_num("UW_DEBUG") == 6){
-      log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)",
-               ename, idname, damage, string )
+      log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)", ename, idname, damage, string )
    }
+   #endif
 
 
    if(userdead || !is_user_alive(id)){
@@ -165,7 +102,7 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
    //client_print(0, print_console, "[%s DEBUG] [do_damage()-2] <%s => %s> dmg=(%d) user_health=(%d)", MOD, ename, idname, damage, get_user_health(id))
 
 
-   if (userkilled && is_user_connected(enemy) && get_user_team(id)!=get_user_team(enemy))
+   if (userkilled && is_connected[enemy] && get_user_team(id)!=get_user_team(enemy))
       cs_set_user_money(enemy, cs_get_user_money(enemy) + MONEY_PER_KILL)
 
    if (userkilled){
@@ -173,7 +110,8 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
    }
 
    if (userkilled && id!=enemy)
-      get_deathbystr(deathby, string, 47)	// Get the string form of deathby
+      copy(string, 29, deathbyweapon[deathby]) //format(string, 25, "%s", uwc3_weapon[deathby])
+      //get_deathbystr(deathby, string, 47)	// Get the string form of deathby
 
 
    new name[32]
@@ -181,13 +119,12 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
 
    xpgiven = xpgiven_lev[p_level[enemy]]
 
-   if (userkilled && ((victim_or_enemy == 2) || (victim_or_enemy == 3)) &&
-       (id != enemy) && (userdead == 0) )
+   if (userkilled && ((victim_or_enemy == 2) || (victim_or_enemy == 3)) && (id != enemy) && (userdead == 0) )
    {
       // A skill resulted in a player's death
       if (get_user_team(id)!=get_user_team(enemy)){
 
-         if ( !is_user_connected( id ) || !is_user_connected( enemy ) )
+         if ( !is_connected[ id ] || !is_connected[ enemy ] )
             return PLUGIN_CONTINUE
 
          set_user_frags(enemy, get_user_frags(enemy)+1)
@@ -201,6 +138,25 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
                   "[%s] You just gained %d XP for killing %s with %s",
                   MOD, xpgiven, name, string)
             }
+            /* Fix this later
+            new e_steamid[32], i_steamid[32]
+
+            new vTeam =  get_user_team(id)
+            new eTeam =  get_user_team(enemy)
+
+            get_user_authid( enemy, e_steamid, 31 )
+            get_user_authid( id, i_steamid, 31 )
+
+            new TeamName[4][] =
+            {
+            	"UNASSIGNED",
+            	"TERRORIST",
+            	"CT",
+            	"SPECTATOR"
+            }
+
+            log_message( "^"%s<%d><%s><%s>^" killed ^"%s<%d><%s><%s>^" with ^"%s^"", e_name, get_user_userid( enemy ), e_steamid, TeamName[eTeam], name, get_user_userid( id ), i_steamid, TeamName[vTeam], string );
+            */
             displaylevel(id, 1)
          }
       }
@@ -285,8 +241,8 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
       //   MOD, ename, idname, weaponname)
 
       //logKill(enemy,id, weaponname)
-      if ( is_user_connected( id ) ) set_user_frags(id, get_user_frags(id)+1)
-      if ( is_user_connected( enemy ) ) set_user_frags(enemy, get_user_frags(enemy)+1)
+      if ( is_connected[ id ] ) set_user_frags(id, get_user_frags(id)+1)
+      if ( is_connected[ enemy ] ) set_user_frags(enemy, get_user_frags(enemy)+1)
 
       if (!get_cvar_num("mp_weaponxpmodifier") &&
           get_user_team(id)!=get_user_team(enemy))
@@ -335,12 +291,15 @@ public damage_event(id){
       return PLUGIN_CONTINUE
 
    new weapon = 0, bodypart = 0, enemy = get_user_attacker(id,weapon,bodypart)
+
+   if(id < 1 || id > 32 || enemy < 1 || enemy > 32)
+      return 0;
+
    new damage = read_data(2)
 
    new name1[32], name2[32]
    get_user_name(id, name1, 31)
    get_user_name(enemy, name2, 31)
-
 
    if (get_cvar_num("UW_medicalerts") && !medicalert[id]){
       // Send out medic alert calls to all medics on the team
@@ -454,16 +413,20 @@ public damage_event(id){
          new edex = (p_attribs[id][ATTRIBIDX_DEX] - ATTRIB_BASE)
          evade_percent += (float(edex) * DEX_EVADE_BONUS)
 
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(id, print_console,
                "[%s DEBUG In damage_event()-1] evade_percent=(%f)", MOD, evade_percent)
          }
+         #endif
       }
 
+      #if defined DEBUG
       if (get_cvar_num("UW_DEBUG") == 1){
          client_print(id, print_console,
           "[%s DEBUG In damage_event()-2] evade_percent modified=(%f)", MOD, evade_percent)
       }
+      #endif
 
       if (is_user_alive(id) && (randomnumber <= evade_percent)){
          p_evadethisshot[id] = true
@@ -512,8 +475,10 @@ public damage_event(id){
       // End of Elf Evasion
    }
 
+   #if defined DEBUG
    if (get_cvar_num("UW_DEBUG") == 1)
       client_print(0, print_console, "[%s DEBUG In damage_event()] <%s => %s> damage=(%d) was_evaded?=(%d)", MOD, name2, name1, damage, p_evadethisshot[id])
+   #endif
 
 
    if (p_skills[enemy][SKILLIDX_CRITSTRIKE] && p_skills[enemy][SKILLIDX_TRUESHOT]){
@@ -649,10 +614,12 @@ public damage_event(id){
             "[%s] Your Shadow Strike is absorbed by your target's poison resistance", MOD)
       }
    }else if (p_skills[enemy][SKILLIDX_SSTRIKE] && p_evadethisshot[id] ){
+	 #if defined DEBUG
       if (get_cvar_num("UW_DEBUG") == 1){
          client_print(id, print_console,
           "[%s DEBUG In damage_event()] Shot evaded, Shadow Strike check skipped")
       }
+      #endif
    // End of Shadow Strike
    }
 
@@ -748,16 +715,18 @@ public damage_event(id){
             MOD)
       }
    }else if (p_skills[enemy][SKILLIDX_CARRION] && p_evadethisshot[id] ){
+	 #if defined DEBUG
       if (get_cvar_num("UW_DEBUG") == 1){
          client_print(id, print_console,
           "[%s DEBUG In damage_event()] Shot evaded, Carrion Beetles check skipped")
       }
+      #endif
    // End of Carrion Beetle
    }
 
    // New Beginner's Luck implied skill for levels 0-4
    if (get_cvar_num("UW_luck_skill") && (id != enemy) &&
-       (0 < id <= MAX_PLAYERS) && (0 < enemy <= MAX_PLAYERS) )
+       (0 < id <= g_MAXPLAYERS) && (0 < enemy <= g_MAXPLAYERS) )
    {
       // [07-25-04] - Beginner's Luck skill (evade chance for victim, dbl dmg for attacker)
 
@@ -811,12 +780,13 @@ public damage_event(id){
    if (p_skills[id][SKILLIDX_THORNS] && !p_evadethisshot[id]){
       // Thorns Aura
       damage = read_data(2)
-      new orig_dmg = damage
+      //new orig_dmg = damage
 
       damage = floatround(float(damage) * p_thorns[p_skills[id][SKILLIDX_THORNS]-1])
 
       damage = ( damage < THORNS_MAX_DMG ) ? damage : THORNS_MAX_DMG
 
+      #if defined DEBUG
       if ( get_cvar_num("UW_DEBUG") == 5 ){
          new idname[32], ename[32]
          get_user_name(id, idname, 31)
@@ -826,6 +796,7 @@ public damage_event(id){
 
          log_amx( "THORNS DEBUG: %s attacked %s (has thorns) orig_dmg=(%d) thorns_dmg=(%d) orig_health=(%d) after_thorns_health=(%d)", ename, idname, orig_dmg, damage, get_user_health(enemy), (get_user_health(enemy)-damage) )
       }
+      #endif
 
       do_damage(enemy, id,damage,2,2, weapon, bodypart,0)
 
@@ -883,10 +854,12 @@ public damage_event(id){
 
       if (USE_ENH && (p_attribs[enemy][ATTRIBIDX_INT] >= INT_TRUESHOT_LEVEL) ){
          ts_dmg += INT_TRUESHOT_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(enemy, print_console,
                "[%s DEBUG] Intellect-Trueshot damage modified=(%f)", MOD, ts_dmg)
          }
+         #endif
       }
 
       damage = floatround(float(damage) * ts_dmg)
@@ -983,10 +956,12 @@ public damage_event(id){
 
       if (USE_ENH && (p_attribs[enemy][ATTRIBIDX_INT] >= INT_IMPALE_LEVEL) ){
          impale_chance += INT_IMPALE_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(enemy, print_console,
                "[%s DEBUG] Intellect-Impale modified=(%f)", MOD, impale_chance)
          }
+         #endif
       }
 
       if (randomnumber <= impale_chance){
@@ -1017,10 +992,12 @@ public damage_event(id){
 
       if (USE_ENH && (p_attribs[enemy][ATTRIBIDX_INT] >= INT_HEX_LEVEL) ){
          hex_chance += INT_HEX_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(enemy, print_console,
                "[%s DEBUG] Intellect-Hex modified=(%f)", MOD, hex_chance)
          }
+         #endif
       }
 
       if ((randomnumber <= hex_chance) && !skinchanged[id]){
@@ -1049,10 +1026,12 @@ public damage_event(id){
 
       if (USE_ENH && (p_attribs[enemy][ATTRIBIDX_INT] >= INT_BANISH_LEVEL) ){
          banish_chance += INT_BANISH_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(enemy, print_console,
                "[%s DEBUG] Intellect-Banish modified=(%f)", MOD, banish_chance)
          }
+         #endif
       }
 
       if (randomnumber <= banish_chance){
@@ -1118,14 +1097,16 @@ public damage_event(id){
 
       if (USE_ENH && (p_attribs[enemy][ATTRIBIDX_INT] >= INT_SIPHON_LEVEL) ){
          money_percent += INT_SIPHON_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(enemy, print_console,
                "[%s DEBUG] Intellect-Siphon modified=(%f)", MOD, money_percent)
          }
+         #endif
       }
       money = floatround(money_percent * money)
 
-      if ( !is_user_connected( id ) || !is_user_connected( enemy ) )
+      if ( !is_connected[ id ] || !is_connected[ enemy ] )
          return PLUGIN_CONTINUE
 
       cs_set_user_money(enemy, cs_get_user_money(enemy)+money,1)
@@ -1282,10 +1263,12 @@ public damage_event(id){
 
       if (USE_ENH && (p_attribs[enemy][ATTRIBIDX_INT] >= INT_BASH_LEVEL) ){
          bash_chance += INT_BASH_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(enemy, print_console,
                "[%s DEBUG] Intellect-Bash modified=(%f)", MOD, bash_chance)
          }
+         #endif
       }
 
       if ((randomnumber <= bash_chance) && (get_user_maxspeed(id) > 10) && !slowed[id]){
@@ -1637,11 +1620,14 @@ public death(){
    //format( sLogText, 255, "In death() %s killed by %s :: Victim-Godmode=(%d) Killer-Godmode=(%d) :: Killer-Blink=(%d) Killer-Items=(%d , %d)", vname, kname, hasgodmode[victim_id], hasgodmode[killer_id], p_skills[killer_id][SKILLIDX_BLINK], playeritem[killer_id], playeritem2[killer_id] )
    //log_amx(sLogText)
 
-   if ( !is_user_connected( victim_id ) )
+   if ( !is_connected[ victim_id ] )
       return PLUGIN_CONTINUE
 
    // Determine if victim has Nightvision
    hasnvision[victim_id] = cs_get_user_nvg(victim_id)
+
+   if(task_exists(451+victim_id))
+      remove_task(451+victim_id)
 
    if (task_exists(2000+victim_id))
       // Remove the function that makes you jump if you're goombad
@@ -1674,6 +1660,7 @@ public death(){
    }
 
    rings[victim_id]=0
+   log_amx("%i", victim_id)
    set_user_footsteps(victim_id, 0)
 
    new weaponname[20]
@@ -1718,7 +1705,7 @@ public death(){
 
    // Player either has ultimate Vengeance OR Suicide Bomber
    if (p_skills[victim_id][SKILLIDX_VENGEANCE] &&
-       (!hasblink[killer_id] || killer_id==victim_id) && !u_delay)
+       (!hasblink[killer_id] || killer_id==victim_id) && !u_delay[killer_id])
    {
       // Vengeance
       new parm[2]
@@ -1749,7 +1736,7 @@ public death(){
 
       // End of Vengeance
    }else if (p_skills[victim_id][SKILLIDX_SUICIDE] && !hasblink[killer_id] &&
-             !changingteam[victim_id] && !u_delay){
+             !changingteam[victim_id] && !u_delay[killer_id]){
       // Suicide Bomber
       emit_sound(victim_id,CHAN_ITEM, "ambience/particle_suck1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
       new parm[5], origin[3]
@@ -1876,7 +1863,15 @@ public death(){
          client_print(victim_id, print_chat,
             "[%s] You lose an Underdog XP penalty of %d for being killed by %s", MOD, udogpenalty, kname)
       }
+/*// [DUMB]
+      if(udogxp < MAX_UDOG_XP && udogpenalty < MAX_UDOG_XP){
+            playerxp[killer_id] += udogxp
+            playerxp[victim_id] -= udogpenalty
 
+            client_print(killer_id, print_chat,"[%s] You receive an Underdog XP bonus of %d for killing %s", MOD, udogxp, name)
+            client_print(victim_id, print_chat,"[%s] You lose an Underdog XP penalty of %d for being killed by %s", MOD, udogpenalty, kname)
+         }
+*/
       displaylevel(killer_id, 1)
    }
 
@@ -2040,8 +2035,10 @@ burn_victim_napalm(id,killer,tk){
 
       new Float:randomnumber = random_float(0.0,1.0)
 
+      #if defined DEBUG
       client_print(id, print_console, "DEBUG: fresist=(%d) chance_to_avoid=(%f) rnum=(%f)",
          p_resists[id][RESISTIDX_FIRE], chance_to_avoid, randomnumber)
+      #endif
 
       if (randomnumber < chance_to_avoid){
          do_burn = false
@@ -2056,11 +2053,12 @@ burn_victim_napalm(id,killer,tk){
       }
    }
 
-   if (do_burn){
+   if (do_burn)
+   {
       args[0] = id
       args[1] = killer
       args[2] = tk
-      set_task(ftimer, "on_fire_napalm", 451, args, 4, "b");
+      set_task(ftimer, "on_fire_napalm", 451+id, args, 4, "b");
    }else{
       isnburning[id] = 0
    }

@@ -73,76 +73,6 @@ public do_itemmenu(id,key){
 // END do_itemmenu subroutine
 // **************************************************************************
 
-
-// **************************************************************************
-// BEGIN items_info subroutine
-// Display info about items in the shopmenu
-// **************************************************************************
-public items_info(id){
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
-
-   new temp[1024], pos = 0
-   new theforward[] = "<li>"
-   new backward[] = "</li>"
-   new lastone[] = "</ul>"
-   pos += format(temp[pos], 1024-pos, "<body bgcolor=#000000><font color=#FFB000>")
-
-   pos += format(temp[pos], 1024-pos, "The following items are available for purchase at the shop (say shopmenu):<p><ul>")
-
-   pos += format(temp[pos], 1024-pos, "%sAnkh of Reincarnation: If you die you will retrieve your equipment the following round%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sBoots of Speed: Allows you to run faster%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sClaws of Attack +%d: An additional %d hp will be removed from the enemy on every hit%s",theforward,CLAWSOFATTACK,CLAWSOFATTACK,backward)
-   pos += format(temp[pos], 1024-pos, "%sCloak of Shadows: Makes you partially invisible, invisibility is increased when holding the knife%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sMask of Death: You will receive health for every hit on the enemy%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sNecklace of Immunity: You will be immune to enemy ultimates",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sOrb of Frost: Slows your enemy down when you hit him%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sPeriapt of Health: Receive extra health%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sTome of Experience: Purchasing a tome increases your experience by a fixed amount, the tome is consume%s%s",theforward,backward,lastone)
-   show_motd(id,temp,"Shopmenu Item Information")
-
-   return PLUGIN_CONTINUE
-}
-// **************************************************************************
-// END items_info subroutine
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN items_info2 subroutine
-// Display info about items in the shopmenu2
-// **************************************************************************
-public items_info2(id){
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
-
-   new temp[1024], pos = 0
-   new theforward[] = "<li>"
-   new backward[] = "</li>"
-   new lastone[] = "</ul>"
-   pos += format(temp[pos], 1024-pos, "<body bgcolor=#000000><font color=#FFB000>")
-
-   pos += format(temp[pos], 1024-pos, "The following items are available for purchase at the shop (say shopmenu2):<p><ul>")
-
-   pos += format(temp[pos], 1024-pos, "%sScroll of Respawning: You will respawn after death%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sMole Protectant: Protects you from moles (unless they hit you in the head)%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sAmulet of the Cat: You cannot be heard when running/going up ladders%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sSock of the Feather: Allows you to levitate %s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sHelm of Excellence: Immunity to headshots%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sFlaming Gloves of Warmth: Given an HE grenade every %s seconds%s",theforward,get_cvar_num("FT_glove_timer"),backward)
-   pos += format(temp[pos], 1024-pos, "%sRing of Regeneration +1: Gives 1 health every 2 seconds, you can have 5 max (type rings to receive 5)%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sChameleon: You are disguised as the enemy!!%s",theforward,backward)
-   pos += format(temp[pos], 1024-pos, "%sMole: Teleports you to the enemy spawn under disguise at the start of the round %s%s",theforward,backward,lastone)
-
-   show_motd(id,temp,"Shopmenu2 Item Information")
-
-   return PLUGIN_CONTINUE
-}
-// **************************************************************************
-// END items_info2 subroutine
-// **************************************************************************
-
-
 // **************************************************************************
 // BEGIN shopmenu subroutine
 // Display the shopmenu
@@ -245,7 +175,7 @@ public buy_item(id,key){
          return PLUGIN_HANDLED
       }else if(!buytime){
          new Float:thetime = get_cvar_float("mp_buytime")*60.0
-         client_print(id, print_center, 
+         client_print(id, print_center,
             "%0.0f seconds have passed. You can't buy anthing now.",thetime)
          return PLUGIN_HANDLED
       }else if(!isBuyzone[id]){
@@ -254,7 +184,7 @@ public buy_item(id,key){
       }
    }
 
-   if ( !is_user_alive(id) && 
+   if ( !is_user_alive(id) &&
         (key==7 || key==6 || key==5 || key==4 || key==3 || key==2 || key==1))
    {
       client_print(id,print_center,"You may not purchase that item when dead")
@@ -288,22 +218,23 @@ public buy_item(id,key){
 
       if (playeritem[id]==HEALTH)
          // Remove health bonus after buying new item
-         set_user_health_log(id, get_user_health(id)-HEALTHBONUS, true, 
+         set_user_health_log(id, get_user_health(id)-HEALTHBONUS, true,
                              "buy_item() HEALTH1")
 
       playeritem[id]=key+1
 
       if (playeritem[id]==HEALTH){
          // Give health bonus for buying periapt of health
-         set_user_health_log(id, get_user_health(id)+HEALTHBONUS, true, 
+         set_user_health_log(id, get_user_health(id)+HEALTHBONUS, true,
                              "buy_item() HEALTH2")
-
+         #if defined DEBUG
          if ( get_cvar_num("UW_DEBUG") == 5 ){
             new name[32]
             get_user_name(id, name, 31)
             log_amx( "In buy_item() :: [%s] Bought Health Has=(%d) Max=(%d)",
                      name, get_user_health(id), maxhealth[id] )
          }
+         #endif
       }
    }
 
@@ -324,128 +255,168 @@ public buy_item(id,key){
 // **************************************************************************
 public buy_item2(id,key){
 
-   if (warcraft3==false)
-      return PLUGIN_CONTINUE
+	if(!warcraft3)
+		return PLUGIN_CONTINUE
 
-   if(get_cvar_num("FT_competitive")){
-      if (!is_user_alive(id)){
-         client_print(id,print_center,"You may not buy items when you are dead.")
-         return PLUGIN_HANDLED
-      }else if(!buytime){
-         new Float:thetime = get_cvar_float("mp_buytime")*60.0
-         client_print(id,print_center,"%0.0f seconds have passed. You can't buy anthing now.",thetime)
-         return PLUGIN_HANDLED
-      }else if(!isBuyzone[id]){
-         client_print(id,print_center,"You must be in the buyzone to purchase an item")
-         return PLUGIN_HANDLED
-      }
-   }
+	if(!is_user_alive(id))
+	{
+		client_print(id,print_center,"You may not buy items when you are dead.")
+		return PLUGIN_CONTINUE
+	}
 
-   if (!is_user_alive(id) && (key==7 || key==6 || key==5 || key==4 || key==3 || key==2 || key==1))
-   {
-      client_print(id,print_center,"You may not purchase that item when dead")
-      return PLUGIN_CONTINUE
-   }
+	if(get_cvar_num("FT_competitive"))
+	{
+		if(!buytime)
+		{
+			new Float:thetime = get_cvar_float("mp_buytime")*60.0
+			client_print(id,print_center,"%0.0f seconds have passed. You can't buy anthing now.",thetime)
+			return PLUGIN_CONTINUE
+		}
+		else if(!isBuyzone[id])
+		{
+			client_print(id,print_center,"You must be in the buyzone to purchase an item")
+			return PLUGIN_CONTINUE
+		}
+	}
 
-   if(key==playeritem2[id]-1 && key!=REGEN-1){
-      client_print(id,print_center,"You already own that item")
-      return PLUGIN_HANDLED
-   }
+	if(key == playeritem2[id] - 1 && key != REGEN - 1)
+	{
+		client_print(id,print_center,"You already own that item")
+		return PLUGIN_HANDLED
+	}
 
-   if(key==RESPAWN-1 && endround){
-      client_print(id,print_center,"You may not purchase this after the round has ended")
-      return PLUGIN_HANDLED
-   }
+	if(key == RESPAWN - 1 && endround)
+	{
+		client_print(id,print_center,"You may not purchase this after the round has ended")
+		return PLUGIN_HANDLED
+	}
 
-   if (key==9)
-      return PLUGIN_HANDLED
-   else if (cs_get_user_money(id)<itemcost2[key]){
-      client_print(id,print_center,"You have insufficient funds!")
-      return PLUGIN_HANDLED
-   }else{
-      if (playeritem2[id]==CAT){
-         set_user_footsteps(id, 0)
-      }
-      if (playeritem2[id]==FEATHER)
-         set_user_gravity(id,1.0)
-      if (playeritem2[id]==HELM)
-         bImmuneHeadshots[id] = false;
-      if (playeritem2[id]==CHAMELEON)
-         changeskin(id,1)
-      if (playeritem2[id]!=REGEN){
-         if(task_exists(9000+id))
-            remove_task(9000+id)
-         rings[id]=0
-      }
-      if (playeritem2[id]!=INFERNO){
-         if(task_exists(9400+id))
-            remove_task(9400+id)
-      }
-      playeritem2[id]=key+1
-      if (playeritem2[id]==CHAMELEON && is_user_alive(id))
-         changeskin(id,0)
-      if (playeritem2[id]==HELM)
-         bImmuneHeadshots[id] = true;
-      if (playeritem2[id]==CAT){
-         set_user_footsteps(id, 1)
-      }
-      if (playeritem2[id]==FEATHER)
-         set_user_gravity(id,0.35)
-      if (playeritem2[id]==RESPAWN && !is_user_alive(id)){
-         if(get_user_team(id)==TEAM_T || get_user_team(id)==TEAM_CT){
-            new parm[2]
-            parm[0]=id
-            parm[1]=6
-            set_task(0.2,"func_spawn",2,parm,2)
-            spawnedfromitem[id]=true
-            playeritem2[id]=0
-            playeritem[id]=0
-         }
-      }
-      if (playeritem2[id]==INFERNO){
-         if (get_cvar_num("FT_no_gloves_on_ka")){
-            if(!givenade){
-               client_print(id, print_center,
-                  "Flaming Gloves of Warmth are restricted on this map")
-               playeritem2[id] = 0 // Fix for Gloves bug which still allowed it to be bought
-               return PLUGIN_HANDLED
-            }else{
-               new parm[2]
-               parm[0]=id
-               giveheifnothas(parm)
-               nadetime[id]=get_cvar_num("FT_glove_timer")
-            }
-         }else{
-            new parm[2]
-            parm[0]=id
-            giveheifnothas(parm)
-            nadetime[id]=get_cvar_num("FT_glove_timer")
-         }
-      }
-      if (playeritem2[id]==REGEN){
-         new parm[2]
-         parm[0]=id
-         if (rings[id]<5){
-            ++rings[id]
-            if(!task_exists(9000+id))
-               regenerate(parm)
-         }else{
-            client_print(id,print_center,"You may not purchase more than 5 rings")
-            return PLUGIN_HANDLED
-         }
-      }
-      if (playeritem2[id] == MOLE){
-         hasmole[id] = true
-      }
-      cs_set_user_money(id, cs_get_user_money(id)-itemcost2[key],1)
-   }
+   	if(key == 9)
+     	return PLUGIN_HANDLED
+	else if (cs_get_user_money(id)<itemcost2[key])
+	{
+		client_print(id,print_center,"You have insufficient funds!")
+		return PLUGIN_HANDLED
+	}
+	else
+	{
+		if(playeritem2[id] == CAT)
+		{
+			log_amx("%i", id)
+			set_user_footsteps(id, 0)
+		}
+		if(playeritem2[id] == FEATHER)
+			set_user_gravity(id, 1.0)
+		if(playeritem2[id]==HELM)
+			bImmuneHeadshots[id] = false;
+		if(playeritem2[id] == CHAMELEON)
+			changeskin(id,1)
+		if(playeritem2[id] != REGEN)
+		{
+			if(task_exists(9000 + id))
+				remove_task(9000 + id)
+			rings[id] = 0
+		}
+		if(playeritem2[id] != INFERNO)
+		{
+			if(task_exists(9400 + id))
+				remove_task(9400+id)
+		}
 
-   if (file_exists("sound/warcraft3/pickupitem.wav")==1)
-      emit_sound(id,CHAN_ITEM, "warcraft3/pickupitem.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
+		playeritem2[id] = key + 1
 
-   displaylevel(id,3)
+		if(playeritem2[id] == CHAMELEON && is_user_alive(id))
+			changeskin(id,0)
 
-   return PLUGIN_HANDLED
+		if (playeritem2[id] == HELM)
+			bImmuneHeadshots[id] = true;
+
+		if(playeritem2[id]==CAT)
+		{
+			log_amx("%i", id)
+			set_user_footsteps(id)
+		}
+
+		if(playeritem2[id] == FEATHER)
+			set_user_gravity(id, 0.35)
+
+		if (playeritem2[id] == RESPAWN && !is_user_alive(id))
+		{
+			if(get_user_team(id) == TEAM_T || get_user_team(id) == TEAM_CT)
+			{
+				new parm[2]
+				parm[0] = id
+				parm[1] = 6
+				set_task(0.2, "func_spawn", 2, parm, 2)
+				spawnedfromitem[id] = true
+				playeritem2[id] = 0
+				playeritem[id] = 0
+			}
+		}
+
+		if(playeritem2[id]==INFERNO)
+		{
+			if (get_cvar_num("FT_no_gloves_on_ka"))
+			{
+				if(!givenade)
+				{
+					client_print(id, print_center,
+						"Flaming Gloves of Warmth are restricted on this map")
+
+					playeritem2[id] = 0 // Fix for Gloves bug which still allowed it to be bought
+
+					return PLUGIN_HANDLED
+				}
+				else
+				{
+					new parm[2]
+					parm[0] = id
+
+					giveheifnothas(parm)
+					nadetime[id] = get_cvar_num("FT_glove_timer")
+				}
+			}
+			else
+			{
+				new parm[2]
+				parm[0] = id
+
+				giveheifnothas(parm)
+				nadetime[id] = get_cvar_num("FT_glove_timer")
+			}
+		}
+		if(playeritem2[id] == REGEN)
+		{
+			new parm[2]
+			parm[0] = id
+
+			if(rings[id] < 5)
+			{
+				++rings[id]
+
+				if(!task_exists(9000 + id))
+					regenerate(parm)
+			}
+			else
+			{
+				client_print(id,print_center,"You may not purchase more than 5 rings")
+				return PLUGIN_HANDLED
+			}
+		}
+
+		if(playeritem2[id] == MOLE)
+		{
+			hasmole[id] = true
+		}
+		cs_set_user_money(id, cs_get_user_money(id) - itemcost2[key], 1)
+	}
+
+	if(file_exists("sound/warcraft3/pickupitem.wav"))
+		emit_sound(id,CHAN_ITEM, "warcraft3/pickupitem.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+	displaylevel(id, 3)
+
+	return PLUGIN_HANDLED
 
 }
 // **************************************************************************
@@ -455,12 +426,12 @@ public buy_item2(id,key){
 
 // **************************************************************************
 // BEGIN player_giveitems subroutine
-// Restore player equipment when dead 
+// Restore player equipment when dead
 // **************************************************************************
 public player_giveitems(parm[2]){
    new id = parm[0]
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    if (p_skills[id][SKILLIDX_VENGEANCE] && !spawnedfromitem[id]){
@@ -556,7 +527,7 @@ public weapon_controller( parm[2] ){
 
    new id = parm[0]
    new origin[3] = 0
-   new weaponid = 0, weaponname[20] = 0, ammoname[20] = 0
+   new weaponid = 0
    new bool:reincarnate
    new iweapons[32] = 0, wpname[32] = 0, inum = 0
    get_user_weapons(id,iweapons,inum)
@@ -635,107 +606,14 @@ public weapon_controller( parm[2] ){
       //if(gotShield[id])
       //   give_item(id,"weapon_shield")
 
-      for (new j=0; (j < savednumber[id]) && (j < 32); ++j){
-          weaponid=savedweapons[id][j]
-
-          if( weaponid==CSW_USP){
-             weaponname="weapon_usp"
-             ammoname="ammo_45acp"
-          }else if( weaponid==CSW_ELITE){
-             weaponname="weapon_elite"
-             ammoname="ammo_9mm"
-          }else if( weaponid==CSW_FIVESEVEN){
-             weaponname="weapon_fiveseven"
-             ammoname="ammo_57mm"
-          }else if( weaponid==CSW_GLOCK18){
-             weaponname="weapon_glock18"
-             ammoname="ammo_9mm"
-          }else if( weaponid==CSW_DEAGLE){
-             weaponname="weapon_deagle"
-             ammoname="ammo_50ae"
-          }else if( weaponid==CSW_P228){
-             weaponname="weapon_p228"
-             ammoname="ammo_357sig"
-          }else if (weaponid==3){
-             weaponname="weapon_scout"
-             ammoname="ammo_762nato"
-          }else if (weaponid==4){
-             give_item(id,"weapon_hegrenade")
-          }else if (weaponid==5){
-             weaponname="weapon_xm1014"
-             ammoname="ammo_buckshot"
-          }else if (weaponid==7){
-             weaponname="weapon_mac10"
-             ammoname="ammo_45acp"
-          }else if (weaponid==8){
-             weaponname="weapon_aug"
-             ammoname="ammo_556nato"
-          }else if (weaponid==9){
-             give_item(id,"weapon_smokegrenade")
-          }else if (weaponid==12){
-             weaponname="weapon_ump45"
-             ammoname="ammo_45acp"
-          }else if (weaponid==13){
-             weaponname="weapon_sg550"
-             ammoname="ammo_556nato"
-          }else if (weaponid==14){
-             weaponname="weapon_galil"
-             ammoname="ammo_556nato"
-          }else if (weaponid==15){
-             weaponname="weapon_famas"
-             ammoname="ammo_556nato"
-          }else if (weaponid==18){
-             weaponname="weapon_awp"
-             ammoname="ammo_338magnum"
-          }else if (weaponid==19){
-             weaponname="weapon_mp5navy"
-             ammoname="ammo_9mm"
-          }else if (weaponid==20){
-             weaponname="weapon_m249"
-             ammoname="ammo_556natobox"
-          }else if (weaponid==21){
-             weaponname="weapon_m3"
-             ammoname="ammo_buckshot"
-          }else if (weaponid==22){
-             weaponname="weapon_m4a1"
-             ammoname="ammo_556nato"
-          }else if (weaponid==23){
-             weaponname="weapon_tmp"
-             ammoname="ammo_9mm"
-          }else if (weaponid==24){
-             weaponname="weapon_g3sg1"
-             ammoname="ammo_762nato"
-          }else if (weaponid==25){
-             if(flashg[id]==1)
-                give_item(id,"weapon_flashbang")
-             else{
-                give_item(id,"weapon_flashbang")
-                give_item(id,"weapon_flashbang")
-             }
-          }else if (weaponid==27){
-             weaponname="weapon_sg552"
-             ammoname="ammo_556nato"
-          }else if (weaponid==28){
-             weaponname="weapon_ak47"
-             ammoname="ammo_762nato"
-          }else if (weaponid==30){
-             weaponname="weapon_p90"
-             ammoname="ammo_57mm"
-          }else{
-             weaponname=""
-             ammoname=""
-          }  
-
-          if (contain(weaponname,"weapon_")==0){
-             // -1 if no match found, 0 if match
-             give_item(id,weaponname)
-             give_item(id,ammoname)
-             give_item(id,ammoname)
-             give_item(id,ammoname)
-             give_item(id,ammoname)
-             give_item(id,ammoname)
-             give_item(id,ammoname)
-             give_item(id,ammoname)
+      for (new j=0; j < savednumber[id]; ++j)
+      {
+          if(weaponid > 0 && weaponid < MAXWEAPON && weaponid !=5)
+          {
+             weaponid = savedweapons[id][j]
+             give_item(id, g_weapons[weaponid])
+             if(g_MaxBPAmmo[weaponid] != 0)
+             	cs_set_user_bpammo(id, g_MaxBPAmmo[weaponid], g_MaxBPAmmo[j])
           }
       }
 
@@ -769,14 +647,14 @@ public weapon_controller( parm[2] ){
    //   hasdefuse[id]=false
    }
 
-   if ( is_user_connected( id ) ){
+   if ( is_connected[ id ] ){
       if ( !cs_get_user_nvg( id ) )
          hasnvision[id] = false
 
       if ( !cs_get_user_defuse( id ) )
          hasdefuse[id] = false
    }
- 
+
    item_functions(parm)
 
    return PLUGIN_HANDLED
@@ -793,7 +671,7 @@ public weapon_controller( parm[2] ){
 public item_functions(parm[]){
    new id = parm[0]
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    if( !hasrespawned[id] && hasmole[id])
@@ -821,9 +699,15 @@ public item_functions(parm[]){
       set_user_gravity(id,1.0)
 
    if (playeritem2[id]==CAT)
-      set_user_footsteps(id, 1)
+   {
+      log_amx("%i", id)
+      set_user_footsteps(id)
+   }
    else
+   {
+      log_amx("%i", id)
       set_user_footsteps(id, 0)
+   }
 
    if(playeritem2[id]!=CHAMELEON && skinchanged[id])
       changeskin(id,1)
@@ -858,7 +742,7 @@ public item_functions(parm[]){
 // **************************************************************************
 public items(parm2[2]){
    new id = parm2[0]
-   new temp2[128] = "" 
+   new temp2[128] = ""
    new temp3[32] = ""
 
    /*if ( get_cvar_num("UW_DEBUG") == 5 ){
@@ -868,18 +752,18 @@ public items(parm2[2]){
                name, ultlearned[id], ultimateused[id], freezetime )
    }*/
 
-   if (ultlearned[id] && !ultimateused[id] && !freezetime){
+   if (ultlearned[id] && !ultimateused[id] && !freezetime && !u_delay[id]){
       format(temp3, 31, "[ Ultimates Ready ]  ")
    }else if (ultlearned[id]){
-      format(temp3, 31, "[ Ultimates  NOT Ready ]  ")
-   }           
-            
+      format(temp3, 31, "[ Ultimates NOT Ready ]  ")
+   }
+
    if (playeritem[id]!=0 && playeritem2[id]!=0){
       if (playeritem2[id]==REGEN && rings[id]>1)
          format(temp2,127,"%sMagic Items: %s and %ss x%d", temp3,
            playeritem[id]?shortitemname[playeritem[id]-1]:"",
            playeritem2[id]?shortitemname2[playeritem2[id]-1]:"",rings[id])
-      else  
+      else
          format(temp2,127,"%sMagic Items: %s and %s", temp3,
            playeritem[id]?shortitemname[playeritem[id]-1]:"",
            playeritem2[id]?shortitemname2[playeritem2[id]-1]:"")
@@ -887,7 +771,7 @@ public items(parm2[2]){
       if (playeritem2[id]==REGEN && rings[id]>1)
          format(temp2,127,"%sMagic Item: %ss x%d", temp3,
            playeritem2[id]?shortitemname2[playeritem2[id]-1]:"",rings[id])
-      else  
+      else
          format(temp2,127,"%sMagic Item: %s", temp3,
            playeritem2[id]?shortitemname2[playeritem2[id]-1]:"")
    }else if (playeritem[id]!=0 && playeritem2[id]==0)
@@ -910,7 +794,7 @@ public items(parm2[2]){
    if (is_user_alive(id) && !endround)
       show_hudmessage(id, temp2)
 
-   set_task(1.0, "items", 451+id, parm2, 2 );
+   set_task(1.5, "items", 4511+id, parm2, 2 );
 }
 // **************************************************************************
 // END items subroutine
@@ -977,25 +861,6 @@ public hebuy(id){
 // END flashbuy and hebuy subroutines
 // **************************************************************************
 
-
-// **************************************************************************
-// BEGIN got_defuse subroutine
-// From Warcraft3FT
-// **************************************************************************
-public got_defuse(id){
-
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
-
-   hasdefuse[id]=true
-
-   return PLUGIN_CONTINUE
-}
-// **************************************************************************
-// END got_defuse subroutine
-// **************************************************************************
-
-
 // **************************************************************************
 // BEGIN armor_type subroutine
 // From Warcraft3FT
@@ -1003,9 +868,10 @@ public got_defuse(id){
 public armor_type(id){
 
    if (!warcraft3)
-      return PLUGIN_CONTINUE
+      return;
 
-   if (read_data(1)){
+   if (read_data(1))
+   {
       helmet[id] = true
       hassuit[id] = true
    }else{
@@ -1014,8 +880,6 @@ public armor_type(id){
    }
 
    check_skinbonus( id )	// Check if helmet helps w/ skin bonus
-
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END armor_type subroutine
@@ -1085,14 +949,14 @@ public check_weap(id){
 // BEGIN change_weapon subroutine
 // Handler for weapon change event
 // **************************************************************************
-public change_weapon(id) {
+public change_weapon(id)
+{
+   if(!warcraft3)
+      return
 
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
+   if(!is_connected[id])
+      return
 
-   if ( !is_user_connected( id ) )
-      return PLUGIN_CONTINUE
-	
    // Find out when they last fired
    fLastShotFired[id] = halflife_time();
 
@@ -1121,9 +985,6 @@ public change_weapon(id) {
    new weaponnum = 0
    weaponnum = (get_user_weapon(id,clipamount,ammoamount))
 
-   if ( !is_user_connected( id ) )
-      return PLUGIN_CONTINUE
-
    if (p_skills[id][SKILLIDX_INVIS]){
       // Invisibility
       if (weaponnum==29){
@@ -1145,14 +1006,12 @@ public change_weapon(id) {
    else
       set_user_rendering(id)
 
-   new parm[1]                  
-   parm[0]=id           
-   unholyspeed(parm)    
-                                
-   return PLUGIN_CONTINUE
-}                       
+   new parm[1]
+   parm[0]=id
+   unholyspeed(parm)
+}
 // **************************************************************************
-// END change_weapon subroutine 
+// END change_weapon subroutine
 // **************************************************************************
 
 
@@ -1191,7 +1050,10 @@ public rings5(id){
    parm[0]=id
 
    if (playeritem2[id]==CAT)
+   {
+      log_amx("%i", id)
       set_user_footsteps(id, 0)
+   }
    if (playeritem2[id]==FEATHER)
       set_user_gravity(id,1.0)
    if (playeritem2[id]==HELM)
@@ -1217,99 +1079,22 @@ public rings5(id){
 // **************************************************************************
 // END rings5 subroutine
 // **************************************************************************
+/* Check map */
+public native_no_weap(id, num)
+{
+	new key = get_param(1)
+	new setting = get_param(2)
 
-
-// **************************************************************************
-// BEGIN shieldbuy check_shield and check_shield2 hook_drop subroutines
-// Handles the buying of CT shields
-// **************************************************************************
-/*
-public shieldbuy(id){
-   if(cs_get_user_money(id)>=2200)
-      gotShield[id]=true
-
-   new parm[1]
-   set_task(0.1,"check_shield",2100 + id,parm,1)
-   return PLUGIN_CONTINUE
+	switch(key)
+	{
+		case give_pistol:
+			givepistol = setting ? true : false
+		case give_nade:
+			givenade = setting ? true : false
+		case no_hegren:
+			no_he = setting ? true : false
+	}
 }
-
-public check_shield(parm[1]) {
-   new id = parm[0]
-   new modelName[32]
-
-   Entvars_Get_String(id, EV_SZ_viewmodel, modelName, 31)
-   if ( containi(modelName,"v_shield_") != -1 )
-      gotShield[id]=true
-   else
-      gotShield[id]=false
-   return PLUGIN_HANDLED
-}
-
-public check_shield2(parm[1]) {
-   new id = parm[0]
-   new modelName[32]
-
-   Entvars_Get_String(id, EV_SZ_viewmodel, modelName, 31)
-   if ( containi(modelName,"v_shield_") != -1 )
-      gotShield[id]=true
-   else
-      gotShield[id]=false
-
-   return PLUGIN_HANDLED
-
-}
-*/
-
-public hook_drop(id){
-   new parm[1]
-   parm[0] = id
-   remove_task(2300 + id,0)
-   set_task(0.1,"check_shield2",2300 + id,parm,1)
-
-   return PLUGIN_CONTINUE
-}
-// **************************************************************************
-// END shieldbuy check_shield check_shield2 and hook_drop  subroutine2
-// **************************************************************************
-
-
-// **************************************************************************
-// BEGIN checkmap subroutine
-// Prevents weapons from being given in knife only maps
-// **************************************************************************
-public checkmap(){
-   new mapname[32]
-   get_mapname(mapname,31)
-
-   if (containi(mapname,"ka_")!=-1 || containi(mapname,"he_")!=-1 || 
-       containi(mapname,"scoutzknivez")!=-1)
-   {
-      givepistol=false
-      if (get_cvar_num("FT_no_gloves_on_ka"))
-         givenade=false
-      else
-         givenade=true
-   }else{
-      givenade=true
-      givepistol=true
-   }
-
-   if(get_cvar_num("FT_no_orcnades_on_he")){
-      //if (containi(mapname,"ka_")!=-1 || containi(mapname,"jail_riot")!=-1)
-      if (containi(mapname,"ka_")!=-1 || containi(mapname,"jail_riot")!=-1 ||
-          containi(mapname,"fy_")!=-1)
-      {
-         no_he=true
-      }else{
-         no_he=false
-      }
-   }
-
-   return PLUGIN_CONTINUE
-}
-// **************************************************************************
-// END checkmap subroutine
-// **************************************************************************
 
 // Used for immunity to headshots!
 #define HITGROUP_HEAD (1 << 1)
@@ -1320,13 +1105,13 @@ public traceline(Float:v1[3], Float:v2[3], noMonsters, pentToSkip)
 	new iVictim = get_tr(TR_pHit);
 	new iHitZone = (1 << get_tr(TR_iHitgroup));
 
-	if ( iVictim >= 1 && iVictim <= get_maxplayers() && bImmuneHeadshots[iVictim] && iAttacker >= 1 && iAttacker <= get_maxplayers())
+	if ( iVictim >= 1 && iVictim <= g_MAXPLAYERS && bImmuneHeadshots[iVictim] && iAttacker >= 1 && iAttacker <= g_MAXPLAYERS)
 	{
 		// If so, then we want to block the shot
 		if ( iHitZone & HITGROUP_HEAD )
 		{
 			set_tr(TR_flFraction, 1.0);
-			
+
 			// Do the check to see if we should flash the screen orange?
 			new Float:time = halflife_time();
 			if ( time - fLastShotFired[iAttacker] < 0.1 )
@@ -1341,10 +1126,10 @@ public traceline(Float:v1[3], Float:v2[3], noMonsters, pentToSkip)
 				write_byte( 150 );
 				message_end();
 			}
-			
+
 			return FMRES_SUPERCEDE;
 		}
 	}
-	
+
 	return FMRES_IGNORED;
 }

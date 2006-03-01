@@ -83,39 +83,43 @@ public check_spot(parm[]){
 
    client_print(id, print_console, "MIH check_spot!!!")
 
-   if (get_user_team(id) == 1)
-      mole_CT(id)
-   else if (get_user_team(id) == 2)
-      mole_T(id)
+   new team = get_user_team(id)
+
+   if(team && team != 3)
+      mole(id, team)
    else
       client_print(id, print_chat, "Join a Team First!")
-
-   return PLUGIN_HANDLED
-
 }
 
-public mole_T(id){
+mole(id, team)
+{
    new numplayers = 0
-   new Float:vicinity = 96.0
    new entsFound[1]
+
+   new Tclass[] = "info_player_deathmatch"
+   new CTclass[] = "info_player_start"
+
    new Float:origin[3]
    new porigin[3]
-   new szEnt[32] = "info_player_deathmatch"
+
    new bool:spotOpen = false
    new teamnumber = get_user_team(id)
-   new curEnt = find_ent_by_class( -1, szEnt );
 
-   while ( curEnt > 0 ){
+   new curEnt = find_ent_by_class( -1, (team == 1) ? CTclass : Tclass);
+
+   while ( curEnt > 0 )
+   {
       numplayers = 0
 
       entity_get_vector( curEnt, EV_VEC_origin, origin)
-      numplayers = find_sphere_class(0, "player", vicinity, entsFound, 1, origin)
+      numplayers = find_sphere_class(0, "player", 96.0, entsFound, 1, origin)
 
-      if (numplayers == 0){
+      if (!numplayers)
+      {
          spotOpen = true
          break
       }
-      curEnt = find_ent_by_class( curEnt, szEnt );
+      curEnt = find_ent_by_class( curEnt, (team == 1) ? CTclass : Tclass);
    }
 
    if (spotOpen){
@@ -133,111 +137,61 @@ public mole_T(id){
       parm2[5] = id
       set_task(0.1,"transport2",2,parm2,6)
    }else{
-      client_print(id, print_chat,
-         "No Terrorist mole locations available, will try again next round")
-      return PLUGIN_HANDLED
+      client_print(id, print_chat, "No %s mole locations available, will try again next round", (team == 1) ? "Terrorist" : "Counter-Terrorist")
    }
-
-
-   return PLUGIN_HANDLED
 }
 
+public transport2(parm[6])
+{
+	// Teleports the MOLE to the opposing team's base (new version)
 
-public mole_CT(id){
-   new numplayers = 0
-   new Float:vicinity = 96.0
-   new entsFound[1]
-   new Float:origin[3]
-   new porigin[3]
-   new szEnt[32] = "info_player_start"
-   new bool:spotOpen = false
-   new teamnumber = get_user_team(id)
-   new curEnt = find_ent_by_class( -1, szEnt );
+	new id = parm[5]
+	new origin[3]
+	new Float:forigin[3]
+	new Float:vicinity = 96.0
+	new entsFound[1]
 
-   while ( curEnt > 0 ){
-      numplayers = 0
+	origin[0] = parm[0]
+	origin[1] = parm[1]
+	origin[2] = parm[2]
 
-      entity_get_vector( curEnt, EV_VEC_origin, origin)
-      numplayers = find_sphere_class(0, "player", vicinity, entsFound, 1, origin)
+	forigin[0] = float(parm[0])
+	forigin[1] = float(parm[1])
+	forigin[2] = float(parm[2])
 
-      if (numplayers == 0){
-         spotOpen = true
-         break
-      }
-      curEnt = find_ent_by_class( curEnt, szEnt );
-   }
+	// Perform a final check to make sure this MOLE spot wasn't taken
+	new numplayers = find_sphere_class(0, "player", vicinity, entsFound, 1, forigin)
 
-   if (spotOpen){
-      porigin[0] = floatround(origin[0])
-      porigin[1] = floatround(origin[1])
-      porigin[2] = floatround(origin[2])
+	if (numplayers > 0)
+	{
+		if (hasmole[id])
+			client_print(id, print_chat,
+				"A mole location was not found for you, item saved for next round")
+		else
+			client_print(id, print_chat,
+			"A mole location was not found for you")
 
-      new parm2[6]
-      parm2[0] = porigin[0]
-      parm2[1] = porigin[1]
-      parm2[2] = porigin[2]
-      parm2[3] = 0
-      parm2[4] = teamnumber
-      parm2[5] = id
-      set_task(0.1,"transport2",2,parm2,6)
-   }else{
-      client_print(id, print_chat,
-         "No Counter-Terrorist mole locations available, will try again next round")
-      return PLUGIN_HANDLED
-   }
+		return PLUGIN_HANDLED
+	}
 
-   return PLUGIN_HANDLED
-}
+	client_print(id, print_chat, "Mole location ready, sending you to : < %d %d %d> ", origin[0], origin[1], origin[2])
 
+	ismole[id] = true
+	changeskin(id, 0)
+	set_user_origin(id, origin)
 
-public transport2(parm[6]){
-   // Teleports the MOLE to the opposing team's base (new version)
+	message_begin(MSG_ONE, gmsgShake, {0, 0, 0}, id)
+	write_short(255<< 14 ) //ammount
+	write_short(10 << 14) //lasts this long
+	write_short(255<< 14) //frequency
+	message_end()
 
-   new id = parm[5]
-   new origin[3]
-   new Float:forigin[3]
-   new Float:vicinity = 96.0
-   new entsFound[1]
+	if (playeritem2[id] == MOLE)
+	playeritem2[id] = 0
 
-   origin[0] = parm[0]
-   origin[1] = parm[1]
-   origin[2] = parm[2]
+	hasmole[id] = false
 
-   forigin[0] = float(parm[0])
-   forigin[1] = float(parm[1])
-   forigin[2] = float(parm[2])
-
-   // Perform a final check to make sure this MOLE spot wasn't taken
-   new numplayers = find_sphere_class(0, "player", vicinity, entsFound, 1, forigin)
-
-   if (numplayers > 0){
-      if (hasmole[id])
-         client_print(id, print_chat,
-            "A mole location was not found for you, item saved for next round")
-      else
-         client_print(id, print_chat,
-            "A mole location was not found for you")
-      return PLUGIN_HANDLED
-   }
-
-   client_print(id, print_chat, "Mole location ready, sending you to : < %d %d %d> ", origin[0], origin[1], origin[2])
-
-   ismole[id]=true
-   changeskin(id,0)
-   set_user_origin(id,origin)
-
-   message_begin(MSG_ONE,gmsgShake,{0,0,0},id)
-   write_short(255<< 14 ) //ammount
-   write_short(10 << 14) //lasts this long
-   write_short(255<< 14) //frequency
-   message_end()
-
-   if (playeritem2[id] == MOLE)
-      playeritem2[id] = 0
-
-   hasmole[id] = false
-
-   return PLUGIN_CONTINUE
+	return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END check_spot, mole_T, mole_CT, transport and other supporting mole routines
@@ -248,19 +202,22 @@ public transport2(parm[6]){
 // BEGIN check_fan subroutine
 // Check the fan of blades skill
 // **************************************************************************
-public check_fan(id){
+public check_fan(id)
+{
+	if(p_skills[id][SKILLIDX_FAN] && is_user_alive(id))
+	{
+		//Fan of Knives
+		new Float:randomnumber = random_float(0.0, 1.0)
+		if(randomnumber <= p_fan[p_skills[id][SKILLIDX_FAN] - 1])
+		{
+			new parm[2]
 
-   if (p_skills[id][SKILLIDX_FAN] && is_user_alive(id)){
-      //Fan of Knives
-      new Float:randomnumber = random_float(0.0,1.0)
-      if (randomnumber <= p_fan[p_skills[id][SKILLIDX_FAN]-1]){
-         new parm[2]
-         parm[0]=id
-         parm[1]=7
-         set_task(0.1,"check_spot",id+12,parm,2)
-      }
-   }
+			parm[0] = id
+			parm[1] = 7
 
+			set_task(0.1, "check_spot", id + 12, parm, 2)
+		}
+	}
 }
 // **************************************************************************
 // END check_fan subroutine

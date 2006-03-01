@@ -36,6 +36,12 @@
 // **************************************************************************
 public ability_wcward(id){
 
+   new blah = 1
+   if(blah)
+   {
+	   client_print(id, print_chat, "Serpent Ward disabled by wabbit for the time being.")
+	   return 1;
+   }
    if (!p_skills[id][SKILLIDX_SERPWARD]){
       client_print(id, print_chat, "You do not know the Serpant Ward ultimate yet")
       return PLUGIN_HANDLED
@@ -121,7 +127,7 @@ public lightpls(parm[6]){
       if ( (serpentteam[id] != get_user_team(targetid)) && is_user_alive(targetid) ){
 
          get_user_origin(targetid,targetorigin)
-         distancebetween=sqrt((origin[1]-targetorigin[1])*(origin[1]-targetorigin[1])+(origin[0]-targetorigin[0])*(origin[0]-targetorigin[0]))
+         distancebetween=sqroot((origin[1]-targetorigin[1])*(origin[1]-targetorigin[1])+(origin[0]-targetorigin[0])*(origin[0]-targetorigin[0]))
          if ((distancebetween < 85)){
 
             // [08-08-04] - Check if Magic Resistance protects against Ward - K2mia
@@ -204,7 +210,7 @@ public ability_wcrepair(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"This ability is disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
@@ -213,7 +219,7 @@ public ability_wcrepair(id){
    new friend, body
    get_user_aiming(id, friend, body)
 
-   if ((0 < friend <= MAX_PLAYERS) && (friend != id) && (get_user_team(id) == get_user_team(friend)) &&
+   if ((0 < friend <= g_MAXPLAYERS) && (friend != id) && (get_user_team(id) == get_user_team(friend)) &&
        is_user_alive(id) && is_user_alive(friend))
    {
       // id has a friend to check for armor repairs
@@ -325,7 +331,7 @@ public ability_wcmend(id){
       return PLUGIN_HANDLED
    }
 
-   if(u_delay){
+   if(u_delay[id]){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"This ability is disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
@@ -334,7 +340,7 @@ public ability_wcmend(id){
    new friend, body
    get_user_aiming(id, friend, body)
 
-   if ((0 < friend <= MAX_PLAYERS) && (friend != id) &&
+   if ((0 < friend <= g_MAXPLAYERS) && (friend != id) &&
        (get_user_team(id) == get_user_team(friend)) && is_user_alive(id) &&
         is_user_alive(friend))
    {
@@ -568,12 +574,12 @@ public draw_medicspr(){
    }
 
    set_task(5.0, "draw_medicspr", 357)
-      
+
    return PLUGIN_CONTINUE
-      
-}        
+
+}
 // **************************************************************************
-// END draw_medicspr  
+// END draw_medicspr
 // **************************************************************************
 
 // **************************************************************************

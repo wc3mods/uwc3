@@ -422,7 +422,7 @@ public set_skill(id, key){
       else if (j <= 32) copy(skillname, 31, skillset4[j-24])
       else if (j <= 40) copy(skillname, 31, skillset5[j-32])
 
-
+      #if defined DEBUG
       if (get_cvar_num("UW_DEBUG") == 5){
          new mapname[32]
          get_mapname(mapname,31)
@@ -431,6 +431,7 @@ public set_skill(id, key){
 
          log_amx( "DEBUG #4: In set_skill() Mapname=(%s) Player=(%s) skill_key=(%d)<%s> Level=(%d) #Skills=(%d), skillpts=(%d)", mapname, name, key, skillname, p_level[id], skillcount, skillpts )
       }
+      #endif
 
       // Prevent player from selecting new skills after dropping them - Marticus
       if (dropskill[id]) {
@@ -659,7 +660,7 @@ public drop_skill(id, page){
 
          if (get_cvar_num("UW_admin_mode"))
             format(sLevelText, 32, "[ Lvl %d ]", skill_minlev[idx])
-        else
+         else
             format(sLevelText, 32, "[Lvl %d required]", skill_minlev[idx])
 
          if (equali(skillname,"NOSKILL"))
@@ -680,10 +681,10 @@ public drop_skill(id, page){
 
    format(temp3, 32, "^n^n9. Next Page")
    add(message, 2048, temp3)
-      
+
    format(temp3, 32, "^n^n0. Exit")
    add(message, 2048, temp3)
-      
+
    show_menu(id, keys, message, -1)
 
    return PLUGIN_HANDLED
@@ -720,11 +721,11 @@ public unset_skill(id, key){
       }
 
       if ( get_availskillpts(id) && !dropskill[id]) {
-         
+
          // Player has no skill pts to drop
          client_print(id, print_chat, "[%s] You must first spend your available skill points", MOD)
          return PLUGIN_HANDLED
-      } 
+      }
 
       // Do not drop below 0 in index skill_idx
       if ( p_skills[id][skill_idx] == 0 ) {
@@ -915,6 +916,7 @@ public set_maxhealth(id, sethealth){
       set_user_health_log(id, maxhealth[id], true, "set_maxhealth()")
    }
 
+   #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 5 ){
       new name[32]
       get_user_name(id, name, 31)
@@ -922,6 +924,7 @@ public set_maxhealth(id, sethealth){
                name, maxhealth[id], p_skills[id][SKILLIDX_DEVOTION],
                p_attribs[id][ATTRIBIDX_STR] )
    }
+   #endif
 
    return PLUGIN_CONTINUE
 }
@@ -1021,7 +1024,7 @@ public check_tasks(id){
    new parm[2]
    parm[0]=id
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    if (p_skills[id][SKILLIDX_HEALWAVE]){
@@ -1081,10 +1084,12 @@ public check_serpwards(id){
       serpents[id] = p_serpent[p_skills[id][SKILLIDX_SERPWARD]-1]
       if (USE_ENH && (p_attribs[id][ATTRIBIDX_INT] >= INT_SERPENT_LEVEL)){
          serpents[id] += INT_SERPENT_BONUS
+         #if defined DEBUG
          if (get_cvar_num("UW_DEBUG") == 1){
             client_print(id, print_console,
                "[%s DEBUG] Intellect-SerpWard #=(%d)", MOD, serpents[id])
          }
+         #endif
       }
    }else{
       serpents[id] = 0
@@ -1533,7 +1538,7 @@ public unholyspeed(parm[1]){
    new id = parm[0]
    new Float:speed = 0.0
 
-   if ( !is_user_connected( id ) )
+   if ( !is_connected[ id ] )
       return PLUGIN_CONTINUE
 
    //client_print(id, print_console,

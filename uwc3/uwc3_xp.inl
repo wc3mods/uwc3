@@ -2,11 +2,11 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   XP 
+*** UWC3 Module:   XP
 *** Date:          May 25, 2004
 *** Last Update:   September 28, 2004
 *
-*  Module: XP 
+*  Module: XP
 *  Some general routines for configuring XP
 *----------------------------------------------------------------------------
 *
@@ -25,7 +25,7 @@
 ****************************************************************************/
 
 // **************************************************************************
-// BEGIN XP Subroutine Declarations 
+// BEGIN XP Subroutine Declarations
 // **************************************************************************
 
 
@@ -40,8 +40,6 @@ public set_xpfrontend(){
    }else{
       set_shorttermxp()
    }
-
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END set_xpfrontend subroutine
@@ -99,8 +97,6 @@ public set_shorttermxp(){
       resist_pt_cost =
          floatround(( xplevel_lev[5] / 10 ) * get_cvar_float("UW_resist_xpmodifier"))
    }
-
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END set_shorttermxp subroutine
@@ -167,15 +163,13 @@ public set_longtermxp(){
       }
 
       // Set the attribute and resistance pt costs (based on xplevel table)
-      attrib_pt_cost = 
+      attrib_pt_cost =
          floatround(( xplevel_lev[10] / 10 ) * get_cvar_float("UW_attrib_xpmodifier"))
-      resist_pt_cost = 
+      resist_pt_cost =
          floatround(( xplevel_lev[5] / 10 ) * get_cvar_float("UW_resist_xpmodifier"))
 
    }
-      
-   return PLUGIN_CONTINUE
-}     
+}
 // **************************************************************************
 // END set_longterm subroutine
 // **************************************************************************
@@ -187,8 +181,8 @@ public set_longtermxp(){
 // **************************************************************************
 public set_xpmultiplier(){
    if (!get_cvar_num("mp_weaponxpmodifier"))
-      return PLUGIN_CONTINUE
-      
+      return;
+
    weaponxpmultiplier[CSW_WORLD] = 0.0
    weaponxpmultiplier[CSW_USP] = 1.0
    weaponxpmultiplier[CSW_DEAGLE] = 1.0
@@ -205,7 +199,7 @@ public set_xpmultiplier(){
    weaponxpmultiplier[CSW_P90] = 1.25
    weaponxpmultiplier[CSW_TMP] = 1.5
    weaponxpmultiplier[CSW_MAC10] = 1.5
-            
+
    weaponxpmultiplier[CSW_AWP] = 1.0
    weaponxpmultiplier[CSW_M4A1] = 1.0
    weaponxpmultiplier[CSW_AK47] = 1.0
@@ -215,16 +209,14 @@ public set_xpmultiplier(){
    weaponxpmultiplier[CSW_SG550] = 1.5
    weaponxpmultiplier[CSW_M249] = 1.25
    weaponxpmultiplier[CSW_SCOUT] = 2.0
-            
+
    weaponxpmultiplier[CSW_HEGRENADE] = 1.0
    weaponxpmultiplier[CSW_KNIFE] = 2.0
-            
+
    weaponxpmultiplier[CSW_C4] = 1.0
    weaponxpmultiplier[CSW_SMOKEGRENADE] = 1.0
    weaponxpmultiplier[CSW_FLASHBANG] = 1.0
-            
-   return PLUGIN_CONTINUE
-}     
+}
 // **************************************************************************
 // END set_xpmultiplier subroutine
 // **************************************************************************
@@ -238,7 +230,7 @@ public xp_table(id){
 
    client_print(id, print_console, "UWC3 XP Table for this Server: ^n")
 
-   client_print(id, print_console, "Attrib Pt Cost: %d E-XP , Resist Pt Cost: %d E-XP ^n", 
+   client_print(id, print_console, "Attrib Pt Cost: %d E-XP , Resist Pt Cost: %d E-XP ^n",
       attrib_pt_cost, resist_pt_cost)
 
    for (new j=1; j<MAX_LEVEL; j++){
@@ -398,6 +390,6 @@ public amx_givexp(id, level ){
 
 
 // **************************************************************************
-// END XP Subroutine Declarations 
+// END XP Subroutine Declarations
 // **************************************************************************
 
