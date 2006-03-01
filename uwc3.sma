@@ -64,6 +64,11 @@
 *               ^^plan.los^^
 ****************************************************************************/
 
+/*
+	Compiled for amxx 1.60 by Geesu on 9/22/2005
+	- Renamed log_error to log_sql_error to avoid conflicts
+*/
+
 #include <amxmodx>
 #include <amxmisc>
 #include <engine>

@@ -180,7 +180,7 @@ public purge(id) {
 	set_task(TIMEBEFORESYNC, "sync_sql", TASKID_SYNCSQL)
 }
 
-log_error(Sql:sql) {
+log_sql_error(Sql:sql) {
 	new errormsg[512]
 	dbi_error(sql, errormsg, 511)
 	log_amx(errormsg)
@@ -223,7 +223,7 @@ public sync_sql() {
 			}
 			else if (result < RESULT_NONE) {
 				log_amx("Failed syncing someone's UWC3 xp to database:")
-				log_error(sql)
+				log_sql_error(sql)
 			}
 		}
 
@@ -236,7 +236,7 @@ public sync_sql() {
 				}
 				else if (result < RESULT_NONE) {
 					log_amx("Failed syncing someone's UWC3 skills %d to database:", j + 1)
-					log_error(sql)
+					log_sql_error(sql)
 				}
 			}
 		}
@@ -249,7 +249,7 @@ public sync_sql() {
 			}
 			else if (result < RESULT_NONE) {
 				log_amx("Failed syncing someone's UWC3 data to database:")
-				log_error(sql)
+				log_sql_error(sql)
 			}
 		}
 	}

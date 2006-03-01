@@ -313,7 +313,7 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
-new VER[12] = {"1.0.0-RC6j"}
+new VER[32] = {"1.6.0-unofficial"}
 new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS
