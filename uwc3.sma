@@ -1,4 +1,3 @@
-
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
@@ -63,8 +62,12 @@
 ****************************************************************************/
 
 /*
+
+	1.6.3
+	 - End of round bug
+
 	Following Updates by Geesu
-	
+
 	1.6.2-unofficial
 	 - Added STEAM_ID_PENDING bug fix (thanks Marticus)
 	 - moved VER variable to top of this file, sick of going to another file to update the version number
@@ -82,29 +85,29 @@
 
 #include <amxmodx>
 #include <amxmisc>
+#include <uwc3>
 #include <fakemeta>
 #include <engine>
 #include <cstrike>
 #include <fun>
 #include <dbi>
 
-new VER[32] = {"1.6.2-unofficial"}
-
-#include "uwc3/uwc3_defs.inc"		// Include the UWC3 #defines file
-#include "uwc3/uwc3_vars.inc"		// Include the UWC3 global variables file
-#include "uwc3/uwc3_ultimates.inc"	// Include the UWC3 ultimate subroutines file
-#include "uwc3/uwc3_abilities.inc"	// Include the UWC3 abilities subroutines file
-#include "uwc3/uwc3_enh.inc"		// Include the UWC3 enhancements subroutines file
-#include "uwc3/uwc3_utility.inc"	// Include the UWC3 utilities subroutines file
-#include "uwc3/uwc3_storage.inc"	// Include the UWC3 storage subroutines file
-#include "uwc3/uwc3_infohelp.inc"	// Include the UWC3 help/info subroutines file
-#include "uwc3/uwc3_dmgevents.inc"	// Include the UWC3 damage events subroutines file
-#include "uwc3/uwc3_mole.inc"		// Include the UWC3 mole subroutines file
-#include "uwc3/uwc3_respawn.inc"	// Include the UWC3 respawn subroutines file
-#include "uwc3/uwc3_items.inc"		// Include the UWC3 items subroutines file
-#include "uwc3/uwc3_skills.inc"		// Include the UWC3 skills subroutines file
-#include "uwc3/uwc3_xp.inc"			// Include the UWC3 xp subroutines file
-#include "uwc3/uwc3_events.inc"		// Include the UWC3 events subroutines file
+//#define DEBUG
+#include "uwc3/uwc3_vars.inl"		// Include the UWC3 global variables file
+#include "uwc3/uwc3_ultimates.inl"	// Include the UWC3 ultimate subroutines file
+#include "uwc3/uwc3_abilities.inl"	// Include the UWC3 abilities subroutines file
+#include "uwc3/uwc3_enh.inl"		// Include the UWC3 enhancements subroutines file
+#include "uwc3/uwc3_utility.inl"	// Include the UWC3 utilities subroutines file
+#include "uwc3/uwc3_storage.inl"	// Include the UWC3 storage subroutines file
+#include "uwc3/uwc3_infohelp.inl"	// Include the UWC3 help/info subroutines file
+#include "uwc3/uwc3_dmgevents.inl"	// Include the UWC3 damage events subroutines file
+#include "uwc3/uwc3_mole.inl"		// Include the UWC3 mole subroutines file
+#include "uwc3/uwc3_respawn.inl"	// Include the UWC3 respawn subroutines file
+#include "uwc3/uwc3_items.inl"		// Include the UWC3 items subroutines file
+#include "uwc3/uwc3_skills.inl"		// Include the UWC3 skills subroutines file
+#include "uwc3/uwc3_xp.inl"			// Include the UWC3 xp subroutines file
+#include "uwc3/uwc3_objectives.inl"
+#include "uwc3/uwc3_events.inl"		// Include the UWC3 events subroutines file
 
 #pragma dynamic 65536 		// Give the plugin some extra memory to use
 
@@ -156,10 +159,10 @@ public plugin_init(){
       "- Display the UWC3 Main Menu")
    register_clcmd( "help", "help_menu", -1,
       "- Displays the main help menu")
-   register_clcmd( "news", "show_news", -1,
-      "- Displays news about the Ultimate Warcraft3 plugin")
-   register_clcmd( "war3help", "war3_info", -1,
-      "- Displays help information for the UWC3 module")
+  // register_clcmd( "news", "show_news", -1,
+    //  "- Displays news about the Ultimate Warcraft3 plugin")
+   //register_clcmd( "war3help", "war3_info", -1,
+     // "- Displays help information for the UWC3 module")
    register_clcmd( "wc3start", "restart_round", ADMIN_MENU,
       "- Restarts the UWC3 mod fresh")
 
@@ -195,12 +198,10 @@ public plugin_init(){
    register_clcmd("/examine", "do_examine", -1,
       "-Allows a player to examine the health and armor of a teammate")
 
-   register_clcmd("toggle_lowres", "toggle_lowres", -1,
-      "-Toggle low-res mode on/off")
+   register_clcmd("toggle_lowres", "toggle_lowres", -1, "-Toggle low-res mode on/off")
+   register_clcmd("xp_table", "xp_table", -1, "-Displays the XP table")
 
-   register_clcmd("xp_table", "xp_table", -1,
-      "-Displays the XP table")
-
+#if defined DEBUG
    // ******************** TEST COMMANDS *******************
    register_clcmd("admin_loadxp", "get_xp_id", ADMIN_MENU,
       "-Debug cmd for testing load data from vault routine")
@@ -208,9 +209,9 @@ public plugin_init(){
       "-Dumps some debug info to the admin")
    register_clcmd("debuginfo", "debug_info", ADMIN_MENU,
       "-Dumps some debug info to the admin")
-   register_clcmd("loc", "admin_loc", ADMIN_MENU,
-      "-Displays your coordinate location")
+
    // ****************** END TEST COMMANDS ******************
+#endif
 
    register_clcmd("changerace", "change_race", -1, "-Display UWC3 info")
    register_clcmd("/changerace", "change_race", -1, "-Display UWC3 info")
@@ -248,19 +249,15 @@ public plugin_init(){
       "-Decoy Ultimate Skill, spawns a decoy to briefly fool your enemies")
    register_clcmd("wcgate", "ultimate_wcgate", -1,
       "-Gate Ultimate Skill, Opens a gateway back to your spawn")
-
    register_clcmd("wcward", "ability_wcward", -1, "-Serpant Ward Ultimate Skill")
    register_clcmd("wcrepair", "ability_wcrepair", -1,
       "-Special Ability: Repair Armor (aim at teammate and trigger the wcrepair cmd)")
    register_clcmd("wcmend", "ability_wcmend", -1,
       "-Special Ability: Mend Wounds (aim at teammate and trigger the wcmend command)")
 
-
    // Console command entries follow
    register_concmd("amx_givexp", "amx_givexp", -1,"-Console command used to give XP")
    register_concmd("amx_givemole", "amx_givemole", -1, "-Admin make a mole command")
-   register_concmd("playerskills", "player_skills", -1, "-Displays the players rank and skills")
-
 
    // Menu related entries follow
    register_menucmd(register_menuid("\yUWC3: Main Menu"), 1023, "do_wc3menu")
@@ -287,30 +284,68 @@ public plugin_init(){
    // Event related entries follow
    register_event("TextMsg", "game_commencing", "a", "2&#Game_C")
    register_event("TextMsg", "restart_round", "a", "2&#Game_will_restart_in")
-   register_event("TextMsg", "Target_Bombed", "a", "2&#Target_Bombed")
    register_event("TextMsg", "setSpecMode", "bd", "2&ec_Mod")
    register_event("StatusValue", "setTeam", "be", "1=1")
    register_event("StatusValue", "showStatus", "be", "1=2", "2!0")
    register_event("StatusValue", "hideStatus", "be", "1=1", "2=0")
    register_event("StatusValue", "showRank", "bd", "1=2")
    register_event("StatusIcon", "BuyZone", "be", "2=buyzone")
-   register_event("StatusIcon", "got_defuse", "be", "1=1", "1=2", "2=defuser")
-   register_event("ResetHUD", "new_round", "b")
-   register_event("SetFOV", "zoomed2", "be", "1<90")
-   register_event("SetFOV", "unzoomed", "be", "1=90")
    register_event("Damage", "damage_event", "b", "2!0")
    register_event("DeathMsg", "death", "a")
-   register_event("SendAudio", "T_win", "a", "2=%!MRAD_terwin")
-   register_event("SendAudio", "CT_win", "a", "2=%!MRAD_ctwin")
-   register_event("SendAudio","nade_thrown","bc","2=%!MRAD_FIREINHOLE")
+   register_event("SendAudio", "nade_thrown", "bc", "2=%!MRAD_FIREINHOLE")
    register_event("WeapPickup", "check_weap", "b")
    register_event("CurWeapon", "change_weapon", "be", "1=1")
    register_event("ArmorType", "armor_type", "be")
 
-   // Log events: Requires AMX 0.9.3 or better
-   register_logevent("event_player_action", 3, "1=triggered")
-   register_logevent("freezetimedone", 2, "0=World triggered", "1=Round_Start")
-   register_logevent("end_round", 2, "0=World triggered", "1=Round_End")
+   register_event("ResetHUD", "new_round", "b")
+   register_logevent("freezetimedone", 2, "0=World triggered", "1=Round_Start") // Need to replace
+   register_event("SendAudio", "end_round", "a", "2&%!MRAD_terwin", "2&%!MRAD_ctwin", "2&%!MRAD_rounddraw")
+
+   register_event("HLTV", "start_round", "a", "1=0", "2=0")
+
+   new map[5]; new objective;
+   //objective = 0 //no objectives
+   //objective = 1 //as maps
+   //objective = 2 //cs maps
+   //objective = 3 //de maps
+   //objective = 4 //csde maps
+
+   get_mapname(map, 4)
+
+   if(equal(map, "as", 2)) // Not ready yet
+      objective = 1
+   else if(equal(map, "cs", 2)) // Not ready yet
+      objective = 2
+   else if(equal(map, "de", 2))
+      objective = 3
+   else
+      objective = 0
+
+   if(equal(map, "csde", 4))
+      objective = 4
+
+      /* Objective event related entries follow. Only register the event if needed.*/
+   if(objective == 3 || objective == 4) // de and csde maps
+   {
+      register_event("TextMsg", "Target_Bombed", "a", "2&#Target_Bombed") /* Bomb has exploded */
+      register_event("StatusIcon", "got_defuse", "be", "1=1", "1=2", "2=defuser") /* Player has gotten defuser */
+      register_event("SendAudio", "bomb_event", "b", "2=%!MRAD_BOMBPL", "2=%!MRAD_BOMBDEF"); // Bomb has been defused or planted
+      register_event("BombDrop", "bomb_drop", "b") /* Bomb has been droped */
+      register_event("BombPickup", "bomb_pickup", "b") /* Bomb has been picked up */
+      register_event("BarTime", "bartime", "b") // Player is defusing with or without kit.
+   }
+
+   /* remove objective == 1 when figure out better way for vip detection */
+   if(objective == 1 ||objective == 2 || objective == 4) // cs hostages
+   {
+	   // Log events: Requires AMX 0.9.3 or better
+	   register_logevent("event_player_action", 3, "1=triggered")
+   }
+
+   //if(objective == 1) // as maps
+   //{
+	   // Need to add vip stuff
+   //}
 
    register_cvar("amx_uwc3", VER, FCVAR_SERVER)
    register_cvar("FT_objectives", "1")
@@ -400,8 +435,10 @@ public plugin_init(){
    register_cvar("UW_max_resistvalue","100")
    register_cvar("UW_max_attribpts","40")
    register_cvar("UW_max_resistpts","500")
+   #if defined DEBUG
    register_cvar("UW_DEBUG","0")
    register_cvar("UW_DEBUG_code","0")
+   #endif
    register_cvar("UW_round_check","1")
    register_cvar("UW_admin_mode","0")
    register_cvar("UW_admin_flag","1048576")
@@ -439,8 +476,8 @@ public plugin_init(){
 
 
    // set_task calls for functions needed by init or to run continuously
-   set_task(10.0, "check_war3",456,"",0,"b")
-   set_task(1.0, "check_war3",457)
+   set_task(10.0, "check_war3", 456, "", 0, "b") // Change This to a uwc3_enable/uwc3_disable
+   set_task(1.0, "check_war3", 457)
    set_task(3.0, "set_xpfrontend", 458)
    set_task(0.6, "set_variables", 822)
    // check_duck used by decoy ultimate
@@ -449,10 +486,9 @@ public plugin_init(){
    set_xpmultiplier()	// Set weapon xp modifiers
    set_skill_limits()	// Set skills-based tables (skill levels, effects, etc)
 
-   new basedir[64]
    new cfgfile[64]
-   get_customdir(basedir, 63)
-   format(cfgfile, 63, "%s/UWC3/UWC3.cfg", basedir)
+   get_customdir(cfgfile, 63)
+   format(cfgfile, 63, "%s/UWC3/UWC3.cfg", cfgfile)
 
    if (file_exists(cfgfile)){
       log_amx("UWC3 Startup :: Loading Configuration File [ UWC3.cfg ]...")
@@ -463,7 +499,6 @@ public plugin_init(){
    }
 
    set_task(0.6, "check_sql", 823)
-
 
 }
 // **************************************************************************
@@ -502,8 +537,6 @@ public plugin_precache() {
    spikes = precache_model("sprites/spikes1.spr")
    thorns = precache_model("sprites/thorns2.spr")
 
-   if (file_exists("models/player/zombie/zombie.mdl"))
-      precache_model("models/player/zombie/zombie.mdl")
    if (file_exists("models/roots2.mdl"))
       precache_model("models/roots2.mdl")
 
@@ -576,22 +609,6 @@ public plugin_precache() {
 
    if (file_exists("sound/warcraft3/pickupitem.wav"))
       precache_sound("warcraft3/pickupitem.wav")
-
-   // Precache std CS player models for use with decoy ability
-   precache_model("models/player/leet/leet.mdl")
-   precache_model("models/player/arctic/arctic.mdl")
-   precache_model("models/player/guerilla/guerilla.mdl")
-   precache_model("models/player/terror/terror.mdl")
-
-   precache_model("models/player/gign/gign.mdl")
-   precache_model("models/player/sas/sas.mdl")
-   precache_model("models/player/gsg9/gsg9.mdl")
-   precache_model("models/player/urban/urban.mdl")
-
-   precache_model("models/player/vip/vip.mdl")
-   precache_model("models/guerilla.mdl")
-
-   return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END plugin_precache subroutine
@@ -603,7 +620,7 @@ public plugin_precache() {
 // Setup variables and use cvar data where applicable
 // **************************************************************************
 public set_variables(){
-   MOD = "UWC3"
+   //MOD = "UWC3"
    BOMBPLANTXP = get_cvar_num("FT_bombplanterxp")
    DEFUSEXP = get_cvar_num("FT_defusexp")
    HOSTAGEXP = get_cvar_num("FT_hostagexp")
@@ -769,7 +786,7 @@ public client_authorized(id)
 {
 	new auth[32];
 	get_user_authid( id, auth, 31 );
-	
+
 	// Then the player doesn't have a steam id, lets make them reconnect
 	if ( equal(auth, "STEAM_ID_PENDING") )
 	{
@@ -780,23 +797,32 @@ public client_authorized(id)
 	{
 		xpreadytoload[id] = 1;
 	}
-
-	return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END client_authorized subroutine
-// ************************************************************************** 
+// **************************************************************************
+
+public client_putinserver(id)
+{
+	if(is_user_bot(id))
+		is_bot[id] = true
+
+	is_connected[id] = true
+
+	client_cmd(id, "hud_centerid 0")
+}
 
 // **************************************************************************
 // BEGIN client_connect subroutine
 // A new client has connected
 // **************************************************************************
-public client_connect(id){
-   client_cmd(id, "hud_centerid 0")
+public client_connect(id)
+{
    g_specMode[id] = false
 
    init_pdata( id, 0 )	// Initialize player data (NOT limited init mode)
 
+   #if defined DEBUG
    if (get_cvar_num("UW_DEBUG_code")){
       // Server set to start w/ XP and max. attribs/resists
       playerxp[id] = DEBUG_STARTXP
@@ -807,12 +833,13 @@ public client_connect(id){
       for (new j=0; j<MAX_RESISTS; j++)
          p_resists[id][j] = RESIST_MAX_VALUE
    }
+   #endif
 
 /* Removed to support fix players losing xp to
       STEAM_ID_PENDING -Marticus 11/15/05
    if (get_cvar_num("mp_savexp"))
       xpreadytoload[id] = 1
-    */ 
+
 
    client_cmd(id, "echo ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
@@ -823,7 +850,7 @@ public client_connect(id){
    client_cmd(id, "echo ^" *=-=                steve french (graphics) ^" ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
    client_cmd(id, "echo ")
-
+*/
 
    return PLUGIN_CONTINUE
 }
@@ -837,6 +864,7 @@ public client_connect(id){
 // A client has disconnected
 // **************************************************************************
 public client_disconnect(id){
+   is_connected[id] = false
    g_specMode[id] = false	// Reset spectator status for player
    isburning[id] = 0		// Reset burning status for player (flamethrower)
    isnburning[id] = 0		// Reset burning status for player (napalm burn)
@@ -866,7 +894,7 @@ public client_disconnect(id){
    if (playerxp[id] < 100)
       return PLUGIN_CONTINUE
 
-   if (get_cvar_num("mp_savexp") && !is_user_bot(id) && playerxp[id]){
+   if (get_cvar_num("mp_savexp") && !is_bot[id] && playerxp[id]){
       if (get_cvar_num("mp_sql")) {
          sqlwrite_xp_id(id)
          purge(id)
@@ -875,7 +903,7 @@ public client_disconnect(id){
          write_xp_id(id)
       xpreadytoload[id] = 0
    }
-
+   is_bot[id] = false
    return PLUGIN_CONTINUE
 }
 // **************************************************************************
@@ -887,12 +915,13 @@ public client_disconnect(id){
 // BEGIN client_prethink subroutine
 // Prethink routines
 // **************************************************************************
+/*
 public client_PreThink(id) {
 
-   if ( is_user_connected( id ) )
+   if(is_connected[id])
       entity_set_float(id, EV_FL_fuser2, 0.0)  // Disable slow down after jumping
 
-}
+}*/
 // **************************************************************************
 // END client_prethink subroutine
 // **************************************************************************
@@ -927,3 +956,20 @@ public plugin_end() {
 // END Ultimate WC3FT Plugin
 // **************************************************************************
 
+public plugin_natives()
+{
+	register_native("no_weap", "native_no_weap")
+	register_native("set_changeskin", "native_set_changeskin")
+	register_library("uwc3")
+}
+
+public native_set_changeskin(id, num)
+{
+	new index = get_param(1);
+	new setting = get_param(2);
+
+	if(index < 1 || index > g_MAXPLAYERS)
+		return;
+
+	skinchanged[index] = setting ? true : false
+}
