@@ -2,12 +2,12 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Event Handlers 
+*** UWC3 Module:   Event Handlers
 *** Date:          May 25, 2004
 *** Last Update:   September 28, 2004
 *
-*  Module: Event Handlers 
-*  Subroutines for handling events not handled in more specific modules 
+*  Module: Event Handlers
+*  Subroutines for handling events not handled in more specific modules
 *----------------------------------------------------------------------------
 *
 *  UWC3 is written exclusively for AMX Mod X
@@ -136,7 +136,7 @@ public new_round(id){
       new pname[32]
       get_user_name(id, pname, 31)
 
-      new skillcount = get_skillcount( id ) 
+      new skillcount = get_skillcount( id )
       new acount = get_attribcount( id )
       new rcount = get_resistcount( id )
 
@@ -170,7 +170,7 @@ public new_round(id){
       new pname[32]
       get_user_name(id, pname, 31)
 
-      new skillcount = get_skillcount( id ) 
+      new skillcount = get_skillcount( id )
 
       if ( skillcount > p_level[id] ){
          client_print(id, print_chat,
@@ -343,13 +343,13 @@ public new_round(id){
       set_user_maxspeed(id, 1.0)
 
       if ( playeritem2[id]==HELM)
-         set_user_hitzones(0,id,253)
+		  bImmuneHeadshots[id] = true;
    }
 
    set_task(0.1, "weapon_controller", 10091, parm, 2) // Weapon Reincarnation
 
    init_pdata( id, 1 )		// Perform a Limited init of player data
-   
+
    endround = false		// New round, reset endround state
    hostagesaver = 0		// Reset hostagesaver state
 
@@ -390,6 +390,10 @@ public new_round(id){
 
          displaylevel(id, 3)
       }
+      // Reset dropskill for id to allow for selecting new skills - Marticus 
+      if (dropskill[id])
+         dropskill[id]=false
+
    }
 
    vengeance_used[id] = 0
@@ -506,8 +510,11 @@ public end_round(){
    pheonixexistsT=0
    pheonixexistsCT=0
 
-   if (get_cvar_num("mp_savexp"))
-      write_all()
+   g_roundCounter++
+   if (g_roundCounter % SAVEFREQUENCY == 0 && get_cvar_num("mp_savexp")) {
+      set_task(2.5, "write_all")
+      client_print(0, print_console, "write_all (%s)^n", get_cvar_num("usenewway") ? "new" : "old")
+   }
 
    return PLUGIN_CONTINUE
 }
@@ -995,14 +1002,14 @@ public event_player_action(){
             client_print(id,print_chat, "[%s] %s recieved %d XP for being so important.",
                MOD,sName,temp)
          }
-      
+
          displaylevel(id, 1)
       }
    }else if (equal(sAction,"Assassinated_The_VIP")) {
       // VIP assassinated
       new sNameVIP[MAX_NAME_LENGTH]
       get_user_name( vipID,sNameVIP,MAX_NAME_LENGTH)
-         
+
       if(get_cvar_num("FT_VIP_kill_bonus")){
          if (get_cvar_num("FT_objectives")){
             temp = VIP_KILL_BONUS + xpgiven_lev[p_level[id]]
@@ -1010,9 +1017,9 @@ public event_player_action(){
             client_print(id,print_chat, "[%s] %s gained %d XP for assinating %s the VIP.",
                MOD,sName,sNameVIP)
          }
-         
+
          displaylevel(id, 1)
-      }  
+      }
    }else if (equal(sAction,"Escaped_As_VIP")) {
       // VIP escaped
       new origin[3]
@@ -1021,26 +1028,26 @@ public event_player_action(){
       new numplayers
       new targetorigin[3]
       new targetid
-               
+
       get_user_origin(id, origin)
       get_user_team(id, teamname, 31)
       get_players(player, numplayers)
-         
+
       new nName[31]
       if (get_cvar_num("FT_objectives")){
-         temp = xpgiven_lev[p_level[id]]         
+         temp = xpgiven_lev[p_level[id]]
          playerxp[id]+=  temp
          client_print(id,print_chat, "[%s] %s gained %d XP for evading assasination.",
             MOD,sName,temp)
-      }     
+      }
 
-      for (new i=0; i<numplayers; ++i){ 
+      for (new i=0; i<numplayers; ++i){
          targetid=player[i]
-         
+
          if (get_user_team(targetid) != TEAM_CT) continue
-         
+
          get_user_origin(targetid, targetorigin)
-   
+
          // [09-27-04] Added check for alive status of player - K2mia
          if ( is_user_alive(targetid) &&
               (get_distance(origin, targetorigin)<=get_cvar_num("FT_xp_radius")) &&

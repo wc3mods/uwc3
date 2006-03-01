@@ -378,14 +378,14 @@ public select_skill(id, page){
       }
 
       add(message, 2048, temp2)
-   } 
+   }
 
    format(temp3, 32, "^n^n9. Next Page")
    add(message, 2048, temp3)
-      
+
    format(temp3, 32, "^n^n0. Exit")
    add(message, 2048, temp3)
-      
+
    show_menu(id, keys, message, -1)
 
    return PLUGIN_HANDLED
@@ -432,6 +432,11 @@ public set_skill(id, key){
          log_amx( "DEBUG #4: In set_skill() Mapname=(%s) Player=(%s) skill_key=(%d)<%s> Level=(%d) #Skills=(%d), skillpts=(%d)", mapname, name, key, skillname, p_level[id], skillcount, skillpts )
       }
 
+      // Prevent player from selecting new skills after dropping them - Marticus
+      if (dropskill[id]) {
+         client_print(id, print_chat, "[%s] You must wait one round to select new skills after dropping them", MOD)
+         return PLUGIN_HANDLED
+      }
 
       // One of the skills was selected, check applicability
       if ( skillpts <= 0 ){
@@ -598,20 +603,178 @@ public set_skill(id, key){
       // Set global skills page variable
       nSkillsPage[id] = (nSkillsPage[id] < MAX_SKILL_PAGES) ? nSkillsPage[id] + 1 : 1
       select_skill(id, nSkillsPage[id])
-      return PLUGIN_HANDLED 
-   }     
-            
-   return PLUGIN_HANDLED 
-         
-}     
+      return PLUGIN_HANDLED
+   }
+
+   return PLUGIN_HANDLED
+
+}
 // **************************************************************************
 // END set_skill subroutine
 // **************************************************************************
 
+// **************************************************************************
+// BEGIN drop_skill subroutine
+// Skill drop menu - Marticus 2005-06-24
+// **************************************************************************
+public drop_skill(id, page){
+   if (!warcraft3)
+      return PLUGIN_CONTINUE
+
+   new skillname[32] = ""
+   new keys = (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9)
+   new message[2048] = ""
+   new temp2[256] = ""
+   new temp3[32] = ""
+
+   page = (page > 0) ? page : 1
+   nSkillsPage[id] = page
+
+   format(temp2, 256,"\yDrop Skill: (pg-%d)\w^n", page)
+   add(message, 2048, temp2)
+
+   new startidx = ((page-1) * SKILLS_PER_SET) + 1
+   new endidx = startidx + (SKILLS_PER_SET - 1)
+
+   for (new i=startidx; i <= endidx; i++){
+      new vis_i = (i - startidx) + 1
+      new j = sortedskills[i]
+      new idx = j
+
+      new sLevelText[32] = ""
+      new admstr[32] = ""
+
+      if (skill_minlev[j] == 0) continue
+
+      if (j <= 8) copy(skillname, 31, skillset1[j])
+      else if (j <= 16) copy(skillname, 31, skillset2[j-8])
+      else if (j <= 24) copy(skillname, 31, skillset3[j-16])
+      else if (j <= 32) copy(skillname, 31, skillset4[j-24])
+      else if (j <= 40) copy(skillname, 31, skillset5[j-32])
+
+      if ( p_level[id] < skill_minlev[idx] ){
+         // Blank out option of level not high enough to train
+         format(temp3, 32, "\d")
+         add(message, 2048, temp3)
+
+         if (get_cvar_num("UW_admin_mode"))
+            format(sLevelText, 32, "[ Lvl %d ]", skill_minlev[idx])
+        else
+            format(sLevelText, 32, "[Lvl %d required]", skill_minlev[idx])
+
+         if (equali(skillname,"NOSKILL"))
+            copy(skillname, 31, "coming soon")
+
+         format(temp2, 256, "\d^n%d. %s %s %s   %s\w",
+            vis_i, admstr, skillname, " - ", sLevelText)
+      }else if (equali(skillname,"NOSKILL")){
+         // Special Case - skill not ready yet
+         format(temp2, 256, "^n%d. skill being developed \w", vis_i)
+      }else{
+         format(temp2, 256, "^n%d. %s %s %s %d/%d  %s\w", vis_i, admstr, skillname,
+            " - ", p_skills[id][idx], skill_limits[idx], sLevelText)
+      }
+
+      add(message, 2048, temp2)
+   }
+
+   format(temp3, 32, "^n^n9. Next Page")
+   add(message, 2048, temp3)
+      
+   format(temp3, 32, "^n^n0. Exit")
+   add(message, 2048, temp3)
+      
+   show_menu(id, keys, message, -1)
+
+   return PLUGIN_HANDLED
+}
+// **************************************************************************
+// END drop_skill subroutine
+// **************************************************************************
+
+
+// **************************************************************************
+// BEGIN unset_skill subroutine
+// Drop a specific skill for a player
+// **************************************************************************
+public unset_skill(id, key){
+
+   new skillname[32]
+
+   if ( (key >= 0) && (key <= 7) ){
+      // Player chose one of the skill dropping keys
+      new sorted_idx = ((nSkillsPage[id]-1) * SKILLS_PER_SET) + key + 1
+      new skill_idx = sortedskills[sorted_idx]
+      new j = skill_idx
+
+      if (j <= 8) copy(skillname, 31, skillset1[j])
+      else if (j <= 16) copy(skillname, 31, skillset2[j-8])
+      else if (j <= 24) copy(skillname, 31, skillset3[j-16])
+      else if (j <= 32) copy(skillname, 31, skillset4[j-24])
+      else if (j <= 40) copy(skillname, 31, skillset5[j-32])
+
+      if (!get_skillcount(id)){
+         // Player has no skill pts to drop
+         client_print(id, print_chat, "[%s] You have no skill points to drop", MOD)
+         return PLUGIN_HANDLED
+      }
+
+      if ( get_availskillpts(id) && !dropskill[id]) {
+         
+         // Player has no skill pts to drop
+         client_print(id, print_chat, "[%s] You must first spend your available skill points", MOD)
+         return PLUGIN_HANDLED
+      } 
+
+      // Do not drop below 0 in index skill_idx
+      if ( p_skills[id][skill_idx] == 0 ) {
+         client_print(id, print_chat, "[%s] You have no points in %s",
+            MOD, skillname)
+         return PLUGIN_HANDLED
+      } else {
+
+         // Prevent skill points from being reselected this round
+         dropskill[id]=true
+
+         // Decrease the player's skill level in the skill at index skill_idx
+         p_skills[id][skill_idx] -= 1
+
+         if ( get_cvar_num("mp_sql") && !get_cvar_num("mp_sql_saveoncmdonly") )
+            sqlwrite_skills_id( id, skill_idx, 1)
+         else
+            write_skills_id( id, 1 )
+
+         if ( p_skills[id][skill_idx] == 0 )
+            client_print(id, print_chat, "[%s] You are no longer trained in %s",
+               MOD, skillname)
+	 else
+            client_print(id, print_chat, "[%s] You have decreased your knowledge of %s", MOD, skillname)
+
+         if (get_skillcount(id)){
+            // Player still has skillpts to drop, return to skill menu
+            drop_skill(id, nSkillsPage[id])
+            return PLUGIN_HANDLED
+         }
+      }
+   }
+
+   if (key == 8){
+      // Set global skills page variable
+      nSkillsPage[id] = (nSkillsPage[id] < MAX_SKILL_PAGES) ? nSkillsPage[id] + 1 : 1
+      drop_skill(id, nSkillsPage[id])
+      return PLUGIN_HANDLED
+   }
+
+   return PLUGIN_HANDLED
+
+}
+// **************************************************************************
+// END unset_skill subroutine
+// **************************************************************************
 
 // **************************************************************************
 // BEGIN get_skillcount subroutine
-// Count the number of skill pts a player has 
+// Count the number of skill pts a player has
 // **************************************************************************
 public get_skillcount(id){
 
@@ -648,25 +811,25 @@ public get_availskillpts(id){
 
 // **************************************************************************
 // BEGIN resetskills subroutine
-// Sets a flag to reset all skill values to 0 
+// Sets a flag to reset all skill values to 0
 // **************************************************************************
 public resetskills(id){
    if (!warcraft3)
      return PLUGIN_CONTINUE
-         
+
    if (get_cvar_num("FT_reset_skills")){
       client_print(id, print_center, "Your skills will be reset next round")
       resetskill[id] = true
    }else{
       client_print(id, print_center, "This server has disabled that option")
       resetskill[id] = false
-   }  
-         
+   }
+
    return PLUGIN_HANDLED
 }
 // **************************************************************************
 // END resetskills subroutine
-// **************************************************************************  
+// **************************************************************************
 
 
 // **************************************************************************
@@ -755,9 +918,9 @@ public set_maxhealth(id, sethealth){
    if ( get_cvar_num("UW_DEBUG") == 5 ){
       new name[32]
       get_user_name(id, name, 31)
-      log_amx( "In set_maxhealth() :: [%s} maxhealth=(%d) devotion=(%d) str=(%d)", 
-               name, maxhealth[id], p_skills[id][SKILLIDX_DEVOTION], 
-               p_attribs[id][ATTRIBIDX_STR] ) 
+      log_amx( "In set_maxhealth() :: [%s} maxhealth=(%d) devotion=(%d) str=(%d)",
+               name, maxhealth[id], p_skills[id][SKILLIDX_DEVOTION],
+               p_attribs[id][ATTRIBIDX_STR] )
    }
 
    return PLUGIN_CONTINUE
@@ -944,14 +1107,14 @@ public phoenix_count(id){
       // Pheonix
       new Float:randomnumber = random_float(0.0,1.0)
       new teamnumber = get_user_team(id)
-      
+
       if (randomnumber <= p_phoenix[p_skills[id][SKILLIDX_PHOENIX]-1]){
          phoenix[id]=true
          if (teamnumber == 1)
             pheonixexistsT++
          else if (teamnumber == 2)
             pheonixexistsCT++
-      }  
+      }
    }
 
    return PLUGIN_CONTINUE
@@ -972,25 +1135,25 @@ public check_skills(id, sethealth){
 
    set_maxhealth( id, sethealth )	// Set user id's maxhealth[] for the round
    check_conregen( id )	 		// Check if constitution regen should be started
-   check_skinbonus( id )		// Set user id's maxarmor[] for the round 
+   check_skinbonus( id )		// Set user id's maxarmor[] for the round
    check_blink( id )	 		// Check if user id gets blink active this round
    check_tasks (id )	 		// Check for task cleanup/restarts
    check_serpwards( id ) 		// Give serpant wards if necessary
    phoenix_count( id )	 		// Count phoenixes for each team
-   
-      
+
+
    if (p_skills[id][SKILLIDX_GATE]){
       // Gate Ultimate, determine number of gates this round by level
       if (p_level[id] >= 30) numgates[id] = 3
       else if (p_level[id] >= 20) numgates[id] = 2
       else numgates[id] = 1
    }
-   
+
    icon_controller(id,ICON_SHOW)
-      
+
    return PLUGIN_CONTINUE
-         
-}        
+
+}
 // **************************************************************************
 // END check_skills subroutine
 // **************************************************************************
@@ -1074,7 +1237,7 @@ public skills_info(id, tier){
          case SKILLIDX_SERPWARD:
             pos+= format(temp[pos],2048-pos,"<li>Serpent Ward (Special Ability): You receive (%d, %d or %d) serpent wards each round that damage nearby enemy units ( bind a key to wcward to plant one)<p>",p_serpent[0],p_serpent[1],p_serpent[2] )
          case SKILLIDX_THORNS:
-            pos+= format(temp[pos],2048-pos,"<li>Thorns Aura: Does (10%% to 37%%) mirror damage to the person who shot you<p>" ) 
+            pos+= format(temp[pos],2048-pos,"<li>Thorns Aura: Does (10%% to 37%%) mirror damage to the person who shot you<p>" )
          case SKILLIDX_INVIS:
             pos+= format(temp[pos],2048-pos,"<li>Invisibility: Makes you partially invisible, you will be harder to see<p>" )
          case SKILLIDX_TELEPORT:
@@ -1086,13 +1249,13 @@ public skills_info(id, tier){
          case SKILLIDX_VENGEANCE:
             pos+= format(temp[pos],2048-pos,"<li>Vengeance (Ultimate Ability): Respawn once with 50 health<p>" )
          case SKILLIDX_LOCUST:
-            pos+= format(temp[pos],2048-pos,"<li>Locust Swarm (Ultimate Ability): A Swarm of Green Locusts attacks the enemy<p>") 
+            pos+= format(temp[pos],2048-pos,"<li>Locust Swarm (Ultimate Ability): A Swarm of Green Locusts attacks the enemy<p>")
          case SKILLIDX_BLINK:
-            pos+= format(temp[pos],2048-pos,"<li>Blink: Chance to disables ALL enemy ultimates (20%% to 100%%)<p>" ) 
+            pos+= format(temp[pos],2048-pos,"<li>Blink: Chance to disables ALL enemy ultimates (20%% to 100%%)<p>" )
          case SKILLIDX_PHOENIX:
             pos+= format(temp[pos],2048-pos,"<li>Phoenix: You have a (20%% to 100%%) chance of reviving the first teammate who dies<p>" )
          case SKILLIDX_NAPALM:
-            pos+= format(temp[pos],2048-pos,"<li>Napalm Grenades: Each round your first he grenade will coat your enemies with napalm, anyone they touch will spread the napalm<p>" )        
+            pos+= format(temp[pos],2048-pos,"<li>Napalm Grenades: Each round your first he grenade will coat your enemies with napalm, anyone they touch will spread the napalm<p>" )
          case SKILLIDX_SUICIDE:
             pos+= format(temp[pos],2048-pos,"<li>Suicide Bomber (Ultimate Ability): When you die you will explode killing nearby enemies and regenerate<p>")
          case SKILLIDX_LIGHTNING:
@@ -1102,17 +1265,17 @@ public skills_info(id, tier){
          case SKILLIDX_GATE:
             pos+= format(temp[pos],2048-pos,"<li>Gate (Ultimate Ability): Opens a Gateway for you to be teleported back to your spawn point and away from danger (hopefully)<p>")
       }
-   }     
-            
-   pos+= format(temp[pos],2048-pos,"</ol><p>" ) 
-         
+   }
+
+   pos+= format(temp[pos],2048-pos,"</ol><p>" )
+
    //add(message,2047,temp)
 
    show_motd( id, temp,"Skills Information")
-            
+
    return PLUGIN_HANDLED
 
-}        
+}
 // **************************************************************************
 // END skills_info subroutine
 // **************************************************************************
@@ -1149,7 +1312,7 @@ public dolskin(parm[2]){
       // Leather skin armor regen here
       //set_user_armor(id, get_user_armor(id) + 2)
       set_user_armor_log(id, (get_user_armor(id) + 2) , true, "dolskin()-1")
-      if (get_user_armor(id) > atotal) 
+      if (get_user_armor(id) > atotal)
          set_user_armor_log(id, atotal , true, "dolskin()-2")
          //set_user_armor(id, atotal)
    }
@@ -1178,18 +1341,18 @@ public dolskin(parm[2]){
 
 // **************************************************************************
 // BEGIN healingitnow healingnext and healingeffect subroutines
-// Handles Healing Wave effects       
+// Handles Healing Wave effects
 // **************************************************************************
 public healitnow(parm[2]){
    new id = parm[0]
-         
+
    if (!endround && is_user_alive(id) && p_skills[id][SKILLIDX_HEALWAVE])
       set_task(p_heal[p_skills[id][SKILLIDX_HEALWAVE]-1],"healitnow",id+90,parm,2)
    healingnext(parm)
-   
+
    return PLUGIN_CONTINUE
-}  
-   
+}
+
 public healingnext(parm[2]){
    // Healing Wave
    new id=parm[0]
@@ -1209,16 +1372,16 @@ public healingnext(parm[2]){
    new closestid = 0
    for (i = 0; i < numberofplayers; ++i){
       targetid=players[i]
-      
+
       if ( get_user_team(id) != get_user_team(targetid) ) continue
-      
+
       if (get_user_team(id)==get_user_team(targetid) && is_user_alive(targetid)){
          get_user_origin(targetid,targetorigin)
          distancebetween=get_distance(origin,targetorigin)
          if (distancebetween < get_cvar_num("FT_healing_range") &&!healinghit[targetid])
             closestid = targetid
       }
-   }  
+   }
 
    if (closestid){
       healingeffect(id,closestid,heal)
@@ -1289,15 +1452,15 @@ public healingeffect(id,targetid,heal){
 // BEGIN jumper subroutine
 // Set the goomba jumping
 // **************************************************************************
-public jumper(parm[2]){ 
+public jumper(parm[2]){
    new id = parm[0]
    client_cmd(id,"+jump;wait;-jump")
-   parm[1]++     
+   parm[1]++
    if(!endround && is_user_alive(id))
       set_task(3.0, "jumper", 2000+id, parm, 1)
-            
+
    return PLUGIN_CONTINUE
-}           
+}
 // **************************************************************************
 // END jumper subroutine
 // **************************************************************************
@@ -1305,7 +1468,7 @@ public jumper(parm[2]){
 
 // **************************************************************************
 // BEGIN walker subroutine
-// Legacy routine from War3FT, no longer footstep related code 
+// Legacy routine from War3FT, no longer footstep related code
 // **************************************************************************
 public walker(parm[2]){
    new id = parm[0]
