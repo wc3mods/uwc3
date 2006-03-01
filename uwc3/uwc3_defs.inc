@@ -174,6 +174,10 @@
 #define SQL_SAVEBY_NAME 2	// Save SQL data by name
 
 #define CSW_WORLD 0		// World Spawn death, for weapon xp multiplier
+
+#define SAVEFREQUENCY	10		// added by JGHG: defines how many rounds must pass before write_all() is performed
+#define TASKID_SYNCSQL	6666	// added by JGHG: always use defined taskids to avoid collisions
+#define TIMEBEFORESYNC	2.0		// added by JGHG: seconds
 // **************************************************************************
 // END UWC3 Defs
 // **************************************************************************

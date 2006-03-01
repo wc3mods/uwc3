@@ -2293,7 +2293,7 @@ public cleanup_decoy(args[]){
 
 public check_duck() {
 
-   for(new i = 1; i <= get_maxplayers(); ++i) {
+   for(new i = 1; i <= g_MAXPLAYERS; ++i) {
       if (is_user_alive(i)) {
          if (decoy[i]) {
             //client_print(i, print_chat, "MIH2")
