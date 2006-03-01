@@ -116,17 +116,17 @@ public grab_sql_vars(){
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills1) // SQLITE COMPLIANT
 
 	if (!g_sqlite)
-		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills2)
+		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills2)
 	else if (!sqlite_table_exists(sql, sqltable_skills2))
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills2) // SQLITE COMPLIANT
 
 	if (!g_sqlite)
-		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills3)
+		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills3)
 	else if (!sqlite_table_exists(sql, sqltable_skills3))
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills3) // SQLITE COMPLIANT
 
 	if (!g_sqlite)
-		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills4)
+		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills4)
 	else if (!sqlite_table_exists(sql, sqltable_skills4))
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills4) // SQLITE COMPLIANT
 
@@ -730,13 +730,12 @@ public sqlget_xp_id(id){
       dbi_error(sql,error,127)
       client_print(id, print_chat,
          "[%s] Error Retrieving Your SQL Data: [ %s ]", MOD, error)
-      dbi_free_result(Res)
+      log_amx("[3] UWC3 SQL :: Error Retrieving SQL Data, %s", error)
       dbi_close(sql)
       return PLUGIN_CONTINUE
    }else if (Res == RESULT_NONE) {
       client_print(id, print_chat, "[%s] No Saved XP SQL Data Found for Player %s",
          MOD, playername )
-      dbi_free_result(Res)
       dbi_close(sql)
       return PLUGIN_CONTINUE
    }
@@ -861,17 +860,14 @@ public sqlget_enh_id(id){
 
    if (Res == RESULT_FAILED) {
       dbi_error(sql,error,127)
-      client_print(id, print_chat,
-         "[%s] Error Retrieving Your SQL Data: [ %s ]", MOD, error)
-      log_amx("UWC3 SQL :: Error Retrieving SQL Data for %s", playername)
-      dbi_free_result(Res)
+      client_print(id, print_chat, "[%s] Error Retrieving Your SQL Data: [ %s ]", MOD, error)
+      log_amx("[1] UWC3 SQL :: Error Retrieving SQL Data for %s, %s", playername, error)
       dbi_close(sql)
       return PLUGIN_CONTINUE
    }else if (Res == RESULT_NONE) {
       client_print(id, print_chat,
        "[%s] No Saved Attribute/Resistance SQL Data Found for Player %s", MOD, playername )
       //log_amx("UWC3 SQL :: No Attrib/Resist SQL Data Found for %s", playername)
-      dbi_free_result(Res)
       dbi_close(sql)
       return PLUGIN_CONTINUE
    }
@@ -1036,10 +1032,14 @@ public sqlget_skills_id(id){
       dbi_error(sql,error,127)
       client_print(id, print_chat,
          "[%s] Error Retrieving Your Skills SQL Data: [ %s ]", MOD, error)
-      log_amx("UWC3 SQL :: Error Retrieving Skills SQL Data for %s", playername)
+      log_amx("[2] UWC3 SQL :: Error Retrieving SQL Data for %s, %s", playername, error)
+      if (Res1 >= RESULT_OK)
       dbi_free_result(Res1)
+      if (Res2 >= RESULT_OK)
       dbi_free_result(Res2)
+      if (Res3 >= RESULT_OK)
       dbi_free_result(Res3)
+      if (Res4 >= RESULT_OK)
       dbi_free_result(Res4)
       dbi_close(sql)
       return PLUGIN_CONTINUE
@@ -1049,9 +1049,13 @@ public sqlget_skills_id(id){
       client_print(id, print_chat,
        "[%s] No Saved Skills SQL Data Found for Player %s", MOD, playername )
       //log_amx("UWC3 SQL :: No Skills SQL Data Found for %s", playername)
+      if (Res1 >= RESULT_OK)
       dbi_free_result(Res1)
+      if (Res2 >= RESULT_OK)
       dbi_free_result(Res2)
+      if (Res3 >= RESULT_OK)
       dbi_free_result(Res3)
+      if (Res4 >= RESULT_OK)
       dbi_free_result(Res4)
       dbi_close(sql)
       return PLUGIN_CONTINUE

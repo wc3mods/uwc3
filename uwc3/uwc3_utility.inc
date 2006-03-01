@@ -1169,7 +1169,7 @@ stock bool:sqlite_table_exists(Sql:sql, table[]) {
 	else
 		exists = false
 
-	if (result > RESULT_NONE)
+	if (result >= RESULT_OK)
 		dbi_free_result(result)
 
 	return exists
