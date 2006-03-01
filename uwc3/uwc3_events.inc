@@ -512,8 +512,11 @@ public end_round(){
    pheonixexistsT=0
    pheonixexistsCT=0
 
-   if (get_cvar_num("mp_savexp"))
-      write_all()
+   g_roundCounter++
+   if (g_roundCounter % SAVEFREQUENCY == 0 && get_cvar_num("mp_savexp")) {
+      set_task(2.5, "write_all")
+      client_print(0, print_console, "write_all (%s)^n", get_cvar_num("usenewway") ? "new" : "old")
+   }
 
    return PLUGIN_CONTINUE
 }

@@ -106,6 +106,17 @@ public plugin_init(){
 
    register_plugin( "UWC3", VER, "K2mia")
 
+   // Added by JGHG: Check if we're using Sqlite
+   new dbitype[16]
+   dbi_type(dbitype, 15)
+   server_print("[UWC3] Using database type %s.", dbitype)
+   if (equal(dbitype, "sqlite"))
+      g_sqlite = true
+   else
+      g_sqlite = false
+
+   g_MAXPLAYERS = get_maxplayers() // Added by JGHG (instead of doing this in EACH iteration in the 0.1 looping set task, we retrieve the value here; it won't change..!)
+
    // Set messagning variables  
    gMsgScreenFade = get_user_msgid("ScreenFade") 
    gmsgDeathMsg = get_user_msgid("DeathMsg")
@@ -142,10 +153,8 @@ public plugin_init(){
       "-In long term XP mode, saves your Attributes")
    register_clcmd("saveresists", "uwc3_saveresists", -1,
       "-In long term XP mode, saves your Resistances")
-   register_clcmd("saveall", "uwc3_saveall", -1,
-      "-In long term XP mode, saves your XP / Skills / Attributes / Resistances")
-   register_clcmd("resetskills", "resetskills", -1,
-      "-Resets your skills while keeping your XP")
+   //register_clcmd("saveall", "uwc3_saveall", -1, "-In long term XP mode, saves your XP / Skills / Attributes / Resistances")
+   register_clcmd("resetskills", "resetskills", -1, "-Resets your skills while keeping your XP")
    register_clcmd("resetattribs", "resetattribs", -1,
       "-Resets your attributes while keeping your XP")
    register_clcmd("resetresists", "resetresists", -1,
@@ -854,8 +863,10 @@ public client_disconnect(id){
       return PLUGIN_CONTINUE
 
    if (get_cvar_num("mp_savexp") && !is_user_bot(id) && playerxp[id]){
-      if (get_cvar_num("mp_sql"))
+      if (get_cvar_num("mp_sql")) {
          sqlwrite_xp_id(id)
+         purge(id)
+      }
       else
          write_xp_id(id)
       xpreadytoload[id] = 0
@@ -891,11 +902,18 @@ public plugin_end(){
    if (!warcraft3)
       return PLUGIN_CONTINUE
 
-   if (get_cvar_num("mp_savexp"))
-      write_all()
+	if (get_cvar_num("mp_savexp")) {
+		// Make sure to sync any remaining data before plugin ends!
+		if (task_exists(TASKID_SYNCSQL)) {
+			remove_task(TASKID_SYNCSQL)
+			sync_sql()
+		}
+		//write_all()
+	}
 
    return PLUGIN_CONTINUE
 }
+
 // **************************************************************************
 // END plugin_end  routine
 // **************************************************************************
