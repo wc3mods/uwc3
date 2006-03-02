@@ -839,7 +839,7 @@ public client_connect(id)
       STEAM_ID_PENDING -Marticus 11/15/05
    if (get_cvar_num("mp_savexp"))
       xpreadytoload[id] = 1
-
+*/
 
    client_cmd(id, "echo ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
@@ -850,7 +850,6 @@ public client_connect(id)
    client_cmd(id, "echo ^" *=-=                steve french (graphics) ^" ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
    client_cmd(id, "echo ")
-*/
 
    return PLUGIN_CONTINUE
 }
@@ -915,13 +914,13 @@ public client_disconnect(id){
 // BEGIN client_prethink subroutine
 // Prethink routines
 // **************************************************************************
-/*
+
 public client_PreThink(id) {
 
    if(is_connected[id])
       entity_set_float(id, EV_FL_fuser2, 0.0)  // Disable slow down after jumping
 
-}*/
+}
 // **************************************************************************
 // END client_prethink subroutine
 // **************************************************************************
