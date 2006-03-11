@@ -172,15 +172,15 @@ public check_say(id){
    else if (equali(said,"^"/selectresist^"") || equali(said,"^"selectresist^""))
       select_resist(id)
    else if (equali(said,"^"/savexp^"") || equali(said,"^"savexp^""))
-      uwc3_savexp(id)
+      uwc3_willsaveon(id)
    else if (equali(said,"^"/saveskills^"") || equali(said,"^"saveskills^""))
-      uwc3_saveskills(id)
+      uwc3_willsaveon(id)
    else if (equali(said,"^"/saveattribs^"") || equali(said,"^"saveattribs^""))
-      uwc3_saveattribs(id)
+      uwc3_willsaveon(id)
    else if (equali(said,"^"/saveresists^"") || equali(said,"^"saveresists^""))
-      uwc3_saveresists(id)
+      uwc3_willsaveon(id)
    else if (equali(said,"^"/saveall^"") || equali(said,"^"saveall^""))
-      uwc3_saveall(id)
+      uwc3_willsaveon(id)
    else if (equali(said,"^"/deletexp^"") || equali(said,"^"deletexp^""))
       amx_deletexp(id)
    else if (equali(said,"^"/reset_skills^"") || equali(said,"^"reset_skills^""))
@@ -494,15 +494,15 @@ public unzoomed(id){
 }
 
 public reset_maxspeed(parm[]){
-   new enemy = parm[0]
+   new enemyz = parm[0]
 
-   if ( !is_user_connected(enemy) )
+   if ( !is_user_connected(enemyz) )
       return PLUGIN_CONTINUE
 
    new normalspeed = parm[1]
-   stunned[enemy]=false
-   slowed[enemy]=false
-   set_user_maxspeed(enemy, float(normalspeed))
+   stunned[enemyz]=false
+   slowed[enemyz]=false
+   set_user_maxspeed(enemyz, float(normalspeed))
 
    return PLUGIN_CONTINUE
 }

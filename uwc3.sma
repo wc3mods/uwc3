@@ -136,11 +136,11 @@ public plugin_init(){
    register_clcmd( "charsheet", "character_sheet", -1, 
       "- Displays your character sheet")
 
-   register_clcmd("savexp", "uwc3_savexp", -1,
+   register_clcmd("savexp", "uwc3_willsaveon", -1,
       "-In long term XP mode, saves your XP to the vault")
-   register_clcmd("saveattribs", "uwc3_saveattribs", -1,
+   register_clcmd("saveattribs", "uwc3_willsaveon", -1,
       "-In long term XP mode, saves your Attributes")
-   register_clcmd("saveresists", "uwc3_saveresists", -1,
+   register_clcmd("saveresists", "uwc3_willsaveon", -1,
       "-In long term XP mode, saves your Resistances")
    register_clcmd("saveall", "uwc3_saveall", -1,
       "-In long term XP mode, saves your XP / Skills / Attributes / Resistances")
@@ -152,7 +152,7 @@ public plugin_init(){
       "-Resets your resistances while keeping your XP")
    register_clcmd("deletexp", "amx_deletexp", -1, 
       "- Deletes all skills and sets your XP to 0")
-   register_clcmd("saveskills", "uwc3_saveskills", -1,
+   register_clcmd("saveskills", "uwc3_willsaveon", -1,
       "-In long term XP mode, saves your skills to the vault")
    register_clcmd("reloadskills", "reloadskills", -1,
       "-Reloads the default saved set of skills")
@@ -174,7 +174,7 @@ public plugin_init(){
       "-Displays the XP table")
 
    // ******************** TEST COMMANDS *******************
-   register_clcmd("admin_loadxp", "get_xp_id", ADMIN_MENU, 
+   register_clcmd("admin_loadxp", "uwc3_willsaveon", ADMIN_MENU, 
       "-Debug cmd for testing load data from vault routine")
    register_clcmd("debug_info", "debug_info", ADMIN_MENU, 
       "-Dumps some debug info to the admin")
@@ -342,9 +342,6 @@ public plugin_init(){
    register_cvar("FT_spec_info","1")   // Show spectating information
    register_cvar("FT_items_in_hud","0")                    
    register_cvar("mp_savexp","1", FCVAR_SERVER)
-   register_cvar("mp_sql","1")
-   register_cvar("mp_sql_saveby","1")
-   register_cvar("mp_sql_saveoncmdonly","0")
    register_cvar("mp_xpmultiplier","1.50")
    register_cvar("mp_weaponxpmodifier","1")
    register_cvar("sv_warcraft3","1",0)
@@ -409,6 +406,15 @@ public plugin_init(){
    register_cvar("UW_attrib_xpmodifier","1.0")
    register_cvar("UW_resist_xpmodifier","1.0")
 
+   
+   register_cvar("UW_rdsvr_bottom","", FCVAR_SERVER)
+   register_cvar("UW_rdsvr_middle","", FCVAR_SERVER)
+   register_cvar("UW_rdsvr_top","", FCVAR_SERVER)
+   register_cvar("UW_rdlvl_bottom","0", FCVAR_SERVER)
+   register_cvar("UW_rdlvl_middle","0", FCVAR_SERVER)
+   register_cvar("UW_rdlvl_top","0", FCVAR_SERVER)
+   register_cvar("UW_rd","0", FCVAR_SERVER)
+	  
    // set_task calls for functions needed by init or to run continuously
    set_task(10.0, "check_war3",456,"",0,"b")
    set_task(1.0, "check_war3",457)
@@ -742,8 +748,39 @@ public set_variables(){
       itemcost2[MOLE-1] = get_cvar_num("UW_price_MOLE")
       log_amx("Item Price Override Detected : MOLE [%d]", itemcost2[MOLE-1])
    }
- 
-
+   if (get_cvar_num("UW_rdlvl_top") != 0){
+	   forwardontolevel[2] = get_cvar_num("UW_rdlvl_top")
+	   log_amx("SGR's UCW3 Redirection System : UW_rdlvl_top -> %d", get_cvar_num("UW_rdlvl_top"))
+	   get_cvar_string("UW_rdsvr_top", forwardontoserver[2], 64)
+	   log_amx("SGR's UCW3 Redirection System : UW_rdsvr_top --> %s", forwardontoserver[2]);
+   }
+   if (get_cvar_num("UW_rdlvl_middle") != 0) {
+	   forwardontolevel[1] = get_cvar_num("UW_rdlvl_middle")
+	   get_cvar_string("UW_rdsvr_middle", forwardontoserver[1], 64)
+   }
+   if (get_cvar_num("UW_rdlvl_bottom") != 0) {
+	   forwardontolevel[0] = get_cvar_num("UW_rdlvl_bottom")
+	   get_cvar_string("UW_rdsvr_bottom", forwardontoserver[0], 64)
+   }
+   if (get_cvar_num("UW_rd") != 0) {
+	   levelredirection = true;
+   }
+   else {
+	   levelredirection = false;
+   }
+   if (forwardontolevel[2]) {
+       log_amx("SGR's UCW3 Redirection System : Greater than level %d --> %s", forwardontolevel[2], forwardontoserver[2]);
+   }
+   if (forwardontolevel[1]) {
+	   log_amx("SGR's UCW3 Redirection System : Greater than level %d --> %s", forwardontolevel[1], forwardontoserver[1]);
+   }
+   if (forwardontolevel[0]) {
+       log_amx("SGR's UCW3 Redirection System : Greater than level %d --> %s" ,forwardontolevel[0], forwardontoserver[0]);
+   }
+   else {
+       levelredirection = false;
+       log_amx("SGR's UCW3 Redirection System : ERROR No bottom redirection level. --> Deactivated");
+   }
    return PLUGIN_CONTINUE
 }
 // **************************************************************************
@@ -772,8 +809,9 @@ public client_connect(id){
          p_resists[id][j] = RESIST_MAX_VALUE 
    }
 
-   if (get_cvar_num("mp_savexp"))
-      xpreadytoload[id] = 1
+   if (get_cvar_num("mp_savexp")) {
+       xpreadytoload[id] = 1
+   }
 
    client_cmd(id, "echo ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
@@ -782,6 +820,7 @@ public client_connect(id){
    client_cmd(id, "echo ^" *=-= UWC3 Dev Team: K2mia (admin@uwc3.com) ^" ")
    client_cmd(id, "echo ^" *=-=                Jim Rhoades (website)   ^" ")
    client_cmd(id, "echo ^" *=-=                steve french (graphics) ^" ")
+   client_cmd(id, "echo ^" *=-=                [DumB]SGR (complete rewrite of save-xp code) ^" ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
    client_cmd(id, "echo ")
 
@@ -824,15 +863,12 @@ public client_disconnect(id){
       savedweapons[id][i]=0
    }
 
-   if (playerxp[id] < 100)
+   if (playerxp[id] < 100) {
       return PLUGIN_CONTINUE
-
+   }
    if (get_cvar_num("mp_savexp") && !is_user_bot(id) && playerxp[id]){
-      if (get_cvar_num("mp_sql"))
-         sqlwrite_xp_id(id)
-      else
-         write_xp_id(id)
-      xpreadytoload[id] = 0
+       sqlwrite_info_id(id)
+       xpreadytoload[id] = 0
    }
 
    return PLUGIN_CONTINUE
@@ -862,12 +898,15 @@ public client_PreThink(id) {
 // End of the plugin
 // **************************************************************************
 public plugin_end(){
-   if (!warcraft3)
+   if (!warcraft3) {
       return PLUGIN_CONTINUE
-
-   if (get_cvar_num("mp_savexp"))
+   }
+   if (get_cvar_num("mp_savexp")) {
       write_all()
-
+   }
+   if (sqlconn) {
+       dbi_close(sqlconn)
+   }
    return PLUGIN_CONTINUE
 }
 // **************************************************************************
@@ -875,7 +914,6 @@ public plugin_end(){
 // **************************************************************************
 
 
-// **************************************************************************
+// *************************************************************************
 // END Ultimate WC3FT Plugin
 // **************************************************************************
-

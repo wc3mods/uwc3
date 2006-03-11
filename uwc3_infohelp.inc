@@ -1266,10 +1266,6 @@ public displaylevel(id,hide){
 
 
    if (bLvled){
-      // Level Gained - Player has gained a level
-
-      //client_print(id, print_console, "[%s DEBUG] Level Gain p_level=(%d) ",
-      //   MOD, p_level[id])
 
       set_hudmessage(200, 100, 0, -1.0, 0.35, 0, 1.0, 7.0, 0.1, 0.2, 2)
 
@@ -1305,44 +1301,6 @@ public displaylevel(id,hide){
       add(message,2048,temp)
 
       add(message, 2048, "^n(Say /charsheet for your complete info)")
-
-      /*
-      format(temp,64,"^n%s ","Your Skills Summary: (first 20)" )
-      add(message,2048,temp)
-
-      new sname[32] = ""
-      new nSkills = 0
-
-      for (new i=1; i<MAX_SKILLS;i++){
-         if (i <= 8) copy(sname, 31, skillset1[i])
-         else if (i <= 16) copy(sname, 31, skillset2[i-8])
-         else if (i <= 24) copy(sname, 31, skillset3[i-16])
-         else if (i <= 32) copy(sname, 31, skillset4[i-24])
-         else if (i <= 40) copy(sname, 31, skillset5[i-32])
-
-         if (p_skills[id][i]){
-            ++nSkills
-
-            if (nSkills % 2 == 0){
-               format(temp,64,"%s - %d ", sname, p_skills[id][i] )
-               add(message,2048,temp)
-            }else{
-               format(temp,64,"^n%s - %d ", sname, p_skills[id][i] )
-               add(message,2048,temp)
-            }
-
-            if (nSkills == 20) break
-         }
-
-      }
-
-      if (nSkills > 0) bHasSkills = true
-
-      if (!bHasSkills){
-         format(temp,64,"^n%s ","No Skills Learned" )
-         add(message,2048,temp)
-      }
-      */
 
       set_hudmessage(255, 255, 255, -1.0, 0.3, 0, 3.0, 7.0, 0.1, 0.2, 2)
       show_hudmessage(id,message)
@@ -1382,19 +1340,57 @@ public displaylevel(id,hide){
       set_user_rendering(id)
    }
 
-
    // Unholy Aura handler next - Call unholy routine
    new parm[1]
    parm[0]=id
    unholyspeed(parm)
+  
+   if (!levelredirection) {
+       return PLUGIN_CONTINUE
+   }
+   if (is_user_admin(id)) {
+	   return PLUGIN_CONTINUE
+   }
+   
 
+   new servergoto[128]
 
-   //if (bLvled)
-   //   select_skill(id, 1)
-
+	// This is being added currently. DO NOT ENABLE -- UNFINISHED.
+	//  if (p_level[id] < forwardontolevel[0]) {
+	//	   new nmessage[2048] = ""
+	//	   format(nmessage, 2048, "^nYou are below level %d. We operate special 'level 15 and below'", forwardontolevel[0]);
+	//	   format(nmessage, 2048, "%s^nservers for those not yet above level %d. If you would like" forwardontolevel[0]);
+	//	   format(nmessage, 2048, "%s^nto be re-directed, please say 'redirectme!' (no quotes). ");
+	//	   show_hudmessage(id,nmessage)
+	//  }
+   
+   // If they are above 'forwardontolevel' move them onto another server.
+   if (p_level[id] > forwardontolevel[0]) {
+	   if (p_level[id] > forwardontolevel[2]) {
+           if (forwardontoserver[2][0]) {
+			   client_print(id, print_console, "You are being re-directed to a new server. [%s]", forwardontoserver[2]);
+			   format(servergoto, 128, "disconnect; connect %s", forwardontoserver[2]);
+			   client_cmd(id, servergoto)
+	       }
+	   }
+	   else if (p_level[id] > forwardontolevel[1]) {
+           if (forwardontoserver[1][0]) {
+			   client_print(id, print_console, "You are being re-directed to a new server. [%s]", forwardontoserver[1]);
+			   format(servergoto, 128, "disconnect; connect %s", forwardontoserver[1]);
+			   client_cmd(id, servergoto)
+	       }
+	   }
+	   else {
+           if (forwardontoserver[0][0]) {
+			   client_print(id, print_console, "You are being re-directed to a new server. [%s]", forwardontoserver[0]);
+			   format(servergoto, 128, "disconnect; connect %s", forwardontoserver[0]);
+			   client_cmd(id, servergoto)
+	       }
+	   }
+   }
    return PLUGIN_CONTINUE
-
 }
+
 // **************************************************************************
 // END displaylevel subroutine
 // **************************************************************************
@@ -1572,4 +1568,3 @@ public player_skills_OLD(id){
 // **************************************************************************
 // END Help and Info Menus and Menu Handler Subroutines
 // **************************************************************************
-

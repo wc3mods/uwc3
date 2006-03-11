@@ -61,12 +61,7 @@ public restart_round(){
    new id
    get_players(players, numplayers)
 
-   //write_all()        // For saving xp info!
-
-   //client_print(0, print_console, "UWC3-DEBUG: In restart_round!")
-
    for (new i=0; i<numplayers; i++){
-      // Iterate over all players and initialize player data
       id = players[i]
       playeritem[id] = 0
       playeritem2[id] = 0
@@ -139,7 +134,6 @@ public new_round(id){
       new skillcount = get_skillcount( id ) 
       new acount = get_attribcount( id )
       new rcount = get_resistcount( id )
-
       new apts = get_availattribpts( id )
       new rpts = get_availresistpts( id )
 
@@ -155,11 +149,8 @@ public new_round(id){
    // [09-13-04] Fix for Voodoo missing end_round task check - K2mia
    if (task_exists(4500+id)){  // Resets godmode
       remove_task(4500+id)
-
       //client_print(0, print_console, "new_round: task exists 4500 + %d", id)
-
       set_user_health_log(id, maxhealth[id], true, "reset_godmode() from new_round()")
-
       hasgodmode[id]=false
       set_hudmessage(0, 100, 0, 0.05, 0.75, 2, 0.02, 10.0, 0.01, 0.1, 2)
       show_hudmessage(id,"Your Voodoo has been reset")
@@ -183,12 +174,7 @@ public new_round(id){
 
          ultlearned[id] = 0
          displaylevel(id, 3)
-
-         if (get_cvar_num("mp_sql")){
-            sqlwrite_skills_id( id, -1, 1)
-         }else{
-            write_skills_id( id, 1 )
-         }
+         sqlwrite_info_id( id )
       }
    }
    // [09-24-04] End of Added check for # skill points being in sync with player level
@@ -209,19 +195,11 @@ public new_round(id){
    if (get_cvar_num("UW_dmgxpbonus"))
       for (new i=0; i < MAX_PLAYERS; i++){
          damageto[id][i] = -1
-      }
+   }
 
    if (get_cvar_num("mp_savexp") && xpreadytoload[id]){
-      if ( get_cvar_num("mp_sql") ){
-         sqlget_xp_id(id)
-         sqlget_enh_id(id)
-         sqlget_skills_id(id)
-      }else{
-         get_xp_id(id)
-         get_skills_id(id, 1)
-         get_enh_id(id)
-      }
-      xpreadytoload[id] = 0
+       sqlget_info_id(id)
+       xpreadytoload[id] = 0
    }
 
    if (!get_cvar_num("mp_savexp")){
@@ -251,9 +229,6 @@ public new_round(id){
          }
       }
    }
-
-   //client_print(0, print_console, "%s has spawned a %s at < %d %d %d>", name, ( (get_user_team(id) == TEAM_T) ? "Terrorist" : "CT" ), origin[0], origin[1], origin[2])
-
 
    if (playerhasspawned[id]){
 
@@ -290,7 +265,7 @@ public new_round(id){
       playeritem2[id] = MOLE
 
    u_delay = false
-   if (get_cvar_num("FT_ultimatedelay")){
+   if (get_cvar_num("FT_ultimatedelay") && freezetime){
       u_delay = true
       if (!task_exists(12385))
          set_task(get_cvar_float("FT_ultimatedelay"), "udelay_cooldown", 12385)
@@ -385,9 +360,6 @@ public new_round(id){
 
          ultlearned[id] = 0
          reloadskill[id]=false
-
-         get_skills_id(id, 1)
-
          displaylevel(id, 3)
       }
    }
@@ -505,10 +477,6 @@ public end_round(){
    freezecalled = 0
    pheonixexistsT=0
    pheonixexistsCT=0
-
-   if (get_cvar_num("mp_savexp"))
-      write_all()
-
    return PLUGIN_CONTINUE
 }
 // **************************************************************************

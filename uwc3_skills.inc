@@ -552,13 +552,6 @@ public set_skill(id, key){
 
       // Increase the player's skill in the skill at index skill_idx
       p_skills[id][skill_idx] += 1
-
-      // [07-18-2004] - Save to default skillset 1
-      if ( get_cvar_num("mp_sql") && !get_cvar_num("mp_sql_saveoncmdonly") )
-         sqlwrite_skills_id( id, skill_idx, 1)
-      else
-         write_skills_id( id, 1 )
-
       // See what adjustments are needed for new skill
       check_skills( id, false)
 
@@ -716,10 +709,6 @@ public admin_loadskills(id){
       // set will allow multiple skillsets to be saved and retrieved
       set = 1
    }
-
-   get_skills_id( id, set)
-
-
    return PLUGIN_HANDLED
 }
 // **************************************************************************

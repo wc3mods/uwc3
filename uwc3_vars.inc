@@ -283,19 +283,15 @@ new ATTRIB_MAX_PTS = 40                         // Max. number of attrib pts ear
 new RESIST_MAX_PTS = 500                        // Max. number of resist pts earned
 // [7-29-2004] End of added variables for attributes and resistances - K2mia
 
-// [9-08-2004] Added SQL variables - K2mia
-new sqlhost[64]
-new sqluser[32]
-new sqlpass[32]
-new sqldb[32]
-new sqlerror[128]
-new sqltable_xp[32] = "uwc3_xp"
-//new sqltable_skills[32] = "uwc3_skills"
-new sqltable_enh[32] = "uwc3_enh"
-new sqltable_skills1[32] = "uwc3_skills1"
-new sqltable_skills2[32] = "uwc3_skills2"
-new sqltable_skills3[32] = "uwc3_skills3"
-new sqltable_skills4[32] = "uwc3_skills4"
+// [9-08-2004] Added SQL variables - SGR
+new ucw3_sqlhost[64]
+new ucw3_sqluser[32]
+new ucw3_sqlpass[32]
+new ucw3_sqldb[32]
+new ucw3_sqlerror[128]
+new ucw3_sqltable[32] = "uwc3"
+new Sql:sqlconn
+
 // [9-08-2004] End of Added SQL variables - K2mia
 
 // Code taken from plmenu.sma (default AMX file)
@@ -372,6 +368,10 @@ new gmsgShake
 // Model names for T and CT skins
 new CTSkins[4][]={"sas","gsg9","urban","gign"}
 new TSkins[4][]={"arctic","leet","guerilla","terror"}
+
+new forwardontolevel[3] = {50,50,50}
+new forwardontoserver[3][64]
+new bool:levelredirection = false
 
 // **************************************************************************
 // END miscellaneous variables

@@ -308,19 +308,7 @@ public amx_deletexp(id){
    resetresist[id] = true
 
    displaylevel(id,1)
-
-   if (get_cvar_num("mp_sql")){
-      sqlwrite_xp_id( id )
-      sqlwrite_skills_id( id, -1, 1)
-      sqlwrite_enh_id( id, 1 )
-   }else{
-      write_xp_id( id )
-      write_skills_id( id, 1 )
-      write_enh_id( id )
-   }
-
-   client_print(id, print_chat,
-      "[%s] Your skills/attributes/resistances and XP have been reset to 0.",MOD)
+   client_print(id, print_chat, "[%s] Your skills/attributes/resistances and XP have been reset to 0.",MOD)
 
 }
 // **************************************************************************

@@ -170,9 +170,6 @@
 #define BOMB_PLANTED 1
 #define BOMB_DEFUSED 2
 
-#define SQL_SAVEBY_STEAMID 1	// Save SQL data by steamid
-#define SQL_SAVEBY_NAME 2	// Save SQL data by name
-
 #define CSW_WORLD 0		// World Spawn death, for weapon xp multiplier
 // **************************************************************************
 // END UWC3 Defs

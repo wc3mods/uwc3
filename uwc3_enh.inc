@@ -135,15 +135,6 @@ public do_attribmenu(id, key){
  
       // An enhancement pt was spent
       p_attribs[id][key+1] += 1
-
-      // Call save routine
-      if ( get_cvar_num("mp_sql") ){
-         if ( !get_cvar_num("mp_sql_saveoncmdonly") )
-            sqlwrite_enh_id( id, 1 )
-      }else{
-         write_enh_id(id)
-      }
-
       new aname[32]
       if ( (key+1) == ATTRIBIDX_STR ) copy(aname, 31, "Strength")
       else if ( (key+1) == ATTRIBIDX_INT ) copy(aname, 31, "Intellect")
@@ -284,15 +275,6 @@ public do_resistmenu(id,key){
 
       // An enhancement pt was spent
       p_resists[id][key+1] += 1
-
-      // Call save routine
-      if ( get_cvar_num("mp_sql") ){
-         if ( !get_cvar_num("mp_sql_saveoncmdonly") )
-            sqlwrite_enh_id( id, 1 )
-      }else{
-         write_enh_id(id)
-      }
-
       new rname[32]
       if ( (key+1) == RESISTIDX_POISON ) copy(rname, 31, "Poison Resistance")
       else if ( (key+1) == RESISTIDX_DISEASE ) copy(rname, 31, "Disease Resistance")

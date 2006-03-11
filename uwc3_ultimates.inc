@@ -60,6 +60,11 @@ public ultimate_wcsuicide(id){
       client_print(id, print_chat, "You do not know the Suicide Bomber ultimate yet")
       return PLUGIN_HANDLED
    }
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
 
    if (freezetime==1){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
@@ -294,6 +299,12 @@ public ultimate_wcflame(id){
    if (freezetime==1){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"You may not use your ultimate during freezetime")
+      return PLUGIN_HANDLED
+   }
+
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
       return PLUGIN_HANDLED
    }
 
@@ -655,13 +666,16 @@ public ultimate_wcteleport(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
       return PLUGIN_HANDLED
    }
-
 
    if ( get_cvar_num("UW_DEBUG") == 6 ){
       new name [32]
@@ -1298,7 +1312,11 @@ public ultimate_wcchain(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
@@ -1325,12 +1343,12 @@ public ultimate_wcchain(id){
 
 public lightsearchtarget(parm[2]){
    new id = parm[0]
-   new enemy, body
-   get_user_aiming(id,enemy,body)
+   new enemyz, body
+   get_user_aiming(id,enemyz,body)
 
-   if ( 0<enemy<=32 && get_user_team(id)!=get_user_team(enemy) &&
-        playeritem[enemy] != IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
-        is_user_alive(enemy) )
+   if ( 0<enemyz<=32 && get_user_team(id)!=get_user_team(enemyz) &&
+        playeritem[enemyz] != IMMUNITY && !hasblink[enemyz] && is_user_alive(id) &&
+        is_user_alive(enemyz) )
    {
       ultimateused[id]=true
       icon_controller(id,ICON_HIDE)
@@ -1340,22 +1358,22 @@ public lightsearchtarget(parm[2]){
 
       // [08-05-04] - Added Electricity resistance check - K2mia
       new actual_damage = damage
-      if (USE_ENH && p_resists[enemy][RESISTIDX_ELECTRIC]){
+      if (USE_ENH && p_resists[enemyz][RESISTIDX_ELECTRIC]){
 
-         actual_damage = actual_damage - floatround((float(p_resists[enemy][RESISTIDX_ELECTRIC]) / float(RESIST_MAX_VALUE)) * float(actual_damage) )
+         actual_damage = actual_damage - floatround((float(p_resists[enemyz][RESISTIDX_ELECTRIC]) / float(RESIST_MAX_VALUE)) * float(actual_damage) )
 
-         client_print(enemy, print_console, "DEBUG: orig_ltning_dmg=(%d) modified_dmg=(%d)",
+         client_print(enemyz, print_console, "DEBUG: orig_ltning_dmg=(%d) modified_dmg=(%d)",
             damage, actual_damage)
 
-         if (p_resists[enemy][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
-            client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
+         if (p_resists[enemyz][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
+            client_print(enemyz, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
          else
-            client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs some of the Chain Lightning damage", MOD)
+            client_print(enemyz, print_chat, "[%s] Your resistance to electricity absorbs some of the Chain Lightning damage", MOD)
       }
-      lightningeffect(id, enemy, linewidth, actual_damage, id)
+      lightningeffect(id, enemyz, linewidth, actual_damage, id)
 
       new lightparm[4]
-      lightparm[0]=enemy
+      lightparm[0]=enemyz
       lightparm[1]=damage
       lightparm[2]=linewidth
       lightparm[3]=id
@@ -1533,7 +1551,11 @@ public ultimate_wcentangle(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   } 
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
@@ -1561,24 +1583,24 @@ public ultimate_wcentangle(id){
 
 public searchtarget(parm[2]){
    new id = parm[0]
-   new enemy, body
-   get_user_aiming(id,enemy,body)
+   new enemyz, body
+   get_user_aiming(id,enemyz,body)
 
-   if ( (0<enemy<=32) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
-        (!temp_immunity[enemy] && magic_saving_throw(enemy)) )
+   if ( (0<enemyz<=32) && (p_resists[enemyz][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+        (!temp_immunity[enemyz] && magic_saving_throw(enemyz)) )
    {
-      temp_immunity[enemy] = true
-      client_print(enemy, print_chat,
+      temp_immunity[enemyz] = true
+      client_print(enemyz, print_chat,
          "[%s] Your magic resistance makes you temporarily immune to Entangling Roots", MOD)
       new iparm[2]
-      iparm[0] = enemy // Player with temp immunity
+      iparm[0] = enemyz // Player with temp immunity
       iparm[1] = 1     // Immunity type 1 - Entangling roots
       set_task(5.0, "reset_immunity", 201+id, iparm, 2)
    }
 
-   if ( 0<enemy<=32 && !stunned[enemy] && get_user_team(id)!=get_user_team(enemy) &&
-        playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
-        is_user_alive(enemy) && !temp_immunity[enemy] )
+   if ( 0<enemyz<=32 && !stunned[enemyz] && get_user_team(id)!=get_user_team(enemyz) &&
+        playeritem[enemyz]!=IMMUNITY && !hasblink[enemyz] && is_user_alive(id) &&
+        is_user_alive(enemyz) && !temp_immunity[enemyz] )
    {
       issearching[id]=false
       ultimateused[id]=true
@@ -1591,13 +1613,13 @@ public searchtarget(parm[2]){
          emit_sound(id,CHAN_ITEM, "weapons/cbar_hitbod3.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
       new waitparm[6]
-      waitparm[0]=enemy
+      waitparm[0]=enemyz
       waitparm[1]=100
-      waitparm[5]=floatround(get_user_maxspeed(enemy))
-      set_user_maxspeed(enemy,1.0)
+      waitparm[5]=floatround(get_user_maxspeed(enemyz))
+      set_user_maxspeed(enemyz,1.0)
       waitstop(waitparm)
 
-      stunned[enemy]=true
+      stunned[enemyz]=true
       new cooldownparm[1]
       cooldownparm[0]=id
       set_task(get_cvar_float("FT_entanglingroots_cooldown"),"cooldown",50+id,cooldownparm,1)
@@ -1736,7 +1758,11 @@ public ultimate_wcvoodoo(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
@@ -1841,7 +1867,11 @@ public ultimate_wclocust(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
@@ -2042,7 +2072,11 @@ public ultimate_wcflash(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
@@ -2070,14 +2104,14 @@ public ultimate_wcflash(id){
 
 public searchtargetflash(parm[2]){
    new id = parm[0]
-   new enemy, body
-   get_user_aiming(id,enemy,body)
+   new enemyz, body
+   get_user_aiming(id,enemyz,body)
 
-   if ( 0<enemy<=32 && !stunned[enemy] && get_user_team(id)!=get_user_team(enemy) &&
-        playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
-        is_user_alive(enemy) &&
-        (p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
-        !magic_saving_throw(enemy) )
+   if ( 0<enemyz<=32 && !stunned[enemyz] && get_user_team(id)!=get_user_team(enemyz) &&
+        playeritem[enemyz]!=IMMUNITY && !hasblink[enemyz] && is_user_alive(id) &&
+        is_user_alive(enemyz) &&
+        (p_resists[enemyz][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
+        !magic_saving_throw(enemyz) )
    {
       issearching[id]=false
       ultimateused[id]=true
@@ -2085,13 +2119,13 @@ public searchtargetflash(parm[2]){
 
       new name[32], ename[32]
       get_user_name( id , name, 31)
-      get_user_name( enemy , ename, 31)
+      get_user_name( enemyz , ename, 31)
 
       client_print(id, print_chat, "[%s] Your Flash of Light blinds %s", MOD, ename)
-      client_print(enemy, print_chat, "[%s] You are blinded by a Flash of Light from %s",
+      client_print(enemyz, print_chat, "[%s] You are blinded by a Flash of Light from %s",
          MOD, name)
 
-      message_begin(MSG_ONE,gMsgScreenFade,{0,0,0},enemy)
+      message_begin(MSG_ONE,gMsgScreenFade,{0,0,0},enemyz)
       write_short( 1<<15 )
       write_short( 1<<10 )
       write_short( 1<<12 )
@@ -2149,7 +2183,11 @@ public ultimate_wcdecoy(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
@@ -2468,7 +2506,11 @@ public ultimate_wcgate(id){
       show_hudmessage(id,"You may not use your ultimate during freezetime")
       return PLUGIN_HANDLED
    }
-
+   if (ismole[id] == true) {
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"Moles cannot use ultimates.")
+      return PLUGIN_HANDLED
+   }
    if(u_delay){
       set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
       show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))

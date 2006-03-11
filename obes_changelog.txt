@@ -1,0 +1,14 @@
+Obes [DumB] UWC3 plugin changes 21.06.05
+
+1. Added Vamp bugfix: 
+
+uwc3_dmgevents.inc
+line 1186
+from ( http://www.uwc3.com/forums/index.php?showtopic=1043 )
+
+2. Added Ultimate/Heal Freezetime bugfix
+
+uwc3_events
+line 268
+from ( http://www.uwc3.com/forums/index.php?showtopic=1051&st=30 )
+

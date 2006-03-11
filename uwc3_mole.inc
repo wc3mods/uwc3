@@ -180,17 +180,16 @@ public mole_CT(id){
       parm2[4] = teamnumber
       parm2[5] = id
       set_task(0.1,"transport2",2,parm2,6)
-   }else{
-      client_print(id, print_chat,
-         "No Counter-Terrorist mole locations available, will try again next round")
+   }
+   else{
+      client_print(id, print_chat, "No Counter-Terrorist mole locations available, will try again next round")
       return PLUGIN_HANDLED
    }
-
    return PLUGIN_HANDLED
 }
 
 
-public transport2(parm[6]){
+public transport2(parm[6]) {
    // Teleports the MOLE to the opposing team's base (new version)
 
    new id = parm[5]
@@ -210,13 +209,13 @@ public transport2(parm[6]){
    // Perform a final check to make sure this MOLE spot wasn't taken
    new numplayers = find_sphere_class(0, "player", vicinity, entsFound, 1, forigin)
 
-   if (numplayers > 0){
-      if (hasmole[id])
-         client_print(id, print_chat,
-            "A mole location was not found for you, item saved for next round")
-      else
-         client_print(id, print_chat,
-            "A mole location was not found for you")
+   if (numplayers > 0) {
+      if (hasmole[id]) {
+         client_print(id, print_chat, "A mole location was not found for you, item saved for next round")
+	  }
+      else {
+           client_print(id, print_chat, "A mole location was not found for you")
+	  }
       return PLUGIN_HANDLED
    }
 
@@ -225,6 +224,17 @@ public transport2(parm[6]){
    ismole[id]=true
    changeskin(id,0)
    set_user_origin(id,origin)
+   client_print(id, print_chat, "[%s] You are temporarily blind after coming into daylight.",MOD)
+
+   message_begin(MSG_ONE,gMsgScreenFade,{0,0,0},id)
+   write_short( 1<<15 )
+   write_short( 1<<10 )
+   write_short( 1<<12 )
+   write_byte( 255 )
+   write_byte( 255 )
+   write_byte( 255 )
+   write_byte( 255 )
+   message_end()
 
    message_begin(MSG_ONE,gmsgShake,{0,0,0},id)
    write_short(255<< 14 ) //ammount
@@ -232,11 +242,10 @@ public transport2(parm[6]){
    write_short(255<< 14) //frequency
    message_end()
 
-   if (playeritem2[id] == MOLE)
+   if (playeritem2[id] == MOLE) {
       playeritem2[id] = 0
-
+   }
    hasmole[id] = false
-
    return PLUGIN_CONTINUE
 }
 // **************************************************************************
@@ -248,12 +257,12 @@ public transport2(parm[6]){
 // BEGIN check_fan subroutine
 // Check the fan of blades skill
 // **************************************************************************
-public check_fan(id){
+public check_fan(id) {
 
-   if (p_skills[id][SKILLIDX_FAN] && is_user_alive(id)){
+   if (p_skills[id][SKILLIDX_FAN] && is_user_alive(id)) {
       //Fan of Knives
       new Float:randomnumber = random_float(0.0,1.0)
-      if (randomnumber <= p_fan[p_skills[id][SKILLIDX_FAN]-1]){
+      if (randomnumber <= p_fan[p_skills[id][SKILLIDX_FAN]-1]) {
          new parm[2]
          parm[0]=id
          parm[1]=7
@@ -265,5 +274,3 @@ public check_fan(id){
 // **************************************************************************
 // END check_fan subroutine
 // **************************************************************************
-
-

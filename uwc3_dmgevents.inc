@@ -1183,12 +1183,14 @@ public damage_event(id){
       if ( playeritem[enemy]==HEALTH )
          max_health += HEALTHBONUS
 
-      new new_health = ( get_user_health(enemy) + damage )
+      if ( get_user_health(enemy) < max_health ) {
+         new new_health = ( get_user_health(enemy) + damage )
 
-      if ( new_health > max_health ) 
-         new_health = max_health
+         if ( new_health > max_health ) 
+             new_health = max_health
 
-      set_user_health_log(enemy, new_health, true, "damage_event() VAMPIRIC")
+         set_user_health_log(enemy, new_health, true, "damage_event() VAMPIRIC")
+      }
 
       if (p_skills[enemy][SKILLIDX_SSKIN]){
          // Steel Skin, give armor to the enemy
@@ -1922,7 +1924,7 @@ public death(){
 public do_cbdisease(args[]){
 
    new id = args[0]
-   new enemy = args[1]
+   new enemyz = args[1]
 
    if(!is_user_alive(id) || isdiseasedcb[id] == 0)
       return PLUGIN_CONTINUE
@@ -1954,7 +1956,7 @@ public do_cbdisease(args[]){
    // Set the player to have a slow max speed
    set_user_maxspeed(id, CBSPEED)
 
-   do_damage(id, enemy, 3, 19, 2, 0, 0, 0)
+   do_damage(id, enemyz, 3, 19, 2, 0, 0, 0)
 
    return PLUGIN_CONTINUE
 }
@@ -1970,7 +1972,7 @@ public do_cbdisease(args[]){
 public do_sspoison(args[]){
 
    new id = args[0]
-   new enemy = args[1]
+   new enemyz = args[1]
 
    if(!is_user_alive(id) || ispoisonedss[id] == 0)
       return PLUGIN_CONTINUE
@@ -1999,7 +2001,7 @@ public do_sspoison(args[]){
    write_byte( iglow[id][0] ) // fade alpha
    message_end()
 
-   do_damage(id, enemy, 5, 18, 2, 0, 0, 0)
+   do_damage(id, enemyz, 5, 18, 2, 0, 0, 0)
 
    return PLUGIN_CONTINUE
 }
