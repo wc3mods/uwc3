@@ -52,7 +52,7 @@ public check_sql(){
 
       }else{
          log_amx("UWC3 SQL :: Configuration File NOT FOUND, Switching to Fast XP Mode")
-         set_cvar_num("mp_savexp", 0)
+         set_pcvar_num(mpsavexp, 0)
          set_cvar_num("mp_sql", 0)
       }
    }
@@ -277,11 +277,11 @@ public sqlwrite_xp_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp") || !get_cvar_num("mp_sql") || xpreadytoload[id]){
+   if (!get_pcvar_num(mpsavexp) || !get_cvar_num("mp_sql") || xpreadytoload[id]){
       // Do not write XP if it mp_savexp not set or xp hasn't been loaded yet
       // or if mp_sql mode not set
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return PLUGIN_CONTINUE
    }
 
@@ -334,11 +334,11 @@ sqlgetsql_xp_id(id, sqlline[], const LEN){
    if (!warcraft3)
       return
 
-   if (!get_cvar_num("mp_savexp") || !get_cvar_num("mp_sql") || xpreadytoload[id]){
+   if (!get_pcvar_num(mpsavexp) || !get_cvar_num("mp_sql") || xpreadytoload[id]){
       // Do not write XP if it mp_savexp not set or xp hasn't been loaded yet
       // or if mp_sql mode not set
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return
    }
 
@@ -375,10 +375,10 @@ public write_xp_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp") || xpreadytoload[id]){
+   if (!get_pcvar_num(mpsavexp) || xpreadytoload[id]){
       // Do not write XP if it mp_savexp not set or xp hasn't been loaded yet
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return PLUGIN_CONTINUE
    }
 
@@ -419,10 +419,10 @@ public sqlwrite_enh_id(id, nset){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp") || !get_cvar_num("mp_sql") ){
+   if (!get_pcvar_num(mpsavexp) || !get_cvar_num("mp_sql") ){
       // Do not write XP if it mp_savexp not set or mp_sql not set
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return PLUGIN_CONTINUE
    }
 
@@ -470,10 +470,10 @@ public write_enh_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp") || xpreadytoload[id]){
+   if (!get_pcvar_num(mpsavexp) || xpreadytoload[id]){
       // Do not write XP if it mp_savexp not set or xp hasn't been loaded yet
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return PLUGIN_CONTINUE
    }
 
@@ -505,10 +505,10 @@ public sqlwrite_skills_id(id, sidx, nset){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp") || !get_cvar_num("mp_sql") ){
+   if (!get_pcvar_num(mpsavexp) || !get_cvar_num("mp_sql") ){
       // Do not write XP if it mp_savexp not set or mp_sql not set
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return PLUGIN_CONTINUE
    }
 
@@ -601,10 +601,10 @@ public write_skills_id(id, set){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp") || xpreadytoload[id]){
+   if (!get_pcvar_num(mpsavexp) || xpreadytoload[id]){
       // Do not write XP if it mp_savexp not set or xp hasn't been loaded yet
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
-      //   id, get_cvar_num("mp_savexp"), xpreadytoload[id])
+      //   id, get_pcvar_num(mpsavexp), xpreadytoload[id])
       return PLUGIN_CONTINUE
    }
 
@@ -701,7 +701,7 @@ public sqlget_xp_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if ( !get_cvar_num("mp_savexp") || !get_cvar_num("mp_sql") )
+   if ( !get_pcvar_num(mpsavexp) || !get_cvar_num("mp_sql") )
       return PLUGIN_CONTINUE
 
    new playerid[32], playername[32], error[128]
@@ -773,7 +773,7 @@ public get_xp_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp"))
+   if (!get_pcvar_num(mpsavexp))
       return PLUGIN_CONTINUE
 
    new playerid[32]
@@ -833,7 +833,7 @@ public sqlget_enh_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp"))
+   if (!get_pcvar_num(mpsavexp))
       return PLUGIN_CONTINUE
 
    new playerid[32], playername[32], error[128]
@@ -911,7 +911,7 @@ public get_enh_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp"))
+   if (!get_pcvar_num(mpsavexp))
       return PLUGIN_CONTINUE
 
    new playerid[32]
@@ -992,7 +992,7 @@ public sqlget_skills_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp"))
+   if (!get_pcvar_num(mpsavexp))
       return PLUGIN_CONTINUE
 
    new playerid[32], playername[32], error[128]
@@ -1160,7 +1160,7 @@ public get_skills_id(id, set){
    if (!warcraft3)
       return PLUGIN_HANDLED
 
-   if (!get_cvar_num("mp_savexp"))
+   if (!get_pcvar_num(mpsavexp))
       return PLUGIN_CONTINUE
 
    if (set < 1 || set > 4){
@@ -1287,7 +1287,7 @@ public get_skills_id(id, set){
 // Frontend for saving a player's XP, Attribs, Resists, Skills, etc
 // **************************************************************************
 public uwc3_savexp(id){
-   if (get_cvar_num("mp_savexp")){
+   if (get_pcvar_num(mpsavexp)){
       if ( get_cvar_num("mp_sql") )
          sqlwrite_xp_id( id )
       else
@@ -1301,7 +1301,7 @@ public uwc3_savexp(id){
 }
 
 public uwc3_saveskills(id){
-   if (!get_cvar_num("mp_savexp")){
+   if (!get_pcvar_num(mpsavexp)){
       client_print(id,print_chat,"[%s] Long term XP mode is NOT enabled now.", MOD)
       return PLUGIN_HANDLED
    }
@@ -1332,7 +1332,7 @@ public uwc3_saveskills(id){
 
 public uwc3_saveattribs(id){
 
-   if (!get_cvar_num("mp_savexp")){
+   if (!get_pcvar_num(mpsavexp)){
       client_print(id,print_chat,"[%s] Long term XP mode is NOT enabled now.", MOD)
       return PLUGIN_HANDLED
    }
@@ -1349,7 +1349,7 @@ public uwc3_saveattribs(id){
 
 public uwc3_saveresists(id){
 
-   if (!get_cvar_num("mp_savexp")){
+   if (!get_pcvar_num(mpsavexp)){
       client_print(id,print_chat,"[%s] Long term XP mode is NOT enabled now.", MOD)
       return PLUGIN_HANDLED
    }
@@ -1367,7 +1367,7 @@ public uwc3_saveresists(id){
 /*
 public uwc3_saveall(id){
 
-   if (!get_cvar_num("mp_savexp")){
+   if (!get_pcvar_num(mpsavexp)){
       client_print(id,print_chat,"[%s] Long term XP mode is NOT enabled now.", MOD)
       return PLUGIN_HANDLED
    }

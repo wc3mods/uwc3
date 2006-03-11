@@ -74,7 +74,7 @@ public restart_round()
 		flashg[id] = 0
 		diedlastround[id] = false
 
-		if(!get_cvar_num("mp_savexp"))
+		if(!get_pcvar_num(mpsavexp))
 		{
 			p_level[id]=0          // Set player to level 0
 
@@ -217,7 +217,9 @@ public new_round(id)
 		for (new i=0; i < g_MAXPLAYERS; i++)
 			damageto[id][i] = -1
 
-	if(get_cvar_num("mp_savexp") && xpreadytoload[id])
+	new mpsave = get_pcvar_num(mpsavexp)
+
+	if(mpsave && xpreadytoload[id])
 	{
 		if(get_cvar_num("mp_sql"))
 		{
@@ -235,7 +237,7 @@ public new_round(id)
 		xpreadytoload[id] = 0
 	}
 
-	if(!get_cvar_num("mp_savexp"))
+	if(!mpsave)
 	{
 		set_hudmessage(200, 100, 0, -1.0, 0.35, 0, 1.0, 15.0, 0.1, 0.2, 2)
 		show_hudmessage(id, "Server Mode: Fast XP -- Long Term XP is Disabled")
@@ -322,13 +324,13 @@ public new_round(id)
 
 	u_delay[id] = false
 
-	if(get_cvar_num("FT_ultimatedelay"))
+	new UD_TIME = get_pcvar_num(ultimatedelay)
+	if(UD_TIME)
 	{
 		u_delay[id] = true
 		if(!task_exists(UTLIMATE_DELAY + id))
-			set_task(get_cvar_float("FT_ultimatedelay"), "udelay_cooldown", UTLIMATE_DELAY + id)
+			set_task(float(UD_TIME), "udelay_cooldown", UTLIMATE_DELAY + id)
 	}
-
 
 	if (task_exists(357)) // Stops the medic sprite display
 		remove_task(357)
@@ -593,7 +595,7 @@ public end_round()
 		pheonixexistsCT=0
 
 		g_roundCounter++
-		if(g_roundCounter % SAVEFREQUENCY == 0 && get_cvar_num("mp_savexp"))
+		if(g_roundCounter % SAVEFREQUENCY == 0 && get_pcvar_num(mpsavexp))
 		{
 			set_task(2.5, "write_all")
 			client_print(0, print_console, "write_all (%s)^n", get_cvar_num("usenewway") ? "new" : "old")

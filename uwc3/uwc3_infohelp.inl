@@ -1052,6 +1052,7 @@ public cmd_who(id){
    for(i=0; i< numplayers; i++){
       playerid = players[i]
 
+      // use Look up table
       if(get_user_team(playerid) == TEAM_T) team = "Terrorist"
       else if(get_user_team(playerid) == TEAM_CT) team = "CT"
       else team = "Spectator"

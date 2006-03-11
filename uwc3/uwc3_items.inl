@@ -612,8 +612,8 @@ public weapon_controller( parm[2] ){
           {
              weaponid = savedweapons[id][j]
              give_item(id, g_weapons[weaponid])
-             if(g_MaxBPAmmo[weaponid] != 0)
-             	cs_set_user_bpammo(id, g_MaxBPAmmo[weaponid], g_MaxBPAmmo[j])
+             if(MaxBPAmmo[weaponid] != 0)
+             	cs_set_user_bpammo(id, MaxBPAmmo[weaponid], g_MaxBPAmmo[j])
           }
       }
 
@@ -1057,7 +1057,7 @@ public rings5(id){
    if (playeritem2[id]==FEATHER)
       set_user_gravity(id,1.0)
    if (playeritem2[id]==HELM)
-      set_user_hitzones(0,id,255)
+      bImmuneHeadshots[id] = false;
    if (playeritem2[id]==CHAMELEON)
       changeskin(id,1)
 
@@ -1079,22 +1079,6 @@ public rings5(id){
 // **************************************************************************
 // END rings5 subroutine
 // **************************************************************************
-/* Check map */
-public native_no_weap(id, num)
-{
-	new key = get_param(1)
-	new setting = get_param(2)
-
-	switch(key)
-	{
-		case give_pistol:
-			givepistol = setting ? true : false
-		case give_nade:
-			givenade = setting ? true : false
-		case no_hegren:
-			no_he = setting ? true : false
-	}
-}
 
 // Used for immunity to headshots!
 #define HITGROUP_HEAD (1 << 1)

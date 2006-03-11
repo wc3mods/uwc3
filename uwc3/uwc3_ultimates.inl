@@ -61,15 +61,15 @@ public ultimate_wcsuicide(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
 
@@ -90,7 +90,7 @@ public ultimate_wcsuicide(id){
          parm[0]=id
          icon_controller(id,ICON_FLASH)
          suicideAttempt[id] = 1
-         set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+         set_hud()
          show_hudmessage(id,"Suicide Bomb Armed^nPress Again To Detonate")
       }
     }else{
@@ -293,15 +293,15 @@ public ultimate_wcflame(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
 
@@ -655,18 +655,17 @@ public ultimate_wcteleport(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
-
 
    #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
@@ -906,7 +905,7 @@ public ultimate_wcteleport(id){
             menuparm[1]=numberofplayers
             telemenu(menuparm)
          }else{
-            set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
+            set_hud()
             show_hudmessage(id,"No valid targets found!")
          }
       }
@@ -1304,15 +1303,15 @@ public ultimate_wcchain(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
 
@@ -1533,81 +1532,88 @@ public lightningeffect(id,targetid,linewidth,damage,caster){
 // BEGIN ultimate_wcentangle and supporting routines
 // Night elf entangle ultimate
 // **************************************************************************
-public ultimate_wcentangle(id){
+public ultimate_wcentangle(id)
+{
+	if(!warcraft3)
+		return PLUGIN_CONTINUE
 
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
+	if(!p_skills[id][SKILLIDX_ENTANGLE])
+	{
+		client_print(id, print_chat, "You do not know the Entangle ultimate yet")
+		return PLUGIN_HANDLED
+	}
 
-   if (!p_skills[id][SKILLIDX_ENTANGLE]){
-      client_print(id, print_chat, "You do not know the Entangle ultimate yet")
-      return PLUGIN_HANDLED
-   }
+	if(freezetime)
+	{
+		is_freezed(id)
+		return PLUGIN_HANDLED
+	}
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
-      return PLUGIN_HANDLED
-   }
+	if(u_delay[id])
+	{
+		is_delay(id)
+		return PLUGIN_HANDLED
+	}
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
-      return PLUGIN_HANDLED
-   }
-
-
-   #if defined DEBUG
-   if ( get_cvar_num("UW_DEBUG") == 6 ){
-      new name [32]
-      get_user_name( id, name, 31)
-      log_amx( "DEBUG: In ultimate_wcentangle() <%s> invoked Entangle Roots", name )
-   }
-   #endif
+	#if defined DEBUG
+	if(get_cvar_num("UW_DEBUG") == 6)
+	{
+		new name [32]
+		get_user_name(id, name, 31)
+		log_amx("DEBUG: In ultimate_wcentangle() <%s> invoked Entangle Roots", name)
+	}
+	#endif
 
 
-   if (is_user_alive(id) && !issearching[id] && !ultimateused[id]){
-      new parm[2]
-      parm[0]=id
-      parm[1]=ULTIMATESEARCHTIME
-      searchtarget(parm)
-   }
+	if(is_user_alive(id) && !issearching[id] && !ultimateused[id])
+	{
+		new parm[2] // Why not make the function instead.
+		parm[0] = id
+		parm[1] = ULTIMATESEARCHTIME
+		searchtarget(parm)
+	}
 
-   return PLUGIN_CONTINUE
-
+	return PLUGIN_HANDLED
 }
 
-public searchtarget(parm[2]){
+public searchtarget(parm[2])
+{
    new id = parm[0]
    new enemy, body
-   get_user_aiming(id,enemy,body)
+   get_user_aiming(id, enemy, body)
 
-   if ( (0<enemy<=g_MAXPLAYERS) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
-        (!temp_immunity[enemy] && magic_saving_throw(enemy)) )
+   new inrange = check_range(enemy)
+
+
+   if(inrange && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) && (!temp_immunity[enemy] && magic_saving_throw(enemy)))
+   //if(inrange && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) || (!temp_immunity[enemy] && magic_saving_throw(enemy)))
    {
       temp_immunity[enemy] = true
-      client_print(enemy, print_chat,
-         "[%s] Your magic resistance makes you temporarily immune to Entangling Roots", MOD)
+      client_print(enemy, print_chat, "[%s] Your magic resistance makes you temporarily immune to Entangling Roots", MOD)
+
       new iparm[2]
+
       iparm[0] = enemy // Player with temp immunity
       iparm[1] = 1     // Immunity type 1 - Entangling roots
-      set_task(5.0, "reset_immunity", 201+id, iparm, 2)
+
+      set_task(5.0, "reset_immunity", 201 + id, iparm, 2)
    }
 
-   if ( 0<enemy<=g_MAXPLAYERS && !stunned[enemy] && get_user_team(id)!=get_user_team(enemy) &&
-        playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
-        is_user_alive(enemy) && !temp_immunity[enemy] )
+   if(inrange && !stunned[enemy] && get_user_team(id) != get_user_team(enemy) &&
+        playeritem[enemy] != IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
+        is_user_alive(enemy) && !temp_immunity[enemy])
    {
       issearching[id]=false
       ultimateused[id]=true
       icon_controller(id,ICON_HIDE)
 
-      if (file_exists("sound/warcraft3/entanglingrootstarget1.wav")==1)
-         emit_sound(id, CHAN_ITEM, "warcraft3/entanglingrootstarget1.wav", 1.0,
-                        ATTN_NORM, 0, PITCH_NORM)
+      if(file_exists("sound/warcraft3/entanglingrootstarget1.wav"))
+         emit_sound(id, CHAN_ITEM, "warcraft3/entanglingrootstarget1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
       else
-         emit_sound(id,CHAN_ITEM, "weapons/cbar_hitbod3.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
+         emit_sound(id, CHAN_ITEM, "weapons/cbar_hitbod3.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
       new waitparm[6]
+
       waitparm[0]=enemy
       waitparm[1]=100
       waitparm[5]=floatround(get_user_maxspeed(enemy))
@@ -1638,59 +1644,70 @@ public searchtarget(parm[2]){
    return PLUGIN_CONTINUE
 }
 
-public reset_immunity(parm[2]){
-   new id = parm[0]
-   new which = parm[1]
+public reset_immunity(parm[2])
+{
+	new id = parm[0]
+	new which = parm[1]
 
-   if (which == 1){
-      client_print(id, print_chat,
-         "[%s] Your magic resistance to Entangling Roots has ended", MOD)
-   }else if (which == 2){
-      client_print(id, print_chat,
-         "[%s] Your magic resistance to Suicide Bomber blast waves has ended", MOD)
-   }
+	switch(which)
+	{
+		case 1:
+			client_print(id, print_chat, "[%s] Your magic resistance to Entangling Roots has ended", MOD)
+		case 2:
+			client_print(id, print_chat, "[%s] Your magic resistance to Suicide Bomber blast waves has ended", MOD)
+	}
 
-   temp_immunity[id] = false
+	temp_immunity[id] = false
 }
 
-public waitstop(parm[6]){
-   new id=parm[0]
-   new origin[3]
-   get_user_origin(id, origin)
+public waitstop(parm[6])
+{
+	new id = parm[0]
+	new origin[3]
 
-   if (origin[0]==parm[2] && origin[1]==parm[3] && origin[2]==parm[4]){
-      new normalspeed = parm[5]
-      new resetparm[2]
-      resetparm[0]=id
-      resetparm[1]=normalspeed
-      set_task(float(parm[1]/10),"reset_maxspeed",1000+id,resetparm,2)
-      new entangleparm[2]
-      entangleparm[0]=parm[0]
-      entangleparm[1]=parm[1]
-      entangle(entangleparm)
-   }else{
-      parm[2]=origin[0]
-      parm[3]=origin[1]
-      parm[4]=origin[2]
-      set_task(0.1,"waitstop",29,parm,6)
-   }
-   return PLUGIN_CONTINUE
+	get_user_origin(id, origin)
+
+	if(origin[0] == parm[2] && origin[1] == parm[3] && origin[2] == parm[4])
+	{
+		new normalspeed = parm[5]
+		new resetparm[2]
+
+		resetparm[0] = id
+		resetparm[1] = normalspeed
+
+		set_task(float(parm[1] / 10), "reset_maxspeed", 1000 + id, resetparm, 2)
+
+		new entangleparm[2]
+
+		entangleparm[0] = parm[0]
+		entangleparm[1] = parm[1]
+
+		entangle(entangleparm)
+	}
+	else
+	{
+		parm[2] = origin[0]
+		parm[3] = origin[1]
+		parm[4] = origin[2]
+
+		set_task(0.1, "waitstop", 29, parm, 6)
+	}
 }
 
 public entangle(parm[2]){
    // Entangle Roots (DOESN'T WORK ON BOTS)
-   new id=parm[0]
+   new id = parm[0]
    new origin[3]
    get_user_origin(id,origin)
 
-   if (file_exists("sound/warcraft3/entanglingrootstarget1.wav")==1)
-      emit_sound(id, CHAN_ITEM, "warcraft3/entanglingrootstarget1.wav", 1.0,
-                     ATTN_NORM, 0, PITCH_NORM)
+   if(file_exists("sound/warcraft3/entanglingrootstarget1.wav"))
+      emit_sound(id, CHAN_ITEM, "warcraft3/entanglingrootstarget1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
    else
       emit_sound(id,CHAN_ITEM, "weapons/electro5.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
    new parm2[1]
    parm2[0]=id
+
    set_task(20.0,"cooldown",500+id,parm2,1)
 
    // ****************************************************************************
@@ -1722,12 +1739,12 @@ public entangle(parm[2]){
    return PLUGIN_CONTINUE
 }
 
-public destroy_roots(args[]){
+public destroy_roots(args[])
+{
+	new ent = args[0]
 
-   new ent = args[0]
-
-   if(pev_valid(ent))
-      remove_entity(ent)
+	if(pev_valid(ent))
+		remove_entity(ent)
 }
 // **************************************************************************
 // END ultimate_wcentangle and supporting routines
@@ -1738,28 +1755,29 @@ public destroy_roots(args[]){
 // BEGIN ultimate_wcvoodoo and supporting routines
 // Shadow Hunter Voodoo ultimate
 // **************************************************************************
-public ultimate_wcvoodoo(id){
+public ultimate_wcvoodoo(id)
+{
 
-   if (!warcraft3)
+   if(!warcraft3)
       return PLUGIN_CONTINUE
 
-   if (!p_skills[id][SKILLIDX_VOODOO]){
+   if (!p_skills[id][SKILLIDX_VOODOO])
+   {
       client_print(id, print_chat, "You do not know the Big Bad Voodoo ultimate yet")
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
-
 
    #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
@@ -1855,18 +1873,17 @@ public ultimate_wclocust(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
-
 
    #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
@@ -1902,8 +1919,8 @@ public calllocustfunction(id){
    }
 
    if (count==0){
-      set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
-      show_hudmessage(id,"No valid targets found!")
+      set_hud()
+      show_hudmessage(id, "No valid targets found!")
       return PLUGIN_CONTINUE
    }
 
@@ -1917,9 +1934,10 @@ public calllocustfunction(id){
 
    //client_print(0, print_console, "DEBUG: after-count=(%d) parm6=(%d)", count, parm[6])
 
-   if (parm[6] > numberofplayers){
-      set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
-      show_hudmessage(id,"No valid targets found!")
+   if (parm[6] > numberofplayers)
+   {
+      set_hud()
+      show_hudmessage(id, "No valid targets found!")
       return PLUGIN_CONTINUE
    }
 
@@ -2060,18 +2078,17 @@ public ultimate_wcflash(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
-
 
    #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
@@ -2169,18 +2186,17 @@ public ultimate_wcdecoy(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
-
 
    #if defined DEBUG
    if ( get_cvar_num("UW_DEBUG") == 6 ){
@@ -2495,15 +2511,15 @@ public ultimate_wcgate(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use your ultimate during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
 
@@ -2514,7 +2530,6 @@ public ultimate_wcgate(id){
       log_amx( "DEBUG: In ultimate_wcgate() <%s> invoked Gate", name )
    }
    #endif
-
 
    if (!is_user_alive(id)){
       client_print(id, print_chat, "[%s] Shhhh, you are dead, act like it.", MOD)

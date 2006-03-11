@@ -89,10 +89,12 @@
 #include <fakemeta>
 #include <engine>
 #include <cstrike>
-#include <fun>
+#include <fun_plugin>
+#include <csdm>
 #include <dbi>
 
 //#define DEBUG
+//#define BROADCAST_MESSAGE
 #include "uwc3/uwc3_vars.inl"		// Include the UWC3 global variables file
 #include "uwc3/uwc3_ultimates.inl"	// Include the UWC3 ultimate subroutines file
 #include "uwc3/uwc3_abilities.inl"	// Include the UWC3 abilities subroutines file
@@ -159,16 +161,10 @@ public plugin_init(){
       "- Display the UWC3 Main Menu")
    register_clcmd( "help", "help_menu", -1,
       "- Displays the main help menu")
-  // register_clcmd( "news", "show_news", -1,
-    //  "- Displays news about the Ultimate Warcraft3 plugin")
-   //register_clcmd( "war3help", "war3_info", -1,
-     // "- Displays help information for the UWC3 module")
    register_clcmd( "wc3start", "restart_round", ADMIN_MENU,
       "- Restarts the UWC3 mod fresh")
-
    register_clcmd( "charsheet", "character_sheet", -1,
       "- Displays your character sheet")
-
    register_clcmd("savexp", "uwc3_savexp", -1,
       "-In long term XP mode, saves your XP to the vault")
    register_clcmd("saveattribs", "uwc3_saveattribs", -1,
@@ -189,15 +185,12 @@ public plugin_init(){
       "-Reloads the default saved set of skills")
    register_clcmd("admin_loadskills", "admin_loadskills", ADMIN_MENU,
       "-Loads a saved set of skills")
-
    register_clcmd("admin_showxp", "admin_showxp", ADMIN_MENU,
       "-Admin Cmd: Displays a player's XP")
-
    register_clcmd("examine", "do_examine", -1,
       "-Allows a player to examine the health and armor of a teammate")
    register_clcmd("/examine", "do_examine", -1,
       "-Allows a player to examine the health and armor of a teammate")
-
    register_clcmd("toggle_lowres", "toggle_lowres", -1, "-Toggle low-res mode on/off")
    register_clcmd("xp_table", "xp_table", -1, "-Displays the XP table")
 
@@ -213,10 +206,6 @@ public plugin_init(){
    // ****************** END TEST COMMANDS ******************
 #endif
 
-   register_clcmd("changerace", "change_race", -1, "-Display UWC3 info")
-   register_clcmd("/changerace", "change_race", -1, "-Display UWC3 info")
-   register_clcmd("selectrace", "change_race", -1, "-Display UWC3 info")
-   register_clcmd("/selectrace", "change_race", -1, "-Display UWC3 info")
    register_clcmd("selectskill", "select_skill", -1, "-Displays the skills menu")
    register_clcmd("/selectskill", "select_skill", -1, "-Displays the skills menu")
    register_clcmd("selectattrib", "select_attrib", -1, "-Displays the attributes menu")
@@ -301,6 +290,7 @@ public plugin_init(){
    register_logevent("freezetimedone", 2, "0=World triggered", "1=Round_Start") // Need to replace
    register_event("SendAudio", "end_round", "a", "2&%!MRAD_terwin", "2&%!MRAD_ctwin", "2&%!MRAD_rounddraw")
 
+   // This will be RoundTime Event later.
    register_event("HLTV", "start_round", "a", "1=0", "2=0")
 
    new map[5]; new objective;
@@ -349,7 +339,7 @@ public plugin_init(){
 
    register_cvar("amx_uwc3", VER, FCVAR_SERVER)
    register_cvar("FT_objectives", "1")
-   register_cvar("FT_ultimatedelay", "0")
+   ultimatedelay = register_cvar("FT_ultimatedelay", "0")
    register_cvar("FT_min_b4_XP","2")
    register_cvar("FT_no_orcnades_on_he","0")
    register_cvar("FT_centerhud","1")
@@ -402,7 +392,7 @@ public plugin_init(){
    register_cvar("FT_blinkstartdisabled","0")
    register_cvar("FT_spec_info","1")   // Show spectating information
    register_cvar("FT_items_in_hud","0")
-   register_cvar("mp_savexp","1", FCVAR_SERVER)
+   mpsavexp = register_cvar("mp_savexp","1", FCVAR_SERVER)
    register_cvar("mp_sql","1")
    register_cvar("mp_sql_saveby","1")
    register_cvar("mp_sql_saveoncmdonly","0")
@@ -785,18 +775,19 @@ public set_variables(){
 public client_authorized(id)
 {
 	new auth[32];
-	get_user_authid( id, auth, 31 );
+	get_user_authid(id, auth, 31);
 
-	// Then the player doesn't have a steam id, lets make them reconnect
-	if ( equal(auth, "STEAM_ID_PENDING") )
-	{
+	/* Fix players losing xp to STEAM_ID_PENDING -Marticus 11/15/05
+	 * Then the player doesn't have a steam id, lets make them reconnect
+	 * Just a faster way to detect STEAM_ID_PENDING - teame06
+	 */
+	if(auth[9] == 'P')
 		client_cmd(id, "reconnect");
-	}
-	// Otherwise we're ready to go
-	else if ( get_cvar_num("mp_savexp") )
-	{
+	else if(get_pcvar_num(mpsavexp)) // Otherwise we're ready to go
 		xpreadytoload[id] = 1;
-	}
+
+	// Remember to add a check in reset hud
+	// Remember to add a check for STEAM_ID_PENDING when saving so it does not save.
 }
 // **************************************************************************
 // END client_authorized subroutine
@@ -818,40 +809,36 @@ public client_putinserver(id)
 // **************************************************************************
 public client_connect(id)
 {
-   g_specMode[id] = false
+	if(!warcraft3)
+		return;
 
-   init_pdata( id, 0 )	// Initialize player data (NOT limited init mode)
+	g_specMode[id] = false
 
-   #if defined DEBUG
-   if (get_cvar_num("UW_DEBUG_code")){
-      // Server set to start w/ XP and max. attribs/resists
-      playerxp[id] = DEBUG_STARTXP
+	init_pdata(id, 0)	// Initialize player data (NOT limited init mode)
 
-      for (new j=0; j<MAX_ATTRIBS; j++)
-         p_attribs[id][j] = ATTRIB_MAX_VALUE
+	#if defined DEBUG
+	if(get_cvar_num("UW_DEBUG_code"))
+	{
+		// Server set to start w/ XP and max. attribs/resists
+		playerxp[id] = DEBUG_STARTXP
 
-      for (new j=0; j<MAX_RESISTS; j++)
-         p_resists[id][j] = RESIST_MAX_VALUE
-   }
-   #endif
+		for(new j = 0; j < MAX_ATTRIBS; j++)
+			p_attribs[id][j] = ATTRIB_MAX_VALUE
 
-/* Removed to support fix players losing xp to
-      STEAM_ID_PENDING -Marticus 11/15/05
-   if (get_cvar_num("mp_savexp"))
-      xpreadytoload[id] = 1
-*/
+		for(new j = 0; j < MAX_RESISTS; j++)
+			p_resists[id][j] = RESIST_MAX_VALUE
+	}
+	#endif
 
-   client_cmd(id, "echo ")
-   client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
-   client_cmd(id, "echo ^" *=-= Welcome to: Ultimate Warcraft3 (UWC3) ^" ")
-   client_cmd(id, "echo ^" *=-= UWC3 Website: http://www.uwc3.com/    ^" ")
-   client_cmd(id, "echo ^" *=-= UWC3 Dev Team: K2mia (admin@uwc3.com) ^" ")
-   client_cmd(id, "echo ^" *=-=                Jim Rhoades (website)   ^" ")
-   client_cmd(id, "echo ^" *=-=                steve french (graphics) ^" ")
-   client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
-   client_cmd(id, "echo ")
-
-   return PLUGIN_CONTINUE
+	client_cmd(id, "echo ")
+	client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
+	client_cmd(id, "echo ^" *=-= Welcome to: Ultimate Warcraft3 (UWC3) ^" ")
+	client_cmd(id, "echo ^" *=-= UWC3 Website: http://www.uwc3.com/    ^" ")
+	client_cmd(id, "echo ^" *=-= UWC3 Dev Team: K2mia (admin@uwc3.com) ^" ")
+	client_cmd(id, "echo ^" *=-=                Jim Rhoades (website)   ^" ")
+	client_cmd(id, "echo ^" *=-=                steve french (graphics) ^" ")
+	client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
+	client_cmd(id, "echo ")
 }
 // **************************************************************************
 // END client_connect subroutine
@@ -862,48 +849,54 @@ public client_connect(id)
 // BEGIN client_disconnect subroutine
 // A client has disconnected
 // **************************************************************************
-public client_disconnect(id){
-   is_connected[id] = false
-   g_specMode[id] = false	// Reset spectator status for player
-   isburning[id] = 0		// Reset burning status for player (flamethrower)
-   isnburning[id] = 0		// Reset burning status for player (napalm burn)
-   ispoisonedss[id] = 0		// Reset poisoned status for player
-   isdiseasedcb[id] = 0		// Reset diseased status for player
-   repairs[id] = 0		// Reset number of repairs done
-   mends[id] = 0		// Reset number of mends done
-   he[id] = 0			// Reset he grenade status
-   threwnapalm[id] = 0		// Reset status of napalm gren for round
-   diedlastround[id]=false	// Reset status for player death previous round
-   lastpspage[id] = 0		// Reset last player skill page read to 0
-   hasmole[id] = false 		// Reset mole item global
-   itemsrunning[id] = false     // Reset itemsrunning for userid
-   loadedlevel[id] = 0		// Reset status for having initial level loaded
-   vengeance_used[id] = 0	// Reset vengeance status
+public client_disconnect(id)
+{
+	if(!warcraft3)
+		return;
 
-   if ( get_cvar_num("UW_lowres_default") )
-      lowres[id] = true		// Reset lowres to true for player slot
-   else
-      lowres[id] = false		// Reset lowres boolean for thisplayer
+	is_connected[id] = false
+	g_specMode[id] = false	// Reset spectator status for player
+	isburning[id] = 0		// Reset burning status for player (flamethrower)
+	isnburning[id] = 0		// Reset burning status for player (napalm burn)
+	ispoisonedss[id] = 0		// Reset poisoned status for player
+	isdiseasedcb[id] = 0		// Reset diseased status for player
+	repairs[id] = 0		// Reset number of repairs done
+	mends[id] = 0		// Reset number of mends done
+	he[id] = 0			// Reset he grenade status
+	threwnapalm[id] = 0		// Reset status of napalm gren for round
+	diedlastround[id]=false	// Reset status for player death previous round
+	lastpspage[id] = 0		// Reset last player skill page read to 0
+	hasmole[id] = false 		// Reset mole item global
+	itemsrunning[id] = false     // Reset itemsrunning for userid
+	loadedlevel[id] = 0		// Reset status for having initial level loaded
+	vengeance_used[id] = 0	// Reset vengeance status
 
-   for (new i=0; i<32; ++i){
-      // Reset due to Equipment Reincarnation
-      savedweapons[id][i]=0
-   }
+	if(get_cvar_num("UW_lowres_default"))
+		lowres[id] = true		// Reset lowres to true for player slot
+	else
+		lowres[id] = false		// Reset lowres boolean for this player
 
-   if (playerxp[id] < 100)
-      return PLUGIN_CONTINUE
+	// Reset due to Equipment Reincarnation
+	for (new i = 0; i < 32; i++)
+		savedweapons[id][i] = 0
 
-   if (get_cvar_num("mp_savexp") && !is_bot[id] && playerxp[id]){
-      if (get_cvar_num("mp_sql")) {
-         sqlwrite_xp_id(id)
-         purge(id)
-      }
-      else
-         write_xp_id(id)
-      xpreadytoload[id] = 0
-   }
-   is_bot[id] = false
-   return PLUGIN_CONTINUE
+	if(playerxp[id] < 100)
+		return;
+
+	if(get_pcvar_num(mpsavexp) && !is_bot[id] && playerxp[id])
+	{
+		if(get_cvar_num("mp_sql"))
+		{
+			sqlwrite_xp_id(id)
+			purge(id)
+		}
+		else
+			write_xp_id(id)
+
+		xpreadytoload[id] = 0
+	}
+
+	is_bot[id] = false
 }
 // **************************************************************************
 // END client_disconnect subroutine
@@ -914,13 +907,30 @@ public client_disconnect(id){
 // BEGIN client_prethink subroutine
 // Prethink routines
 // **************************************************************************
+/*
+public client_PreThink(id)
+{
+	// Disable slow down after jumping
+	if(is_connected[id])
+		entity_set_float(id, EV_FL_fuser2, 0.0)
 
-public client_PreThink(id) {
+	// Fix this later for uwc3
+	if(Verify_Skill(id, RACE_UNDEAD, SKILL3) && !p_data_b[id][PB_STUNNED] && !p_data_b[id][PB_SLOWED])
+	{
+		new Float:vel[3]
+		entity_get_vector(id, EV_VEC_velocity, vel)
+		new Float:length = vector_length(vel)
 
-   if(is_connected[id])
-      entity_set_float(id, EV_FL_fuser2, 0.0)  // Disable slow down after jumping
+		if(length < 180.0)
+			entity_set_int(id, EV_INT_flTimeStepSound, 999)
+		else if(entity_get_int(id, EV_INT_flTimeStepSound) > 500)
+			entity_set_int(id, EV_INT_flTimeStepSound, 200)
+	}
 
-}
+	// With The code above Think we need this
+	if(p_data_b[id][PB_SILENT])
+		entity_set_int(id, EV_INT_flTimeStepSound, 999)
+}*/
 // **************************************************************************
 // END client_prethink subroutine
 // **************************************************************************
@@ -930,20 +940,21 @@ public client_PreThink(id) {
 // BEGIN plugin_end  routine
 // End of the plugin
 // **************************************************************************
-public plugin_end() {
-	if (!warcraft3)
-		return PLUGIN_CONTINUE
+public plugin_end()
+{
+	if(!warcraft3)
+		return
 
-	if (get_cvar_num("mp_savexp")) {
+	if(get_pcvar_num(mpsavexp))
+	{
 		// Make sure to sync any remaining data before plugin ends!
-		if (task_exists(TASKID_SYNCSQL)) {
+		if (task_exists(TASKID_SYNCSQL))
+		{
 			remove_task(TASKID_SYNCSQL)
 			sync_sql()
 		}
 		//write_all()
 	}
-
-	return PLUGIN_CONTINUE
 }
 
 // **************************************************************************
@@ -971,4 +982,50 @@ public native_set_changeskin(id, num)
 		return;
 
 	skinchanged[index] = setting ? true : false
+}
+
+/* Do not know where I want to put theses.*/
+is_freezed(id)
+{
+	set_hud()
+	show_hudmessage(id,"You may not use this ability during freezetime")
+}
+
+is_delay(id)
+{
+	set_hud()
+	show_hudmessage(id, "This ability is disabled^nfor the first %d seconds", get_pcvar_num(ultimatedelay))
+}
+
+set_hud()
+{
+	set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
+}
+
+check_range(index)
+{
+	if(index > 0 && index <= g_MAXPLAYERS)
+		return 1;
+
+	return 0;
+}
+
+stock give_item(id, item[])
+	csdm_give_item(id, item)
+
+/* Check map */
+public native_no_weap(id, num)
+{
+	new key = get_param(1)
+	new setting = get_param(2)
+
+	switch(key)
+	{
+		case give_pistol:
+			givepistol = setting ? true : false
+		case give_nade:
+			givenade = setting ? true : false
+		case no_hegren:
+			no_he = setting ? true : false
+	}
 }

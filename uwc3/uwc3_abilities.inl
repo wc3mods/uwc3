@@ -35,13 +35,6 @@
 // Shadow Hunter serpant ward ultimate
 // **************************************************************************
 public ability_wcward(id){
-
-   new blah = 1
-   if(blah)
-   {
-	   client_print(id, print_chat, "Serpent Ward disabled by wabbit for the time being.")
-	   return 1;
-   }
    if (!p_skills[id][SKILLIDX_SERPWARD]){
       client_print(id, print_chat, "You do not know the Serpant Ward ultimate yet")
       return PLUGIN_HANDLED
@@ -194,8 +187,8 @@ public lightpls(parm[6]){
 // BEGIN ability_wcrepair and supporting routine
 // Special Ability: Repair Armor - fix a teammate's damaged armor
 // **************************************************************************
-public ability_wcrepair(id){
-
+public ability_wcrepair(id)
+{
    if (!warcraft3)
       return PLUGIN_CONTINUE
 
@@ -204,15 +197,15 @@ public ability_wcrepair(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use this ability during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"This ability is disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
 
@@ -276,7 +269,7 @@ public ability_wcrepair(id){
       xpbonus = REPAIRXP + xpgiven_lev[p_level[id]]
 
       // Extra incentive for long-term XP
-      if (get_cvar_num("mp_savexp"))
+      if(get_pcvar_num(mpsavexp))
          xpbonus += (REPAIRXP * p_level[id])
 
       // Award the player XP for their service
@@ -325,18 +318,17 @@ public ability_wcmend(id){
       return PLUGIN_HANDLED
    }
 
-   if (freezetime==1){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"You may not use this ability during freezetime")
+   if (freezetime)
+   {
+      is_freezed(id)
       return PLUGIN_HANDLED
    }
 
-   if(u_delay[id]){
-      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
-      show_hudmessage(id,"This ability is disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+   if(u_delay[id])
+   {
+      is_delay(id)
       return PLUGIN_HANDLED
    }
-
    new friend, body
    get_user_aiming(id, friend, body)
 
@@ -401,7 +393,7 @@ public ability_wcmend(id){
       xpbonus = MENDXP + xpgiven_lev[p_level[id]]
 
       // Extra incentive for long-term XP
-      if (get_cvar_num("mp_savexp"))
+      if (get_pcvar_num(mpsavexp))
          xpbonus += (MENDXP * p_level[id])
 
 

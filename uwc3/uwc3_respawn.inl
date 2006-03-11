@@ -51,7 +51,7 @@ public check_for_reviving(victim_id){
             // [07-27-04] - Now gives XP bonus for reviving a teammate
             new xpbonus = PHOENIXXP + xpgiven_lev[p_level[id]]
 
-            if (get_cvar_num("mp_savexp"))
+            if (get_pcvar_num(mpsavexp))
                xpbonus += (PHOENIXXP * p_level[id])
 
             playerxp[id] += xpbonus
@@ -83,7 +83,7 @@ public check_for_reviving(victim_id){
             // [07-27-04] - Now gives XP bonus for reviving a teammate
             new xpbonus = PHOENIXXP + xpgiven_lev[p_level[id]]
 
-            if (get_cvar_num("mp_savexp"))
+            if (get_pcvar_num(mpsavexp))
                xpbonus += (PHOENIXXP * p_level[id])
 
             playerxp[id] += xpbonus

@@ -411,3 +411,39 @@ new const deathbyweapon[][] =
 	"UWC3 Critical Backfire",
 	"UWC3 Magic Resistance"
 };
+
+new const weaponname[25][] =
+{
+	"",
+	"p228",
+	"scout",
+	"grenade",
+	"xm1014",
+	"mac10",
+	"aug",
+	"elite",
+	"fiveseven",
+	"ump45",
+	"sg550",
+	"usp",
+	"glock18",
+	"awp",
+	"mp5navy",
+	"m249",
+	"m3",
+	"m4a1",
+	"tmp",
+	"g3sg1",
+	"deagle",
+	"sg552",
+	"ak47",
+	"knife",
+	"p90"
+};
+
+/* Cvar Pointers */
+new mpsavexp;
+new ultimatedelay;
+
+
+/* Messages */

@@ -28,252 +28,195 @@
 // BEGIN do_damage subroutine
 // Used by damage_event to deal out damage
 // **************************************************************************
-public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, userdead){
-   // id is attacked, attacker ,damage , victim = 1, enemy = 2
+public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, userdead)
+{
+	// id is attacked, attacker ,damage , victim = 1, enemy = 2
 
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
+	if (!warcraft3)
+		return PLUGIN_CONTINUE
 
-   new idname[32], ename[32]
-   get_user_name( id, idname, 31)
-   get_user_name( enemy, ename, 31)
+	new idname[32], ename[32]
 
-   if (get_cvar_num("UW_dmgxpbonus"))
-      damageto[enemy][id] += damage
+	get_user_name(id, idname, 31)
+	get_user_name(enemy, ename, 31)
 
-   //client_print(0, print_console,
-   //   "[%s DEBUG] [In do_damage()] <%s => %s> damage=(%d) damageto=(%d)",
-   //   MOD, ename, idname, damage, damageto[enemy][id])
+	new vTeam =  get_user_team(id)
+	new eTeam =  get_user_team(enemy)
 
+	if(get_cvar_num("UW_dmgxpbonus"))
+		damageto[enemy][id] += damage
 
-   new userkilled = 0
-   new string[30]
-   copy(string, 29, deathbyweapon[deathby]) // Not sure why there two.
+	//client_print(0, print_console,
+	//   "[%s DEBUG] [In do_damage()] <%s => %s> damage=(%d) damageto=(%d)",
+	//   MOD, ename, idname, damage, damageto[enemy][id])
 
-   //get_deathbystr(deathby, string, 47)	// Get the string form of deathby
-   #if defined DEBUG
-   if (get_cvar_num("UW_DEBUG") == 1){
-      client_print(0, print_console, "[%s DEBUG In do_damage()] <%s => %s> dmg=(%d) deathby=(%s) userdead=(%d) victim_evade?=(%d)", MOD, ename, idname, damage, string, userdead, p_evadethisshot[id])
-   }else if (get_cvar_num("UW_DEBUG") == 6){
-      log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)", ename, idname, damage, string )
-   }
-   #endif
+	new userkilled = 0
+	new string[30]
 
+	#if defined DEBUG
+	copy(string, 29, deathbyweapon[deathby])
 
-   if(userdead || !is_user_alive(id)){
-      return PLUGIN_HANDLED
-   }
-
-   if ( hasblink[id] &&
-        (weapon ==10 || weapon==11 || weapon==12 || weapon==13 || weapon==15))
-   {
-      return PLUGIN_HANDLED
-   }
-
-   if (hasgodmode[id] && !hasblink[enemy] && playeritem[enemy]!=IMMUNITY &&
-      (p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
-      !magic_saving_throw(enemy))
-   {
-      return PLUGIN_HANDLED
-   }
-
-   /*
-   if (bodypart==1 && get_user_team(id)!=get_user_team(enemy)){
-      playerxp[enemy]+=HEADSHOT_BONUS
-      if (get_cvar_num("FT_kill_objectives")){
-          client_print(0, print_console, "UWC3-DEBUG: HEADSHOT (do_damage()) - attacked=(%d) enemy=(%d)", id, enemy)
-          client_print(enemy,print_chat,"[%s] You are awarded %d XP for having a headshot", MOD, HEADSHOT_BONUS)//?
-      }
-      displaylevel(enemy,1)
-   }
-   */
-
-   if (get_user_health(id) - damage<=0)
-      userkilled = 1
-   if (get_user_health(id) - damage<=1024 && get_user_health(id)>500)
-      userkilled = 1
-   if (userkilled)
-      set_user_health_log(id, -1, true, "do_damage() USERKILLED1")
-   else{
-      //client_print(0, print_console, "[%s DEBUG] [In do_damage()] NOTKILLED1 damage=(%d) cause=(%s)", damage, string)
-      set_user_health_log(id, get_user_health(id) - damage, true, "do_damage() NOTKILLED1")
-   }
-
-   //client_print(0, print_console, "[%s DEBUG] [do_damage()-2] <%s => %s> dmg=(%d) user_health=(%d)", MOD, ename, idname, damage, get_user_health(id))
+	if(get_cvar_num("UW_DEBUG") == 1)
+		client_print(0, print_console, "[%s DEBUG In do_damage()] <%s => %s> dmg=(%d) deathby=(%s) userdead=(%d) victim_evade?=(%d)", MOD, ename, idname, damage, string, userdead, p_evadethisshot[id])
+	else if (get_cvar_num("UW_DEBUG") == 6)
+		log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)", ename, idname, damage, deathbyweapon[deathby])
+	#endif
 
 
-   if (userkilled && is_connected[enemy] && get_user_team(id)!=get_user_team(enemy))
-      cs_set_user_money(enemy, cs_get_user_money(enemy) + MONEY_PER_KILL)
+	if(userdead || !is_user_alive(id))
+		return PLUGIN_HANDLED
 
-   if (userkilled){
-      diedlastround[id]=true
-   }
+	if(hasblink[id] && (weapon >=10 || weapon <= 15))
+		return PLUGIN_HANDLED
 
-   if (userkilled && id!=enemy)
-      copy(string, 29, deathbyweapon[deathby]) //format(string, 25, "%s", uwc3_weapon[deathby])
-      //get_deathbystr(deathby, string, 47)	// Get the string form of deathby
+	if(hasgodmode[id] && !hasblink[enemy] && playeritem[enemy] != IMMUNITY &&
+	(p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) && !magic_saving_throw(enemy))
+		return PLUGIN_HANDLED
 
+	/*
+	if(bodypart==1 && vTeam != eTeam)
+	{
+		playerxp[enemy]+=HEADSHOT_BONUS
 
-   new name[32]
-   get_user_name(id,name,31)
+		if(get_cvar_num("FT_kill_objectives"))
+		{
+			client_print(0, print_console, "UWC3-DEBUG: HEADSHOT (do_damage()) - attacked=(%d) enemy=(%d)", id, enemy)
+			client_print(enemy, print_chat, "[%s] You are awarded %d XP for having a headshot", MOD, HEADSHOT_BONUS)//?
+		}
+		displaylevel(enemy, 1)
+	}
+	*/
 
-   xpgiven = xpgiven_lev[p_level[enemy]]
+	if(get_user_health(id) - damage <= 0)
+		userkilled = 1
 
-   if (userkilled && ((victim_or_enemy == 2) || (victim_or_enemy == 3)) && (id != enemy) && (userdead == 0) )
-   {
-      // A skill resulted in a player's death
-      if (get_user_team(id)!=get_user_team(enemy)){
+	if(get_user_health(id) - damage <= 1024 && get_user_health(id) > 500)
+		userkilled = 1
 
-         if ( !is_connected[ id ] || !is_connected[ enemy ] )
-            return PLUGIN_CONTINUE
+	if(userkilled)
+		set_user_health_log(id, -1, true, "do_damage() USERKILLED1")
+	else
+	{
+		//client_print(0, print_console, "[%s DEBUG] [In do_damage()] NOTKILLED1 damage=(%d) cause=(%s)", damage, string)
+		set_user_health_log(id, get_user_health(id) - damage, true, "do_damage() NOTKILLED1")
+	}
 
-         set_user_frags(enemy, get_user_frags(enemy)+1)
-         set_user_frags(id, get_user_frags(id)+1)
+	//client_print(0, print_console, "[%s DEBUG] [do_damage()-2] <%s => %s> dmg=(%d) user_health=(%d)", MOD, ename, idname, damage, get_user_health(id))
 
-         //logKill(enemy,id, string)
-         if (get_user_team(id) != get_user_team(enemy)){
-            playerxp[enemy] += xpgiven
-            if (get_cvar_num("FT_kill_objectives")){
-               client_print(enemy, print_chat,
-                  "[%s] You just gained %d XP for killing %s with %s",
-                  MOD, xpgiven, name, string)
-            }
-            /* Fix this later
-            new e_steamid[32], i_steamid[32]
+	if(userkilled && is_connected[enemy] && vTeam != eTeam)
+		cs_set_user_money(enemy, cs_get_user_money(enemy) + MONEY_PER_KILL)
 
-            new vTeam =  get_user_team(id)
-            new eTeam =  get_user_team(enemy)
+	if(userkilled)
+		diedlastround[id] = true
 
-            get_user_authid( enemy, e_steamid, 31 )
-            get_user_authid( id, i_steamid, 31 )
+	if(userkilled && id != enemy)
+		copy(string, 29, deathbyweapon[deathby])
 
-            new TeamName[4][] =
-            {
-            	"UNASSIGNED",
-            	"TERRORIST",
-            	"CT",
-            	"SPECTATOR"
-            }
+	new name[32]
+	get_user_name(id, name, 31)
 
-            log_message( "^"%s<%d><%s><%s>^" killed ^"%s<%d><%s><%s>^" with ^"%s^"", e_name, get_user_userid( enemy ), e_steamid, TeamName[eTeam], name, get_user_userid( id ), i_steamid, TeamName[vTeam], string );
-            */
-            displaylevel(id, 1)
-         }
-      }
+	xpgiven = xpgiven_lev[p_level[enemy]]
 
-      if(!deathmessageshown[id]){
-         deathmessageshown[id]=true
-         message_begin( MSG_ALL, gmsgDeathMsg,{0,0,0},0)
-         write_byte(enemy)
-         write_byte(id)
-         write_byte(0)
-         write_string(string)
-         message_end()
-      }
+	if(userkilled && ((victim_or_enemy == 2) || (victim_or_enemy == 3)) && (id != enemy) && !userdead)
+	{
+		// A skill resulted in a player's death
+		if(vTeam != eTeam)
+		{
+			if(!is_connected[id] || !is_connected[enemy])
+				return PLUGIN_CONTINUE
 
-      return PLUGIN_HANDLED
+			set_user_frags(enemy, get_user_frags(enemy) + 1)
+			set_user_frags(id, get_user_frags(id) + 1)
 
-   }
+			//logKill(enemy,id, string)
+			if(vTeam != eTeam)
+			{
+				playerxp[enemy] += xpgiven
+				if(get_cvar_num("FT_kill_objectives"))
+				{
+					client_print(enemy, print_chat, "[%s] You just gained %d XP for killing %s with %s", MOD, xpgiven, name, string)
+				}
 
-   if (userkilled && (victim_or_enemy == 1) && (id != enemy) && (userdead == 0) ){
-      // due to all aggressive auras
-      new headshot
-      if (bodypart==1)
-         headshot=1
-      else
-         headshot=0
+				/* Fix this later
+				new e_steamid[32], i_steamid[32]
 
-      new weaponname[32]
+				get_user_authid( enemy, e_steamid, 31 )
+				get_user_authid( id, i_steamid, 31 )
 
-      switch (weapon){
-         case 1:
-            weaponname = "p228"
-         case 3:
-            weaponname = "scout"
-         case 4:
-            weaponname = "grenade"
-         case 5:
-            weaponname = "xm1014"
-         case 7:
-            weaponname = "mac10"
-         case 8:
-            weaponname = "aug"
-         case 10:
-            weaponname = "elite"
-         case 11:
-            weaponname = "fiveseven"
-         case 12:
-            weaponname = "ump45"
-         case 13:
-            weaponname = "sg550"
-         case 16:
-            weaponname = "usp"
-         case 17:
-            weaponname = "glock18"
-         case 18:
-            weaponname = "awp"
-         case 19:
-            weaponname = "mp5navy"
-         case 20:
-            weaponname = "m249"
-         case 21:
-            weaponname = "m3"
-         case 22:
-            weaponname = "m4a1"
-         case 23:
-            weaponname = "tmp"
-         case 24:
-            weaponname = "g3sg1"
-         case 26:
-            weaponname = "deagle"
-         case 27:
-            weaponname = "sg552"
-         case 28:
-            weaponname = "ak47"
-         case 29:
-            weaponname = "knife"
-         case 30:
-            weaponname = "p90"
-      }
+				new TeamName[4][] =
+				{
+					"UNASSIGNED",
+					"TERRORIST",
+					"CT",
+					"SPECTATOR"
+				}
 
-      //client_print(0, print_console,
-      //   "[%s DEBUG] [do_damage()-3] <%s => %s> weapon=(%s)",
-      //   MOD, ename, idname, weaponname)
+				log_message("^"%s<%d><%s><%s>^" killed ^"%s<%d><%s><%s>^" with ^"%s^"", e_name, get_user_userid(enemy), e_steamid, TeamName[eTeam], name, get_user_userid(id), i_steamid, TeamName[vTeam], string);
+				*/
+				displaylevel(id, 1)
+			}
+		}
 
-      //logKill(enemy,id, weaponname)
-      if ( is_connected[ id ] ) set_user_frags(id, get_user_frags(id)+1)
-      if ( is_connected[ enemy ] ) set_user_frags(enemy, get_user_frags(enemy)+1)
+		if(!deathmessageshown[id])
+		{
+			deathmessageshown[id] = true
+			message_begin( MSG_ALL, gmsgDeathMsg, {0, 0, 0}, 0)
+			write_byte(enemy)
+			write_byte(id)
+			write_byte(0)
+			write_string(string)
+			message_end()
+		}
+		return PLUGIN_HANDLED
+	}
 
-      if (!get_cvar_num("mp_weaponxpmodifier") &&
-          get_user_team(id)!=get_user_team(enemy))
-      {
-         playerxp[enemy]+=xpgiven
-         if (get_cvar_num("FT_kill_objectives")){
-            client_print(enemy, print_chat,
-              "[%s] You just gained %d XP for killing %s with %s",MOD,xpgiven,name,string)
-         }
-      }else if(get_user_team(id)!=get_user_team(enemy)){
-         playerxp[enemy] += floatround(xpgiven*weaponxpmultiplier[weapon])
-         if (get_cvar_num("FT_kill_objectives")){
-            client_print(enemy, print_chat,
-              "[%s] You just gained %d XP for killing %s with %s",
-              MOD, floatround(xpgiven*weaponxpmultiplier[weapon]), name, string)
-         }
-      }
+	if(userkilled && (victim_or_enemy == 1) && (id != enemy) && !userdead)
+	{
+		// due to all aggressive auras
+		new headshot = (bodypart==1) ? 1 : 0
 
-      if(!deathmessageshown[id]){
-         deathmessageshown[id]=true
-         message_begin( MSG_ALL, gmsgDeathMsg,{0,0,0},0)
-         write_byte(enemy)
-         write_byte(id)
-         write_byte(headshot)
-         write_string(weaponname)
-         message_end()
-         displaylevel(enemy, 1)
-      }
-   }
+		//client_print(0, print_console,
+		//   "[%s DEBUG] [do_damage()-3] <%s => %s> weapon=(%s)",
+		//   MOD, ename, idname, weaponname[weapon])
 
-   return PLUGIN_CONTINUE
+		//logKill(enemy,id, weaponname[weapon])
+
+		if(is_connected[id])
+			set_user_frags(id, get_user_frags(id) + 1)
+
+		if(is_connected[enemy])
+			set_user_frags(enemy, get_user_frags(enemy) + 1)
+
+		if(!get_cvar_num("mp_weaponxpmodifier") && vTeam != eTeam)
+		{
+			playerxp[enemy] += xpgiven
+
+			if(get_cvar_num("FT_kill_objectives"))
+			{
+				client_print(enemy, print_chat, "[%s] You just gained %d XP for killing %s with %s", MOD, xpgiven, name, string)
+			}
+		}
+		else if(vTeam != eTeam)
+		{
+			playerxp[enemy] += floatround(xpgiven * weaponxpmultiplier[weapon])
+
+			if(get_cvar_num("FT_kill_objectives"))
+				client_print(enemy, print_chat, "[%s] You just gained %d XP for killing %s with %s", MOD, floatround(xpgiven * weaponxpmultiplier[weapon]), name, string)
+		}
+
+		if(!deathmessageshown[id])
+		{
+			deathmessageshown[id] = true
+			message_begin(MSG_ALL, gmsgDeathMsg, {0, 0, 0}, 0)
+			write_byte(enemy)
+			write_byte(id)
+			write_byte(headshot)
+			write_string(weaponname[weapon])
+			message_end()
+			displaylevel(enemy, 1)
+		}
+	}
+	return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END do_damage subroutine
@@ -285,200 +228,169 @@ public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, 
 // BEGIN damage_event subroutine
 // Handler for all damage events
 // **************************************************************************
-public damage_event(id){
+public damage_event(id)
+{
+	if(!warcraft3)
+		return PLUGIN_CONTINUE
 
-   if (!warcraft3)
-      return PLUGIN_CONTINUE
+	new weapon = 0, bodypart = 0, enemy = get_user_attacker(id, weapon, bodypart)
 
-   new weapon = 0, bodypart = 0, enemy = get_user_attacker(id,weapon,bodypart)
+	if(id < 1 || id > 32 || enemy < 1 || enemy > 32)
+		return 0;
 
-   if(id < 1 || id > 32 || enemy < 1 || enemy > 32)
-      return 0;
+	new damage = read_data(2)
 
-   new damage = read_data(2)
+	new name1[32], name2[32]
 
-   new name1[32], name2[32]
-   get_user_name(id, name1, 31)
-   get_user_name(enemy, name2, 31)
+	get_user_name(id, name1, 31)
+	get_user_name(enemy, name2, 31)
 
-   if (get_cvar_num("UW_medicalerts") && !medicalert[id]){
-      // Send out medic alert calls to all medics on the team
-      medicalert[id] = true
-      new pid, players[32], pnum=0
-      get_players(players, pnum)
-      for (new i=0; i < pnum; i++){
-         pid = players[i]
-         if (is_user_alive(id) && is_user_alive(pid) &&
-             (get_user_team(pid) == get_user_team(id)))
-         {
-            if ((p_skills[pid][SKILLIDX_MEND] == 3) && (isburning[id] || isnburning[id])){
-               client_print(pid, print_chat,
-                  "[%s] MEDIC ALERT : %s is burning and needs medical attention",
-                  MOD, name1)
-            }else if ((p_skills[pid][SKILLIDX_MEND] == 2) && ispoisonedss[id]){
-               client_print(pid, print_chat,
-                  "[%s] MEDIC ALERT : %s is poisoned and needs medical attention",
-                  MOD, name1)
-            }else if ((p_skills[pid][SKILLIDX_MEND] == 2) && isdiseasedcb[id]){
-               client_print(pid, print_chat,
-                  "[%s] MEDIC ALERT : %s is diseased and needs medical attention",
-                  MOD, name1)
-            }else if (p_skills[pid][SKILLIDX_MEND]){
-               client_print(pid, print_chat,
-                  "[%s] MEDIC ALERT : %s needs medical attention", MOD, name1)
-            }
-         }
-      }
-   }
+	if(get_cvar_num("UW_medicalerts") && !medicalert[id])
+	{
+		medicalert[id] = true // Send out medic alert calls to all medics on the team
 
-   if (get_cvar_num("UW_dmgxpbonus"))
-      damageto[enemy][id] += damage
+		new pid, players[32], pnum = 0
+		get_players(players, pnum)
 
-   //client_print(0, print_console, "[%s DEBUG] [In damage_event()] <%s => %s> damage=(%d) damageto=(%d)", MOD, name2, name1, damage, damageto[enemy][id])
+		for(new i = 0; i < pnum; i++)
+		{
+         		pid = players[i]
+			if(is_user_alive(id) && is_user_alive(pid) && (get_user_team(pid) == get_user_team(id)))
+			{
+				if((p_skills[pid][SKILLIDX_MEND] == 3) && (isburning[id] || isnburning[id]))
+					client_print(pid, print_chat,	"[%s] MEDIC ALERT : %s is burning and needs medical attention", MOD, name1)
+				else if((p_skills[pid][SKILLIDX_MEND] == 2) && ispoisonedss[id])
+					client_print(pid, print_chat, "[%s] MEDIC ALERT : %s is poisoned and needs medical attention", MOD, name1)
+				else if ((p_skills[pid][SKILLIDX_MEND] == 2) && isdiseasedcb[id])
+					client_print(pid, print_chat, "[%s] MEDIC ALERT : %s is diseased and needs medical attention", MOD, name1)
+				else if (p_skills[pid][SKILLIDX_MEND])
+					client_print(pid, print_chat, "[%s] MEDIC ALERT : %s needs medical attention", MOD, name1)
+			}
+		}
+	}
 
-   //client_print(0, print_console, "[%s DEBUG] [In damage_event()] <%s => %s> weapon=(%d) bodypart=(%d) dmg=(%d)", MOD, name2, name1, weapon, bodypart, damage)
+	if(get_cvar_num("UW_dmgxpbonus"))
+		damageto[enemy][id] += damage
 
-   /*
-   if(weapon==0 && enemy==0 && is_running("czero")){
-      // Temporary Fix: HE nade tossed in CZ (get_user_attacker is broken in CZ
-      //for nades) This is not 100% (obviously, look at the shitty code)
-      new Float:porigin[3], players[32], pnum=0, y=0
-      new Float:distance
+	//client_print(0, print_console, "[%s DEBUG] [In damage_event()] <%s => %s> damage=(%d) damageto=(%d)", MOD, name2, name1, damage, damageto[enemy][id])
 
-      Entvars_Get_Vector(id,EV_VEC_origin,porigin)
-      get_players(players, pnum)
+	//client_print(0, print_console, "[%s DEBUG] [In damage_event()] <%s => %s> weapon=(%d) bodypart=(%d) dmg=(%d)", MOD, name2, name1, weapon, bodypart, damage)
 
-      for(y=0;y<pnum;y++){
-         enemy = players[y]
-         distance = VecDist(porigin,he_origin[enemy])
-         if (distance<350.0)
-            break
-      }
-      new parm3[1]
-      parm3[0]=enemy
-      set_task(0.1,"reset_he_origin",1,parm3,1)
-      weapon = 4
-      // End Temporary Fix
-   }
-   */
+	if(ismole[enemy] && (playeritem2[id]==PROTECTANT || hasblink[id]))
+	{
+		// Mole Protectant
+		set_user_health_log(id, get_user_health(id) + damage, true, "damage_event() PROTECTANT1")
+		client_print(id, print_chat,"[%s] A shot by a mole was deflected", MOD)
+		return PLUGIN_HANDLED
+	}
 
-   if(ismole[enemy] && (playeritem2[id]==PROTECTANT || hasblink[id])){
-      // Mole Protectant
-      damage = read_data(2)
-      set_user_health_log(id,get_user_health(id)+damage, true, "damage_event() PROTECTANT1")
-      client_print(id,print_chat,"[%s] %s",MOD,"A shot by a mole was deflected")
-      return PLUGIN_HANDLED
-   }
+	if(hasgodmode[id])
+	{
+		// Godmode handler, check for necklace which will counter w/ extra dmg
+		if(hasblink[enemy] || playeritem[enemy] == IMMUNITY)
+		{
+			godshealth[id] = godshealth[id] - damage
 
-   if(hasgodmode[id]){
-      // Godmode handler, check for necklace which will counter w/ extra dmg
-      damage = read_data(2)
-      if(hasblink[enemy] || playeritem[enemy]==IMMUNITY){
-         godshealth[id] = godshealth[id] - damage
-         if(godshealth[id]<0){
-            do_damage(id,enemy, godshealth[id]+2048, 16, 1, weapon, bodypart, 0)
-         }
-      }else if ( (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
-                  magic_saving_throw(enemy))
-      {
-         godshealth[id] = godshealth[id] - damage
-         if(godshealth[id]<0){
-            do_damage(id,enemy, godshealth[id]+2048, 22, 1, weapon, bodypart, 0)
-         }
-      }else{
-         set_user_health_log(id,get_user_health(id)+damage, true, "damage_event() GODMODE1")
-         return PLUGIN_HANDLED
-      }
-   }
+			if(godshealth[id] < 0)
+			{
+				do_damage(id,enemy, godshealth[id]+2048, 16, 1, weapon, bodypart, 0)
+			}
+		}
+		else if((p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) || magic_saving_throw(enemy))
+		{
+			godshealth[id] = godshealth[id] - damage
+			if(godshealth[id] < 0)
+			{
+				do_damage(id,enemy, godshealth[id] + 2048, 22, 1, weapon, bodypart, 0)
+			}
+		}
+		else
+		{
+			set_user_health_log(id,get_user_health(id)+damage, true, "damage_event() GODMODE1")
+			return PLUGIN_HANDLED
+		}
+	}
 
-   if (enemy==id)
-      return PLUGIN_HANDLED
+	if(enemy == id)
+		return PLUGIN_HANDLED
 
-   if (enemy==id && weapon==0){
-      return PLUGIN_CONTINUE
-   }else if (enemy==0){
-      return PLUGIN_CONTINUE
-   }
+	if(enemy == id && !weapon)
+		return PLUGIN_CONTINUE
+	else if(!enemy)
+		return PLUGIN_CONTINUE
 
-   // [08-10-04] - Evasion completely rewritten and modified for Dexterity bonus - K2mia
-   // [07-30-04] - Moved Evasion check to be before other skill checks - K2mia
-   if (p_skills[id][SKILLIDX_EVASION]) {
-      // Elf Evasion
+	// [08-10-04] - Evasion completely rewritten and modified for Dexterity bonus - K2mia
+	// [07-30-04] - Moved Evasion check to be before other skill checks - K2mia
+	if(p_skills[id][SKILLIDX_EVASION]) // Elf Evasion
+	{
+		new Float:randomnumber = random_float(0.0, 1.0)
+		new Float:evade_percent = p_evasion[p_skills[id][SKILLIDX_EVASION] - 1]
 
-      new Float:randomnumber = random_float(0.0,1.0)
+		if(USE_ENH && (p_attribs[id][ATTRIBIDX_DEX] > ATTRIB_BASE))
+		{
+			new edex = p_attribs[id][ATTRIBIDX_DEX] - ATTRIB_BASE
+			evade_percent += (float(edex) * DEX_EVADE_BONUS)
 
-      new Float:evade_percent = p_evasion[p_skills[id][SKILLIDX_EVASION]-1]
+			#if defined DEBUG
+				if(get_cvar_num("UW_DEBUG") == 1)
+					client_print(id, print_console, "[%s DEBUG In damage_event()-1] evade_percent=(%f)", MOD, evade_percent)
+			#endif
+		}
 
-      if (USE_ENH && (p_attribs[id][ATTRIBIDX_DEX] > ATTRIB_BASE) ){
-         new edex = (p_attribs[id][ATTRIBIDX_DEX] - ATTRIB_BASE)
-         evade_percent += (float(edex) * DEX_EVADE_BONUS)
+		#if defined DEBUG
+			if (get_cvar_num("UW_DEBUG") == 1)
+				client_print(id, print_console, "[%s DEBUG In damage_event()-2] evade_percent modified=(%f)", MOD, evade_percent)
+		#endif
 
-         #if defined DEBUG
-         if (get_cvar_num("UW_DEBUG") == 1){
-            client_print(id, print_console,
-               "[%s DEBUG In damage_event()-1] evade_percent=(%f)", MOD, evade_percent)
-         }
-         #endif
-      }
+		if (is_user_alive(id) && (randomnumber <= evade_percent))
+			p_evadethisshot[id] = true
+		else
+			p_evadethisshot[id] = false
 
-      #if defined DEBUG
-      if (get_cvar_num("UW_DEBUG") == 1){
-         client_print(id, print_console,
-          "[%s DEBUG In damage_event()-2] evade_percent modified=(%f)", MOD, evade_percent)
-      }
-      #endif
+		if(p_evadethisshot[id])
+		{
+			new idname[32], ename[32]
 
-      if (is_user_alive(id) && (randomnumber <= evade_percent)){
-         p_evadethisshot[id] = true
-      }else{
-         p_evadethisshot[id] = false
-      }
+			get_user_name(id, idname, 31)
+			get_user_name(enemy, ename, 31)
 
-      if (p_evadethisshot[id]){
-         new idname[32], ename[32]
-         get_user_name(id, idname, 31)
-         get_user_name(enemy, ename, 31)
+			set_user_health_log(id, get_user_health(id) + damage, true, "damage_event() EVADE (health+damage)")
 
-         damage = read_data(2)
-
-         set_user_health_log(id, get_user_health(id) + damage, true,
-            "damage_event() EVADE (health+damage)")
-
-         client_print(id, print_chat,"[%s] You skillfully evade a shot by %s", MOD, ename)
-         client_print(enemy, print_chat, "[%s] %s skillfully evades your shot", MOD, idname)
+			client_print(id, print_chat, "[%s] You skillfully evade a shot by %s", MOD, ename)
+			client_print(enemy, print_chat, "[%s] %s skillfully evades your shot", MOD, idname)
 
 
-         if (iglow[id][2] < 1){
-            new parm[2]
-            parm[0] = id
-            set_task(0.01,"glow_change",7,parm,2)
-         }
+			if (iglow[id][2] < 1)
+			{
+				new parm[2]
+				parm[0] = id
+				set_task(0.01, "glow_change", 7, parm, 2) // Make this just into a normal call function
+			}
 
-         iglow[id][2] += damage
-         iglow[id][0] = 0
-         iglow[id][1] = 0
-         iglow[id][3] = 0
+			iglow[id][2] += damage
+			iglow[id][0] = 0
+			iglow[id][1] = 0
+			iglow[id][3] = 0
 
-         if (iglow[id][2]>MAXGLOW)
-            iglow[id][2]=MAXGLOW
+			if(iglow[id][2] > MAXGLOW)
+				iglow[id][2] = MAXGLOW
 
-         message_begin(MSG_ONE,gmsgFade,{0,0,0},id)
-         write_short( 1<<10 ) // fade lasts this long duration
-         write_short( 1<<10 ) // fade lasts this long hold time
-         write_short( 1<<12 ) // fade type (in / out)
-         write_byte( 0 ) // fade red
-         write_byte( 0 ) // fade green
-         write_byte( 255 ) // fade blue
-         write_byte( iglow[id][2] ) // fade alpha
-         message_end()
-      }
-      // End of Elf Evasion
-   }
+			message_begin(MSG_ONE, gmsgFade, {0, 0, 0}, id)
+			write_short(1<<10) // fade lasts this long duration
+			write_short(1<<10) // fade lasts this long hold time
+			write_short(1<<12) // fade type (in / out)
+			write_byte(0) // fade red
+			write_byte(0) // fade green
+			write_byte(255) // fade blue
+			write_byte(iglow[id][2]) // fade alpha
+			message_end()
+      	}
+	}// End of Elf Evasion
 
-   #if defined DEBUG
-   if (get_cvar_num("UW_DEBUG") == 1)
-      client_print(0, print_console, "[%s DEBUG In damage_event()] <%s => %s> damage=(%d) was_evaded?=(%d)", MOD, name2, name1, damage, p_evadethisshot[id])
-   #endif
+	#if defined DEBUG
+		if (get_cvar_num("UW_DEBUG") == 1)
+		client_print(0, print_console, "[%s DEBUG In damage_event()] <%s => %s> damage=(%d) was_evaded?=(%d)", MOD, name2, name1, damage, p_evadethisshot[id])
+	#endif
 
 
    if (p_skills[enemy][SKILLIDX_CRITSTRIKE] && p_skills[enemy][SKILLIDX_TRUESHOT]){
@@ -1626,17 +1538,18 @@ public death(){
    // Determine if victim has Nightvision
    hasnvision[victim_id] = cs_get_user_nvg(victim_id)
 
-   if(task_exists(451+victim_id))
-      remove_task(451+victim_id)
+   // Removes Naplam
+   if(task_exists(451 + victim_id))
+      remove_task(451 + victim_id)
 
-   if (task_exists(2000+victim_id))
-      // Remove the function that makes you jump if you're goombad
-      remove_task(2000+victim_id)
+   // Remove the function that makes you jump if you're goombad
+   if(task_exists(2000 + victim_id))
+      remove_task(2000 + victim_id)
 
    // Remove icon because you don't have an ultimate when you're dead
-   icon_controller(victim_id,ICON_HIDE)
+   icon_controller(victim_id, ICON_HIDE)
 
-   ismole[victim_id]=false                 // For use w/mole protectant
+   ismole[victim_id] = false // For use w/mole protectant
 
    if (playeritem2[victim_id]==CHAMELEON || skinchanged[victim_id])
       changeskin(victim_id,1)
@@ -1663,10 +1576,10 @@ public death(){
    log_amx("%i", victim_id)
    set_user_footsteps(victim_id, 0)
 
-   new weaponname[20]
-   read_data(4,weaponname,31)
+   new weapon_name[20]
+   read_data(4,weapon_name,31)
    new weapon
-   get_user_attacker(victim_id,weapon)
+   get_user_attacker(victim_id, weapon)
 
    //client_print(0, print_console, "[%s DEBUG] [In death()-2] killer=(%s) victim=(%s) hs=(%d) weaponname=(%s)", MOD, kname, vname, headshot, weaponname)
 
@@ -1687,21 +1600,19 @@ public death(){
    }
    */
 
-   if(!deathmessageshown[victim_id] && killer_id!=victim_id &&
-      !equal(weaponname,"world"))
+   if(!deathmessageshown[victim_id] && killer_id!=victim_id && !equal(weapon_name, "world"))
    {
-      deathmessageshown[victim_id]=true
-      message_begin( MSG_ALL, gmsgDeathMsg,{0,0,0},0)
+      deathmessageshown[victim_id] = true
+      message_begin(MSG_ALL, gmsgDeathMsg, {0, 0, 0}, 0)
       write_byte(killer_id)
       write_byte(victim_id)
       write_byte(headshot)
-      write_string(weaponname)
-      write_string(weaponname)
+      write_string(weapon_name)
       message_end()
    }
 
-   changingteam[victim_id]=false
-   diedlastround[victim_id]=true
+   changingteam[victim_id] = false
+   diedlastround[victim_id] = true
 
    // Player either has ultimate Vengeance OR Suicide Bomber
    if (p_skills[victim_id][SKILLIDX_VENGEANCE] &&
@@ -1709,8 +1620,8 @@ public death(){
    {
       // Vengeance
       new parm[2]
-      parm[0]=victim_id
-      parm[1]=6
+      parm[0] = victim_id
+      parm[1] = 6
 
       // [07-14-04] Vengeance check within ultimate timer - K2mia
       if (get_cvar_num("UW_force_vengeance")){

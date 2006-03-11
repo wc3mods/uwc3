@@ -38,6 +38,11 @@ public plugin_init()
 	register_clcmd("news", "show_new_s", -1, "- Displays news about the Ultimate Warcraft3 plugin")
 	register_clcmd("war3help", "war3_info2", -1, "- Displays help information for the UWC3 module")
 	register_concmd("playerskills", "player_skills", -1, "-Displays the players rank and skills")
+
+	register_clcmd("changerace", "n_change_race", -1, "-Display UWC3 info")
+	register_clcmd("/changerace", "n_change_race", -1, "-Display UWC3 info")
+	register_clcmd("selectrace", "n_change_race", -1, "-Display UWC3 info")
+	register_clcmd("/selectrace", "n_change_race", -1, "-Display UWC3 info")
 }
 
 /*
@@ -474,14 +479,18 @@ public native_items_info2(id, num)
 // END items_info2 subroutine
 // **************************************************************************
 
+
 public native_change_race(id, num)
 {
 	if(!warcraft3)
 		return;
 
 	new index = get_param(1)
-
-	if(check_player(index))
+	n_change_race(index)
+}
+public n_change_race(index)
+{
+	if(!warcraft3)
 		return;
 
 	temp[0] = 0

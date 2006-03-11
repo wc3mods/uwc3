@@ -40,7 +40,7 @@ public plugin_precache()
 
 public plugin_init()
 {
-	register_plugin("UWC3 Functions", VER, "UWC3 TEAM");
+	register_plugin("UWC3 FunctiONs", VER, "UWC3 TEAM");
 
 	new map[32];
 
@@ -49,7 +49,7 @@ public plugin_init()
 	checkmap(map)
 
 	/* TEST COMMANDS */
-	register_clcmd("loc", "admin_loc", ADMIN_MENU, "-Displays your coordinate location")
+	register_clcmd("loc", "admin_loc", ADMIN_MENU, "-Displays your coordinate locatiON")
 	/* END TEST COMMANDS */
 }
 
@@ -71,12 +71,12 @@ public native_changeskin(id, num)
 		case 1:
 		{
 			cs_reset_user_model(index)
-			set_changeskin(index, off)
+			set_changeskin(index, OFF)
 		}
 		case 2:
 		{
 			cs_set_user_model(index, "zombie")
-			set_changeskin(index, on)
+			set_changeskin(index, ON)
 		}
 		default:
 		{
@@ -89,7 +89,7 @@ public native_changeskin(id, num)
 				case TEAM_CT:
 					cs_set_user_model(index, TSkins[num])
 			}
-			set_changeskin(index, on)
+			set_changeskin(index, ON)
 		}
 	}
 }
@@ -100,8 +100,8 @@ public native_changeskin(id, num)
 
 /*
  * BEGIN count_team subroutine
- * Count the members of the T/CT team - rewrite for buggy amxx function
- * teame06 rewrite to one single function redundant to have two.
+ * Count the members of the T/CT team - rewrite for buggy amxx functiON
+ * teame06 rewrite to ONe single functiON redundant to have two.
  */
 public native_count_team(id, num)
 {
@@ -130,14 +130,14 @@ public native_count_team(id, num)
 
 // **************************************************************************
 // BEGIN admin_loc subroutine
-// Display your location in coordinates
+// Display your locatiON in coordinates
 // **************************************************************************
 public admin_loc(id)
 {
 	new origin[3]
 
 	get_user_origin(id, origin)
-	client_print(id, print_chat, "[%s] Your location is: <%d %d %d>", MOD, origin[0], origin[1], origin[2])
+	client_print(id, print_chat, "[%s] Your locatiON is: <%d %d %d>", MOD, origin[0], origin[1], origin[2])
 
 	return PLUGIN_HANDLED
 }
@@ -145,33 +145,33 @@ public admin_loc(id)
 // END admin_loc subroutine
 // **************************************************************************
 /*
- * Prevents weapons from being given in knife only maps
+ * Prevents weapONs from being given in knife ONly maps
  */
 
 checkmap(mapname[])
 {
-	new gaben = get_cvar_num("FT_no_gloves_on_ka")
+	new gaben = get_cvar_num("FT_no_gloves_ON_ka")
 
 	if(equali(mapname, "ka_", 3) || equali(mapname, "he_", 3) || containi(mapname,"scoutzknivez") != -1)
 	{
-		no_weap(give_pistol, on)
-		no_weap(give_nade, gaben ? off : on)
+		no_weap(give_pistol, ON)
+		no_weap(give_nade, gaben ? OFF : ON)
 	}
 	else
 	{
-		no_weap(give_nade, on)
-		no_weap(give_pistol, on)
+		no_weap(give_nade, ON)
+		no_weap(give_pistol, ON)
 	}
 
-	if(get_cvar_num("FT_no_orcnades_on_he"))
+	if(get_cvar_num("FT_no_orcnades_ON_he"))
 	{
 		if(equali(mapname,"ka_", 3) || equali(mapname,"jail_riot", 3) || equali(mapname,"fy_", 3))
-			no_weap(no_hegren, on)
+			no_weap(no_hegren, ON)
 		else
-			no_weap(no_hegren, off)
+			no_weap(no_hegren, OFF)
 	}
 
-	/* This is only ran once so it ok.*/
+	/* This is ONly ran ONce so it ok.*/
 	new gaben_map[][] =
 	{
 		"cs_tibet",
@@ -186,8 +186,8 @@ checkmap(mapname[])
 	{
 		if(equali(mapname, gaben_map[i]))
 		{
-			no_weap(give_pistol, on)
-			no_weap(give_nade, gaben ? off : on)
+			no_weap(give_pistol, ON)
+			no_weap(give_nade, gaben ? OFF : ON)
 			break
 		}
 	}
@@ -202,7 +202,7 @@ public client_putinserver(id)
 	is_connected[id] = true
 }
 
-public client_disconnect(id)
+public client_discONnect(id)
 {
 	is_connected[id] = false
 }

@@ -106,6 +106,7 @@ public bomb_drop(id)
 	}
 }
 
+/* This Does not work */
 public bomb_event(id)
 {
 	if(!warcraft3)
@@ -211,6 +212,7 @@ public bomb_event(id)
 	}
 	return;
 }
+/* This Does not work */
 
 /* Hostage Kill Event */
 public event_hostkill(id)

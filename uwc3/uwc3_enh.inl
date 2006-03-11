@@ -6,8 +6,8 @@
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Enhancements (Attributes / Resistances) 
-*  Subroutines to handle enhancement training 
+*  Module: Enhancements (Attributes / Resistances)
+*  Subroutines to handle enhancement training
 *----------------------------------------------------------------------------
 *
 *  UWC3 is written exclusively for AMX Mod X
@@ -44,8 +44,8 @@ public select_attrib( id ){
    }
 
    if (p_level[id] < enh_minlevel){
-      client_print(id, print_center, 
-         "[%s] You must reach level [%d] before you may enhance your attributes", 
+      client_print(id, print_center,
+         "[%s] You must reach level [%d] before you may enhance your attributes",
          MOD, enh_minlevel)
       return PLUGIN_HANDLED
    }
@@ -122,7 +122,7 @@ public do_attribmenu(id, key){
 
       if (apts <= 0){
          if (acount < ATTRIB_MAX_PTS){
-            client_print(id, print_chat, 
+            client_print(id, print_chat,
                "[%s] You do not have any Attribute points to spend, earn more E-XP", MOD)
          }else{
             client_print(id, print_chat,
@@ -132,7 +132,7 @@ public do_attribmenu(id, key){
          return PLUGIN_HANDLED
       }
 
- 
+
       // An enhancement pt was spent
       p_attribs[id][key+1] += 1
 
@@ -159,7 +159,7 @@ public do_attribmenu(id, key){
 
       // See what adjustments are needed for new skill
       if ( (key+1) == ATTRIBIDX_STR )
-         set_maxhealth( id, false ) 
+         set_maxhealth( id, false )
       else if ( (key+1) == ATTRIBIDX_CON )
          check_conregen( id )
       else if ( (key+1) == ATTRIBIDX_AGI ){
@@ -272,7 +272,7 @@ public do_resistmenu(id,key){
 
       if (rpts <= 0){
          if (rcount < RESIST_MAX_PTS){
-            client_print(id, print_chat, 
+            client_print(id, print_chat,
                "[%s] You do not have any Resistance points to spend, earn more E-XP", MOD)
          }else{
             client_print(id, print_chat,
@@ -434,21 +434,21 @@ public get_availresistpts(id){
 public resetattribs(id){
    if (!warcraft3)
      return PLUGIN_CONTINUE
-         
+
    if (get_cvar_num("FT_reset_skills")){
       client_print(id, print_center, "Your attributes will be reset next round")
       resetattrib[id] = true
    }else{
       client_print(id, print_center, "This server has disabled that option")
       resetattrib[id] = false
-   }     
-         
+   }
+
    return PLUGIN_HANDLED
-}     
+}
 // **************************************************************************
 // END resetattribs subroutine
 // **************************************************************************
-   
+
 
 // **************************************************************************
 // BEGIN resetresists subroutine
@@ -477,17 +477,17 @@ public resetresists(id){
 // BEGIN magic_saving_throw routine
 // Routine to check for a magic saving throw
 // **************************************************************************
-public magic_saving_throw(id){
-
-   if (USE_ENH && p_resists[id][RESISTIDX_MAGIC]){
-      new Float:randomnumber = random_float(0.0,1.0)
+public magic_saving_throw(id)
+{
+   if(USE_ENH && p_resists[id][RESISTIDX_MAGIC])
+   {
+      new Float:randomnumber = random_float(0.0, 1.0)
       new Float:tosave = float(p_resists[id][RESISTIDX_MAGIC]) / float(RESIST_MAX_VALUE)
 
       //new bool:bSaves = (randomnumber <= tosave)
-      //client_print(id, print_console, "DEBUG: rnum=(%f) tosave=(%f) saves=(%d)",
-      //   randomnumber, tosave, bSaves)
+      //client_print(id, print_console, "DEBUG: rnum=(%f) tosave=(%f) saves=(%d)", randomnumber, tosave, bSaves)
 
-      if (randomnumber <= tosave)
+      if(randomnumber <= tosave)
          return 1
    }
 
@@ -504,43 +504,43 @@ public magic_saving_throw(id){
 // Heal routine for the Constitution attribute
 // **************************************************************************
 public con_heal(parm[]){
-   
+
    new id = parm[0]
    new heal = parm[1]
    new Float:interval = CON_HEAL_INTERVAL
-   
+
    if (!endround && is_user_alive(id) && (p_attribs[id][ATTRIBIDX_CON] > ATTRIB_BASE) ){
       new econ = (p_attribs[id][ATTRIBIDX_CON] - ATTRIB_BASE)
       if (econ != heal){
          parm[1] = econ
-         heal = econ 
+         heal = econ
       }
       set_task(interval, "con_heal", id+1100, parm, 2)
    }
-   
+
    new health = 0
    new bool:was_healed = false
-   
+
 
    health = maxhealth[id] + (playeritem[id] == HEALTH ? HEALTHBONUS : 0)
 
    if (get_user_health(id) < health){
       was_healed = true
       set_user_health_log(id, get_user_health(id)+heal, true, "con_heal() HEAL")
-   }   
-   
+   }
+
 
    // [09-26-04] Adjustment if maxhealth exceeded - K2mia
    if (get_user_health(id) > health)
       set_user_health_log(id, health, true, "con_heal() ADJUST")
-   
-      
+
+
    if (!was_healed)
-      return PLUGIN_CONTINUE  
-      
+      return PLUGIN_CONTINUE
+
    new origin[3]
    get_user_origin(id, origin)
-      
+
    if(playeritem[id]!=CLOAK && (!p_skills[id][SKILLIDX_INVIS])){
       message_begin( MSG_BROADCAST, SVC_TEMPENTITY );
       write_byte( TE_IMPLOSION );

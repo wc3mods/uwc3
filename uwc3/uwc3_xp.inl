@@ -35,7 +35,7 @@
 // **************************************************************************
 public set_xpfrontend(){
 
-   if (get_cvar_num("mp_savexp")){
+   if (get_pcvar_num(mpsavexp)){
       set_longtermxp()
    }else{
       set_shorttermxp()
@@ -52,7 +52,7 @@ public set_xpfrontend(){
 // **************************************************************************
 public set_shorttermxp(){
 
-   if (get_cvar_num("mp_savexp") == 0){
+   if (!get_pcvar_num(mpsavexp)){
       BOMBPLANTXP /= 3
       DEFUSEXP /= 3
       HOSTAGEXP /= 3
@@ -109,7 +109,7 @@ public set_shorttermxp(){
 // **************************************************************************
 public set_longtermxp(){
 
-   if (get_cvar_num("mp_savexp")){
+   if (get_pcvar_num(mpsavexp)){
       BOMBPLANTXP /= 10
       DEFUSEXP /= 10
       HOSTAGEXP /= 10
