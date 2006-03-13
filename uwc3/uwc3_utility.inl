@@ -483,7 +483,7 @@ public do_examine(id){
 
       if (get_user_team(id) != get_user_team(friend)){
          format(sReport, 64, "Examining %s :: [ ENEMY ]", fname )
-         show_hudmessage(id, sReport)
+         show_hudmessage(id, "%s", sReport)
          return PLUGIN_HANDLED
       }
 
@@ -493,7 +493,7 @@ public do_examine(id){
 
       format(sReport, 64, "Examining %s :: [ %d HP / %d ARM ]", fname, fhp, farmor )
 
-      show_hudmessage(id, sReport)
+      show_hudmessage(id, "%s", sReport)
    }
 
    return PLUGIN_HANDLED
@@ -623,7 +623,7 @@ public showStatus(id)
          show_hudmessage(id,"%s -- %d HP / %d AP", name, health, get_user_armor(pid))
       } else {
          set_hudmessage(color1,50,color2,-1.0,0.60,1, 0.01, 3.0, 0.01, 0.01, 4)
-         show_hudmessage(id,name)
+         show_hudmessage(id, "%s", name)
       }
       displaylevel(id, 4)
    }

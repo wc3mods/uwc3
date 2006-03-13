@@ -792,7 +792,7 @@ public items(parm2[2]){
    //set_hudmessage(255, 255, 255, 0.05, -1.0, 2, 0.02, 10.0, 0.01, 0.1, 2)
 
    if (is_user_alive(id) && !endround)
-      show_hudmessage(id, temp2)
+      show_hudmessage(id, "%s", temp2)
 
    set_task(1.5, "items", 4511+id, parm2, 2 );
 }

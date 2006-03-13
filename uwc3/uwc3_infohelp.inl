@@ -973,7 +973,7 @@ public displaylevel(id,hide){
       */
 
       set_hudmessage(255, 255, 255, -1.0, 0.3, 0, 3.0, 7.0, 0.1, 0.2, 2)
-      show_hudmessage(id,message)
+      show_hudmessage(id, "%s", message)
    }
 
    if(!is_connected[ id ])
