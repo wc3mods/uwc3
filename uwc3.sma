@@ -89,8 +89,7 @@
 #include <fakemeta>
 #include <engine>
 #include <cstrike>
-#include <fun_plugin>
-#include <csdm>
+#include <fun>
 #include <dbi>
 
 //#define DEBUG
@@ -774,17 +773,7 @@ public set_variables(){
 // **************************************************************************
 public client_authorized(id)
 {
-	new auth[32];
-	get_user_authid(id, auth, 31);
-
-	/* Fix players losing xp to STEAM_ID_PENDING -Marticus 11/15/05
-	 * Then the player doesn't have a steam id, lets make them reconnect
-	 * Just a faster way to detect STEAM_ID_PENDING - teame06
-	 */
-	if(auth[9] == 'P')
-		client_cmd(id, "reconnect");
-	else if(get_pcvar_num(mpsavexp)) // Otherwise we're ready to go
-		xpreadytoload[id] = 1;
+	xpreadytoload[id] = 1;
 
 	// Remember to add a check in reset hud
 	// Remember to add a check for STEAM_ID_PENDING when saving so it does not save.
@@ -1009,9 +998,6 @@ check_range(index)
 
 	return 0;
 }
-
-stock give_item(id, item[])
-	csdm_give_item(id, item)
 
 /* Check map */
 public native_no_weap(id, num)
