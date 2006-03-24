@@ -1,0 +1,1 @@
+To make weapons weight speed to each weapon instead of constant undead speed/bootspeed
