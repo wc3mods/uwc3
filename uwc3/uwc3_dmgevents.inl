@@ -140,10 +140,10 @@ public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, 
 				/* Fix this later
 				new e_steamid[32], i_steamid[32]
 
-				get_user_authid( enemy, e_steamid, 31 )
+				get_user_authid( enemy, e_steamid, 31 ) // Have a few global variable holding certain information ie authid, steamid so Doesn't always have to be lookup.
 				get_user_authid( id, i_steamid, 31 )
 
-				new TeamName[4][] =
+				new const TeamName[4][] =
 				{
 					"UNASSIGNED",
 					"TERRORIST",
