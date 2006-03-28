@@ -83,7 +83,7 @@ stock g_MaxBPAmmo[] =
 	30,	//CSW_AWP
 	120,//CSW_MP5NAVY
 	200,//CSW_M249
-	21,	//CSW_M3
+	32,	//CSW_M3
 	90,	//CSW_M4A1
 	120,//CSW_TMP
 	90,	//CSW_G3SG1
