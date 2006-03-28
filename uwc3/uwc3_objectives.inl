@@ -212,7 +212,7 @@ public bomb_event(id)
 	}
 	return;
 }
-/* This Does not work */
+/* This Does not work above*/
 
 /* Hostage Kill Event */
 public event_hostkill(id)
