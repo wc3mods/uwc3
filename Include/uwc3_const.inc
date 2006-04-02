@@ -33,15 +33,13 @@
 #define TEAM_CT 2
 #define SPECTATOR 3
 
-// **************************************************************************
-// BEGIN UWC3 Defs
-// The following #defines control various aspects of the plugin
-// It is not recommended changing anything in this section
-// **************************************************************************
+// For Icon events
+#define ICON_HIDE 0
+#define ICON_SHOW 1
+#define ICON_FLASH 2
+
 #define DEBUG_STARTXP 250000    // If in DEBUG mode, starting XP for players
 #define DEBUG_CASH 16000        // If in DEBUG mode, starting Cash for players
-
-#define STEAM_POWERED 1         // Running CS1.6 required for this plugin
 
 #define MAX_PLAYERS 33          // Max number of players in the game
 #define MAX_LEVEL 35            // Max level a player can achieve
@@ -182,10 +180,6 @@
 #define SAVEFREQUENCY	10		// added by JGHG: defines how many rounds must pass before write_all() is performed
 #define TASKID_SYNCSQL	6666	// added by JGHG: always use defined taskids to avoid collisions
 #define TIMEBEFORESYNC	2.0		// added by JGHG: seconds
-// **************************************************************************
-// END UWC3 Defs
-// **************************************************************************
-
 
 // **************************************************************************
 // BEGIN Backwards-Compatible Defs from War3 and War3FT

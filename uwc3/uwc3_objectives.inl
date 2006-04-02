@@ -6,48 +6,49 @@ public got_defuse(id)
       hasdefuse[id]=true
 }
 
+#define PLANTTIME 3
+new planter_defuser
+
 public bartime(id)
 {
+	planter_defuser = id // To be used with defusing/planting
+
 	//id = player index
 	new time = read_data(1)
 
-	if(time != WITHKIT || time != WITHOUTKIT)
-		return;
-
-	if(get_cvar_num("FT_attempt_defuse_bonus"))
+	if (get_cvar_num(OBJECTIVES) && get_cvar_num("FT_attempt_defuse_bonus") && get_user_team(id) == TEAM_CT)
 	{
-		new team = get_user_team(id), temp = 0, sName[32]
-		get_user_name(id, sName, 31)
-
-		new plevel = p_level[id]
-		if(time == WITHKIT) // Is trying to defuse with defuse kit
+		if(++bombDefuserIndex[id] == 1)
 		{
-			if(++bombDefuserIndex[id] && (team == TEAM_CT))
+			new temp = 0, sName[32]
+			get_user_name(id, sName, 31)
+
+			new plevel = p_level[id]
+
+			switch(time)
 			{
-				if (get_cvar_num(OBJECTIVES))
+				case WITHKIT:
 				{
+
 					temp = (1/6 * DEFUSEXP) + xpgiven_lev[plevel]
 					playerxp[id] += temp
 
 					client_print(id, print_chat,
 						"[%s] %s recieved %d XP for cutting the red wire on the bomb.",	MOD, sName, temp)
+
+					displaylevel(id, 1)
 				}
-				displaylevel(id, 1)
-			}
-		}
-		else if(time == WITHOUTKIT) // is trying to defuse without kit.
-		{
-			if((++bombDefuserIndex[id] == 1) && (team == TEAM_CT))
-			{
-				if(get_cvar_num(OBJECTIVES))
+				case WITHOUTKIT:
 				{
+
 					temp = xpgiven_lev[plevel]
-					playerxp[bombdefuser]+=  temp
+					playerxp[bombdefuser]+=  temp // Need to check this
 
 					client_print(id, print_chat,
 						"[%s] %s recieved %d XP for attempting to defuse bare handed.^n", MOD, id, temp)
+
+					displaylevel(id, 1)
 				}
-				displaylevel(id, 1)
 			}
 		}
 	}
@@ -107,14 +108,17 @@ public bomb_drop(id)
 }
 
 /* This Does not work */
-public bomb_event(id)
+public bomb_event()
 {
 	if(!warcraft3)
 		return;
 
 	new objective = get_cvar_num(OBJECTIVES)
-	if(!id)
+
+	if(!planter_defuser)
 		return;
+
+	new id = planter_defuser
 
 	new param[13]
 	read_data(2, param, 12)

@@ -34,149 +34,156 @@
 // BEGIN ability_wcward and supporting routines
 // Shadow Hunter serpant ward ultimate
 // **************************************************************************
-public ability_wcward(id){
-   if (!p_skills[id][SKILLIDX_SERPWARD]){
-      client_print(id, print_chat, "You do not know the Serpant Ward ultimate yet")
-      return PLUGIN_HANDLED
-   }
+public ability_wcward(id)
+{
+	if (!p_skills[id][SKILLIDX_SERPWARD])
+	{
+		client_print(id, print_chat, "You do not know the Serpant Ward ultimate yet")
+		return PLUGIN_HANDLED
+	}
 
-   if(is_user_alive(id)){
-      if (serpents[id]>0 && !endround){
+	if(is_user_alive(id))
+	{
+		if(serpents[id] > 0 && !endround)
+		{
+			if(entity_get_int(id, EV_INT_movetype) == MOVETYPE_FLY)
+			{
+				client_print(id, print_chat, "[%s] You can't plant Serpent Ward on Ladders", MOD)
+				return PLUGIN_HANDLED
+			}
 
-         if (get_user_team(id)==TEAM_T)
-            serpentteam[id]=TEAM_T
-         else
-            serpentteam[id]=TEAM_CT
+			serpentteam[id] = (get_user_team(id) == TEAM_T) TEAM_T : TEAM_CT
 
-         new parm[6]
-         new origin[3]
-         get_user_origin(id,origin)
-         parm[0]=origin[0]
-         parm[1]=origin[1]
-         parm[2]=origin[2]
-         parm[5]=id
-         lightpls(parm)
-         set_hudmessage(200, 100, 0, 0.2, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 2)
-         serpents[id]--
-         show_hudmessage(id,"Serpent Ward Placed, %d remaining", serpents[id])
-      }
-   }
-   return PLUGIN_HANDLED
+			new parm[6]
+			new origin[3]
+
+			get_user_origin(id, origin)
+
+			parm[0] = origin[0]
+			parm[1] = origin[1]
+			parm[2] = origin[2]
+			parm[5] = id
+
+			lightpls(parm)
+
+			set_hudmessage(200, 100, 0, 0.2, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 2)
+			show_hudmessage(id, "Serpent Ward Placed, %d remaining", serpents[id])
+
+			serpents[id]--
+		}
+	}
+	return PLUGIN_HANDLED
 }
 
-public lightpls(parm[6]){
-   new id = parm[5]
-   if (!is_user_alive(id))
-      return PLUGIN_CONTINUE
+public lightpls(parm[6])
+{
+	new id = parm[5]
 
-   new origin[3], damage
-   origin[0]=parm[0]
-   origin[1]=parm[1]
-   origin[2]=parm[2]
+	if(!is_user_alive(id))
+		return
 
-   message_begin( MSG_BROADCAST,SVC_TEMPENTITY)
-   write_byte( 0 )
-   write_coord(origin[0])
-   write_coord(origin[1])
-   write_coord(origin[2]+600)
-   write_coord(origin[0])
-   write_coord(origin[1])
-   write_coord(origin[2]-600)
-   write_short( lightning )
-   write_byte( 1 ) // framestart
-   write_byte( 5 ) // framerate
-   write_byte( 2 ) // life
-   write_byte( 500 ) // width
-   write_byte( 20 ) // noise
+	new origin[3], damage
 
-   if (serpentteam[id]==1){
-      write_byte( 255 ) // r
-      write_byte( 0 ) // g
-      write_byte( 0 ) // b
-   }else{
-      write_byte( 0 ) // r
-      write_byte( 0 ) // g
-      write_byte( 255 ) // b
-   }
+	origin[0] = parm[0]
+	origin[1] = parm[1]
+	origin[2] = parm[2]
 
-   write_byte( 100 ) // brightness
-   write_byte( 100 ) // speed
-   message_end()
+	message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+	write_byte(0)
+	write_coord(origin[0])
+	write_coord(origin[1])
+	write_coord(origin[2] + 600)
+	write_coord(origin[0])
+	write_coord(origin[1])
+	write_coord(origin[2] - 600)
+	write_short(lightning)
+	write_byte(1) // framestart
+	write_byte(5) // framerate
+	write_byte(2) // life
+	write_byte(500) // width
+	write_byte(20) // noise
+
+	if(serpentteam[id] == 1)
+	{
+		write_byte(255) // r
+		write_byte(0) // g
+		write_byte(0) // b
+	}
+	else
+	{
+		write_byte(0) // r
+		write_byte(0) // g
+		write_byte(255) // b
+	}
+
+	write_byte(100) // brightness
+	write_byte(100) // speed
+	message_end()
 
 
-   new players[32]
-   new numberofplayers
-   get_players(players, numberofplayers)
-   new i
-   new targetid = 0
-   new distancebetween = 0
-   new targetorigin[3]
+	new players[32]
+	new numberofplayers
+	new i
+	new targetid = 0
+	new distancebetween = 0
+	new targetorigin[3]
 
-   for (i = 0; i < numberofplayers; ++i){
-      targetid=players[i]
-      //if (serpentteam[id]!=get_user_team(targetid) &&
-      //   is_user_alive(targetid) && playeritem[targetid]!=IMMUNITY )
-      // [10-30-04] - Necklaces no longer protect against Serpent Wards
-      if ( (serpentteam[id] != get_user_team(targetid)) && is_user_alive(targetid) ){
+	get_players(players, numberofplayers)
 
-         get_user_origin(targetid,targetorigin)
-         distancebetween=sqroot((origin[1]-targetorigin[1])*(origin[1]-targetorigin[1])+(origin[0]-targetorigin[0])*(origin[0]-targetorigin[0]))
-         if ((distancebetween < 85)){
+	new parm2[2]
 
-            // [08-08-04] - Check if Magic Resistance protects against Ward - K2mia
-            if ( (p_resists[targetid][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
-                 magic_saving_throw(targetid))
-            {
-               client_print(targetid, print_chat,
-                  "[%s] Your magic resistance protects you from a Serpent Ward", MOD)
-               continue
-            }
+	for (i = 0; i < numberofplayers; ++i)
+	{
+		targetid = players[i]
+		//if (serpentteam[id]!=get_user_team(targetid) &&
+		//   is_user_alive(targetid) && playeritem[targetid]!=IMMUNITY )
+		// [10-30-04] - Necklaces no longer protect against Serpent Wards
+		if(serpentteam[id] != get_user_team(targetid) && is_user_alive(targetid))
+		{
+			get_user_origin(targetid, targetorigin)
+			distancebetween = sqroot((origin[1] - targetorigin[1]) * (origin[1] - targetorigin[1]) + (origin[0] - targetorigin[0]) * (origin[0] - targetorigin[0]))
 
-            damage = 10
-            do_damage(targetid,id, damage,14, 3, 0, 0, 0)
+			if((distancebetween < 85))
+			{
 
-            client_cmd(targetid, "spk ambience/thunder_clap.wav")
+				// [08-08-04] - Check if Magic Resistance protects against Ward - K2mia
+				if((p_resists[targetid][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) || magic_saving_throw(targetid))
+				{
+					client_print(targetid, print_chat, "[%s] Your magic resistance protects you from a Serpent Ward", MOD)
+					continue
+				}
 
-            message_begin(MSG_ONE,gmsgFade,{0,0,0},id)
-            write_short( 1<<10 ) // fade lasts this long duration
-            write_short( 1<<10 ) // fade lasts this long hold time
-            write_short( 1<<12 ) // fade type (in / out)
-            write_byte( 255 ) // fade red
-            write_byte( 255 ) // fade green
-            write_byte( 255 ) // fade blue
-            write_byte( iglow[id][3] ) // fade alpha
-            message_end()
+				damage = 10
+				do_damage(targetid, id, damage, 14, 3, 0, 0, 0)
 
-            if (iglow[id][0] < 1){
-               new parm2[2]
-               parm2[0]=id
-               set_task(0.01,"glow_change",8,parm2,2)
-            }
-            iglow[id][0] += 3*damage
-            iglow[id][1] = 0
-            iglow[id][2] = 0
-            iglow[id][3] = 0
-            if (iglow[id][0]>MAXGLOW)
-               iglow[id][0]=MAXGLOW
+				client_cmd(targetid, "spk ambience/thunder_clap.wav")
 
-            message_begin(MSG_ONE,gmsgFade,{0,0,0},id)
-            write_short( 1<<10 ) // fade lasts this long duration
-            write_short( 1<<10 ) // fade lasts this long hold time
-            write_short( 1<<12 ) // fade type (in / out)
-            write_byte( 255 ) // fade red
-            write_byte( 0 ) // fade green
-            write_byte( 0 ) // fade blue
-            write_byte( iglow[id][0] ) // fade alpha
-            message_end()
 
-         }
-      }
-   }
+				Create_Fade(id, 1<<10, 1<<10, 1<<12, 255, 255, 255, iglow[id][3])
 
-   if (!endround)
-      set_task(0.45, "lightpls", 43, parm, 6)
+				if(iglow[id][0] < 1)
+				{
 
-   return PLUGIN_CONTINUE
+					parm2[0] = id
+					set_task(0.01, "glow_change", 8, parm2, 2)
+				}
+
+				iglow[id][0] += 3 * damage
+				iglow[id][1] = 0
+				iglow[id][2] = 0
+				iglow[id][3] = 0
+
+				if(iglow[id][0] > MAXGLOW)
+					iglow[id][0] = MAXGLOW
+
+
+				Create_Fade(id, 1<<10, 1<<10, 1<<12, 255, 0, 0, iglow[id][0])
+			}
+		}
+	}
+
+	if(!endround)
+		set_task(0.45, "lightpls", 43, parm, 6)
 }
 // **************************************************************************
 // END ability_wcward and supporting and routines

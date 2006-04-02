@@ -85,15 +85,17 @@
 
 #include <amxmodx>
 #include <amxmisc>
-#include <uwc3>
-#include <fakemeta>
-#include <engine>
 #include <cstrike>
-#include <fun>
 #include <dbi>
+#include <fun>
+#include <engine>
+#include <fakemeta>
+#include <uwc3>
 
 //#define DEBUG
 //#define BROADCAST_MESSAGE
+//#define VERBOSE_CHAT_MESSAGES
+
 #include "uwc3/uwc3_vars.inl"		// Include the UWC3 global variables file
 #include "uwc3/uwc3_ultimates.inl"	// Include the UWC3 ultimate subroutines file
 #include "uwc3/uwc3_abilities.inl"	// Include the UWC3 abilities subroutines file
@@ -900,8 +902,10 @@ public client_disconnect(id)
 public client_PreThink(id)
 {
 	// Disable slow down after jumping
-	if(is_connected[id])
-		entity_set_float(id, EV_FL_fuser2, 0.0)
+	if(!is_connected[id])
+		return;
+
+	entity_set_float(id, EV_FL_fuser2, 0.0)
 
 	// Fix this later for uwc3
 	if(Verify_Skill(id, RACE_UNDEAD, SKILL3) && !p_data_b[id][PB_STUNNED] && !p_data_b[id][PB_SLOWED])

@@ -1,1 +1,7 @@
 To make weapons weight speed to each weapon instead of constant undead speed/bootspeed
+To make people walk silent when Holding down the walk key
+
+Fix the problem with defusing/planting detection. (Finished)
+Tone down on the set_task
+Disable planting serpent ward on ladders (Finished)
+Figure a way to make ability still have a chance to land even if the player has 100 resist.

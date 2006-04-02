@@ -61,7 +61,7 @@ native set_changeskin(id, setting);
 /* return the count of team. team = 1 T's team = 2 CT's*/
 native count_team(team);
 
-stock g_MaxBPAmmo[] =
+stock MaxBPAmmo[] =
 {
 	0,  //Nothing
 	52,	//CSW_P228
@@ -83,7 +83,7 @@ stock g_MaxBPAmmo[] =
 	30,	//CSW_AWP
 	120,//CSW_MP5NAVY
 	200,//CSW_M249
-	32,	//CSW_M3
+	21,	//CSW_M3
 	90,	//CSW_M4A1
 	120,//CSW_TMP
 	90,	//CSW_G3SG1
@@ -95,7 +95,7 @@ stock g_MaxBPAmmo[] =
 	100 //CSW_P90
 }
 
-stock const g_weapons[][] =
+stock const weapon_names[][] =
 {
 	"",
 	"weapon_p228",
@@ -147,10 +147,10 @@ stock replaceall(text[], len, what[], with[])
 	replace_all(text, len, what, with);
 }
 
-stock const MOD[] = "UWC3"
+stock const MOD[] = "UWC3";
 
-stock bool:is_connected[33]
-stock pMax = 0
+stock bool:is_connected[33];
+stock pMax = 0;
 
 stock check_player(index)
 {
@@ -165,4 +165,17 @@ stock check_player(index)
 		return 1;
 	}
 	return 0;
+}
+
+stock Create_Fade(id, duration, holdtime, type, r, g, b, alpha)
+{
+	message_begin(MSG_ONE, gmsgFade, {0, 0, 0}, id)
+	write_short(duration) // fade lasts this long duration
+	write_short(holdtime) // fade lasts this long hold time
+	write_short(type) // fade type (in / out)
+	write_byte(r) // fade red
+	write_byte(g) // fade green
+	write_byte(b) // fade blue
+	write_byte(alpha) // fade alpha
+	message_end()
 }
