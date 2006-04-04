@@ -5,3 +5,6 @@ Fix the problem with defusing/planting detection. (Finished)
 Tone down on the set_task
 Disable planting serpent ward on ladders (Finished)
 Figure a way to make ability still have a chance to land even if the player has 100 resist.
+xp_table delay every 10 listing
+Tie Buy time to shopmenu/2
+Tie shopmenu/2 to buyzone
