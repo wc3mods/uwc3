@@ -167,15 +167,16 @@ stock check_player(index)
 	return 0;
 }
 
+stock gmsgFade;
 stock Create_Fade(id, duration, holdtime, type, r, g, b, alpha)
 {
-	message_begin(MSG_ONE, gmsgFade, {0, 0, 0}, id)
-	write_short(duration) // fade lasts this long duration
-	write_short(holdtime) // fade lasts this long hold time
-	write_short(type) // fade type (in / out)
-	write_byte(r) // fade red
-	write_byte(g) // fade green
-	write_byte(b) // fade blue
-	write_byte(alpha) // fade alpha
-	message_end()
+	message_begin(MSG_ONE, gmsgFade, {0, 0, 0}, id);
+	write_short(duration) // fade lasts this long duration;
+	write_short(holdtime) // fade lasts this long hold time;
+	write_short(type) // fade type (in / out);
+	write_byte(r) // fade red;
+	write_byte(g) // fade green;
+	write_byte(b) // fade blue;
+	write_byte(alpha) // fade alpha;
+	message_end();
 }

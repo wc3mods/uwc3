@@ -1531,7 +1531,7 @@ public regenerate(parm[]){
 // BEGIN unholyspeed subroutine
 // Handles the Unholy Aura skill
 // **************************************************************************
-public unholyspeed(parm[1]){
+public unholyspeed(parm[2]){
    if (!warcraft3)
       return PLUGIN_CONTINUE
 

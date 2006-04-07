@@ -164,7 +164,7 @@ public do_attribmenu(id, key){
          check_conregen( id )
       else if ( (key+1) == ATTRIBIDX_AGI ){
          // Call routine to set user runspeed
-         new parm[1]
+         new parm[2]
          parm[0]=id
          unholyspeed(parm)
       }

@@ -96,20 +96,21 @@
 //#define BROADCAST_MESSAGE
 //#define VERBOSE_CHAT_MESSAGES
 
+
 #include "uwc3/uwc3_vars.inl"		// Include the UWC3 global variables file
-#include "uwc3/uwc3_ultimates.inl"	// Include the UWC3 ultimate subroutines file
-#include "uwc3/uwc3_abilities.inl"	// Include the UWC3 abilities subroutines file
 #include "uwc3/uwc3_enh.inl"		// Include the UWC3 enhancements subroutines file
-#include "uwc3/uwc3_utility.inl"	// Include the UWC3 utilities subroutines file
 #include "uwc3/uwc3_storage.inl"	// Include the UWC3 storage subroutines file
 #include "uwc3/uwc3_infohelp.inl"	// Include the UWC3 help/info subroutines file
-#include "uwc3/uwc3_dmgevents.inl"	// Include the UWC3 damage events subroutines file
 #include "uwc3/uwc3_mole.inl"		// Include the UWC3 mole subroutines file
 #include "uwc3/uwc3_respawn.inl"	// Include the UWC3 respawn subroutines file
 #include "uwc3/uwc3_items.inl"		// Include the UWC3 items subroutines file
-#include "uwc3/uwc3_skills.inl"		// Include the UWC3 skills subroutines file
 #include "uwc3/uwc3_xp.inl"			// Include the UWC3 xp subroutines file
+#include "uwc3/uwc3_utility.inl"	// Include the UWC3 utilities subroutines file
+#include "uwc3/uwc3_ultimates.inl"	// Include the UWC3 ultimate subroutines file
+#include "uwc3/uwc3_skills.inl"		// Include the UWC3 skills subroutines file
 #include "uwc3/uwc3_objectives.inl"
+#include "uwc3/uwc3_dmgevents.inl"	// Include the UWC3 damage events subroutines file
+#include "uwc3/uwc3_abilities.inl"	// Include the UWC3 abilities subroutines file
 #include "uwc3/uwc3_events.inl"		// Include the UWC3 events subroutines file
 
 #pragma dynamic 65536 		// Give the plugin some extra memory to use
@@ -610,160 +611,209 @@ public plugin_precache() {
 // BEGIN set_variables subroutine
 // Setup variables and use cvar data where applicable
 // **************************************************************************
-public set_variables(){
-   //MOD = "UWC3"
-   BOMBPLANTXP = get_cvar_num("FT_bombplanterxp")
-   DEFUSEXP = get_cvar_num("FT_defusexp")
-   HOSTAGEXP = get_cvar_num("FT_hostagexp")
-   KILLRESCUEMANXP = get_cvar_num("FT_killrescuemanxp")
-   XPBONUS = get_cvar_num("FT_xpbonus")
-   KILL_BOMB_CARRIER = get_cvar_num("FT_kill_bomb_carrier_bonus")
-   HEADSHOT_BONUS = get_cvar_num("FT_headshot_bonus")
-   DEFUSER_KILL_BONUS = get_cvar_num("FT_defuser_kill_bonus")
-   VIP_ESCAPE_BONUS = get_cvar_num("FT_VIP_escape_bonus")
-   ROUNDXP = get_cvar_num("FT_round_win_XP")
-   REPAIRXP = get_cvar_num("UW_repair_XP")
-   MENDXP = get_cvar_num("UW_mend_XP")
-   PHOENIXXP = get_cvar_num("UW_phoenix_XP")
+public set_variables()
+{
+	BOMBPLANTXP = get_cvar_num("FT_bombplanterxp")
+	DEFUSEXP = get_cvar_num("FT_defusexp")
+	HOSTAGEXP = get_cvar_num("FT_hostagexp")
+	KILLRESCUEMANXP = get_cvar_num("FT_killrescuemanxp")
+	XPBONUS = get_cvar_num("FT_xpbonus")
+	KILL_BOMB_CARRIER = get_cvar_num("FT_kill_bomb_carrier_bonus")
+	HEADSHOT_BONUS = get_cvar_num("FT_headshot_bonus")
+	DEFUSER_KILL_BONUS = get_cvar_num("FT_defuser_kill_bonus")
+	VIP_ESCAPE_BONUS = get_cvar_num("FT_VIP_escape_bonus")
+	ROUNDXP = get_cvar_num("FT_round_win_XP")
+	REPAIRXP = get_cvar_num("UW_repair_XP")
+	MENDXP = get_cvar_num("UW_mend_XP")
+	PHOENIXXP = get_cvar_num("UW_phoenix_XP")
 
-   // [08-01-04] Admin Only sets skills reserved only for admins
-   if (get_cvar_num("UW_admin_mode")){
-      admin_only[SKILLIDX_REPAIR] = true
-      admin_only[SKILLIDX_NAPALM] = true
-      admin_only[SKILLIDX_VOODOO] = true
-      admin_only[SKILLIDX_FAN] = true
-      admin_only[SKILLIDX_VENGEANCE] = true
-      admin_only[SKILLIDX_TRUESHOT] = true
-   }
+	// [08-01-04] Admin Only sets skills reserved only for admins
+	if(get_cvar_num("UW_admin_mode"))
+	{
+		admin_only[SKILLIDX_REPAIR] = true
+		admin_only[SKILLIDX_NAPALM] = true
+		admin_only[SKILLIDX_VOODOO] = true
+		admin_only[SKILLIDX_FAN] = true
+		admin_only[SKILLIDX_VENGEANCE] = true
+		admin_only[SKILLIDX_TRUESHOT] = true
+	}
 
-   // If attribute enhancements allowed but no min. level set use default
-   if (get_cvar_num("UW_use_enh")){
-      USE_ENH = 1
-      if (get_cvar_num("UW_enh_minlevel"))
-         enh_minlevel = get_cvar_num("UW_enh_minlevel")
-      else
-         enh_minlevel = ENH_MIN_LEVEL
-      log_amx("Enhancements ON with minimum level set to [%d]", enh_minlevel)
+	// If attribute enhancements allowed but no min. level set use default
+	if (get_cvar_num("UW_use_enh"))
+	{
+		USE_ENH = 1
 
-      if (get_cvar_num("UW_max_resistvalue")){
-         RESIST_MAX_VALUE = get_cvar_num("UW_max_resistvalue")
-         log_amx("Override Detected : Max Resist Value [%d]", RESIST_MAX_VALUE)
-      }
+		if(get_cvar_num("UW_enh_minlevel"))
+			enh_minlevel = get_cvar_num("UW_enh_minlevel")
+		else
+			enh_minlevel = ENH_MIN_LEVEL
 
-      if (get_cvar_num("UW_max_attribpts")){
-         ATTRIB_MAX_PTS = get_cvar_num("UW_max_attribpts")
-         log_amx("Override Detected : Max Attrib Pts [%d]", ATTRIB_MAX_PTS)
-      }
+		log_amx("Enhancements ON with minimum level set to [%d]", enh_minlevel)
 
-      if (get_cvar_num("UW_max_resistpts")){
-         RESIST_MAX_PTS = get_cvar_num("UW_max_resistpts")
-         log_amx("Override Detected : Max Resist Pts [%d]", RESIST_MAX_PTS)
-      }
-   }
+		if(get_cvar_num("UW_max_resistvalue"))
+		{
+			RESIST_MAX_VALUE = get_cvar_num("UW_max_resistvalue")
+			log_amx("Override Detected : Max Resist Value [%d]", RESIST_MAX_VALUE)
+		}
 
+		if(get_cvar_num("UW_max_attribpts"))
+		{
+			ATTRIB_MAX_PTS = get_cvar_num("UW_max_attribpts")
+			log_amx("Override Detected : Max Attrib Pts [%d]", ATTRIB_MAX_PTS)
+		}
 
-   // [07-31-04] Check for other setting overrides from config file
-   if (get_cvar_float("UW_BOOTSPEED")){
-      BOOTSPEED = get_cvar_float("UW_BOOTSPEED")
-      log_amx("Override Detected : BOOTSPEED [%f]", BOOTSPEED)
-   }
-   if (get_cvar_float("UW_FROSTSPEED")){
-      FROSTSPEED = get_cvar_float("UW_FROSTSPEED")
-      log_amx("Override Detected : FROSTSPEED [%f]", FROSTSPEED)
-   }
-   if (get_cvar_float("UW_MASKPERCENT")){
-      MASKPERCENT = get_cvar_float("UW_MASKPERCENT")
-      log_amx("Override Detected : MASKPERCENT [%f]", MASKPERCENT)
-   }
-   if (get_cvar_num("UW_CLAWSOFATTACK")){
-      CLAWSOFATTACK = get_cvar_num("UW_CLAWSOFATTACK")
-      log_amx("Override Detected : CLAWSOFATTACK [%d]", CLAWSOFATTACK)
-   }
-   if (get_cvar_num("UW_CLOAKINVISIBILITY")){
-      CLOAKINVISIBILITY = get_cvar_num("UW_CLOAKINVISIBILITY")
-      log_amx("Override Detected : CLOAKINVISIBILITY [%d]", CLOAKINVISIBILITY)
-   }
-   if (get_cvar_num("UW_HEALTHBONUS")){
-      HEALTHBONUS = get_cvar_num("UW_HEALTHBONUS")
-      log_amx("Override Detected : HEALTHBONUS [%d]", HEALTHBONUS)
-   }
-
-   // [07-31-04] Check for shop item cost overrides from config file
-   if (get_cvar_num("UW_price_ANKH") != itemcost[ANKH-1]){
-      itemcost[ANKH-1] = get_cvar_num("UW_price_ANKH")
-      log_amx("Item Price Override Detected : ANKH [%d]", itemcost[ANKH-1])
-   }
-   if (get_cvar_num("UW_price_BOOTS") != itemcost[BOOTS-1]){
-      itemcost[BOOTS-1] = get_cvar_num("UW_price_BOOTS")
-      log_amx("Item Price Override Detected : BOOTS [%d]", itemcost[BOOTS-1])
-   }
-   if (get_cvar_num("UW_price_CLAWS") != itemcost[CLAWS-1]){
-      itemcost[CLAWS-1] = get_cvar_num("UW_price_CLAWS")
-      log_amx("Item Price Override Detected : CLAWS [%d]", itemcost[CLAWS-1])
-   }
-   if (get_cvar_num("UW_price_CLOAK") != itemcost[CLOAK-1]){
-      itemcost[CLOAK-1] = get_cvar_num("UW_price_CLOAK")
-      log_amx("Item Price Override Detected : CLOAK [%d]", itemcost[CLOAK-1])
-   }
-   if (get_cvar_num("UW_price_MASK") != itemcost[MASK-1]){
-      itemcost[MASK-1] = get_cvar_num("UW_price_MASK")
-      log_amx("Item Price Override Detected : MASK [%d]", itemcost[MASK-1])
-   }
-   if (get_cvar_num("UW_price_IMMUNITY") != itemcost[IMMUNITY-1]){
-      itemcost[IMMUNITY-1] = get_cvar_num("UW_price_IMMUNITY")
-      log_amx("Item Price Override Detected : IMMUNITY [%d]", itemcost[IMMUNITY-1])
-   }
-   if (get_cvar_num("UW_price_FROST") != itemcost[FROST-1]){
-      itemcost[FROST-1] = get_cvar_num("UW_price_FROST")
-      log_amx("Item Price Override Detected : FROST [%d]", itemcost[FROST-1])
-   }
-   if (get_cvar_num("UW_price_HEALTH") != itemcost[HEALTH-1]){
-      itemcost[HEALTH-1] = get_cvar_num("UW_price_HEALTH")
-      log_amx("Item Price Override Detected : HEALTH [%d]", itemcost[HEALTH-1])
-   }
-   if (get_cvar_num("UW_price_TOME") != itemcost[TOME-1]){
-      itemcost[TOME-1] = get_cvar_num("UW_price_TOME")
-      log_amx("Item Price Override Detected : TOME [%d]", itemcost[TOME-1])
-   }
-   if (get_cvar_num("UW_price_RESPAWN") != itemcost2[RESPAWN-1]){
-      itemcost2[RESPAWN-1] = get_cvar_num("UW_price_RESPAWN")
-      log_amx("Item Price Override Detected : RESPAWN [%d]", itemcost2[RESPAWN-1])
-   }
-   if (get_cvar_num("UW_price_PROTECTANT") != itemcost2[PROTECTANT-1]){
-      itemcost2[PROTECTANT-1] = get_cvar_num("UW_price_PROTECTANT")
-      log_amx("Item Price Override Detected : PROTECTANT [%d]", itemcost2[PROTECTANT-1])
-   }
-   if (get_cvar_num("UW_price_HELM") != itemcost2[HELM-1]){
-      itemcost2[HELM-1] = get_cvar_num("UW_price_HELM")
-      log_amx("Item Price Override Detected : HELM [%d]", itemcost2[HELM-1])
-   }
-   if (get_cvar_num("UW_price_CAT") != itemcost2[CAT-1]){
-      itemcost2[CAT-1] = get_cvar_num("UW_price_CAT")
-      log_amx("Item Price Override Detected : CAT [%d]", itemcost2[CAT-1])
-   }
-   if (get_cvar_num("UW_price_FEATHER") != itemcost2[FEATHER-1]){
-      itemcost2[FEATHER-1] = get_cvar_num("UW_price_FEATHER")
-      log_amx("Item Price Override Detected : FEATHER [%d]", itemcost2[FEATHER-1])
-   }
-   if (get_cvar_num("UW_price_INFERNO") != itemcost2[INFERNO-1]){
-      itemcost2[INFERNO-1] = get_cvar_num("UW_price_INFERNO")
-      log_amx("Item Price Override Detected : INFERNO [%d]", itemcost2[INFERNO-1])
-   }
-   if (get_cvar_num("UW_price_REGEN") != itemcost2[REGEN-1]){
-      itemcost2[REGEN-1] = get_cvar_num("UW_price_REGEN")
-      log_amx("Item Price Override Detected : REGEN [%d]", itemcost2[REGEN-1])
-   }
-   if (get_cvar_num("UW_price_CHAMELEON") != itemcost2[CHAMELEON-1]){
-      itemcost2[CHAMELEON-1] = get_cvar_num("UW_price_CHAMELEON")
-      log_amx("Item Price Override Detected : CHAMELEON [%d]", itemcost2[CHAMELEON-1])
-   }
-   if (get_cvar_num("UW_price_MOLE") != itemcost2[MOLE-1]){
-      itemcost2[MOLE-1] = get_cvar_num("UW_price_MOLE")
-      log_amx("Item Price Override Detected : MOLE [%d]", itemcost2[MOLE-1])
-   }
+		if(get_cvar_num("UW_max_resistpts"))
+		{
+			RESIST_MAX_PTS = get_cvar_num("UW_max_resistpts")
+			log_amx("Override Detected : Max Resist Pts [%d]", RESIST_MAX_PTS)
+		}
+	}
 
 
-   return PLUGIN_CONTINUE
+	// [07-31-04] Check for other setting overrides from config file
+	if (get_cvar_float("UW_BOOTSPEED"))
+	{
+		BOOTSPEED = get_cvar_float("UW_BOOTSPEED")
+		log_amx("Override Detected : BOOTSPEED [%f]", BOOTSPEED)
+	}
+
+	if(get_cvar_float("UW_FROSTSPEED"))
+	{
+		FROSTSPEED = get_cvar_float("UW_FROSTSPEED")
+		log_amx("Override Detected : FROSTSPEED [%f]", FROSTSPEED)
+	}
+
+	if(get_cvar_float("UW_MASKPERCENT"))
+	{
+		MASKPERCENT = get_cvar_float("UW_MASKPERCENT")
+		log_amx("Override Detected : MASKPERCENT [%f]", MASKPERCENT)
+	}
+
+	if (get_cvar_num("UW_CLAWSOFATTACK"))
+	{
+		CLAWSOFATTACK = get_cvar_num("UW_CLAWSOFATTACK")
+		log_amx("Override Detected : CLAWSOFATTACK [%d]", CLAWSOFATTACK)
+	}
+
+	if(get_cvar_num("UW_CLOAKINVISIBILITY"))
+	{
+		CLOAKINVISIBILITY = get_cvar_num("UW_CLOAKINVISIBILITY")
+		log_amx("Override Detected : CLOAKINVISIBILITY [%d]", CLOAKINVISIBILITY)
+	}
+
+	if(get_cvar_num("UW_HEALTHBONUS"))
+	{
+		HEALTHBONUS = get_cvar_num("UW_HEALTHBONUS")
+		log_amx("Override Detected : HEALTHBONUS [%d]", HEALTHBONUS)
+	}
+
+	// [07-31-04] Check for shop item cost overrides from config file
+	if (get_cvar_num("UW_price_ANKH") != itemcost[ANKH-1])
+	{
+		itemcost[ANKH-1] = get_cvar_num("UW_price_ANKH")
+		log_amx("Item Price Override Detected : ANKH [%d]", itemcost[ANKH-1])
+	}
+
+	if(get_cvar_num("UW_price_BOOTS") != itemcost[BOOTS-1])
+	{
+		itemcost[BOOTS-1] = get_cvar_num("UW_price_BOOTS")
+		log_amx("Item Price Override Detected : BOOTS [%d]", itemcost[BOOTS-1])
+	}
+
+	if(get_cvar_num("UW_price_CLAWS") != itemcost[CLAWS-1])
+	{
+		itemcost[CLAWS-1] = get_cvar_num("UW_price_CLAWS")
+		log_amx("Item Price Override Detected : CLAWS [%d]", itemcost[CLAWS-1])
+	}
+
+	if(get_cvar_num("UW_price_CLOAK") != itemcost[CLOAK-1])
+	{
+		itemcost[CLOAK-1] = get_cvar_num("UW_price_CLOAK")
+		log_amx("Item Price Override Detected : CLOAK [%d]", itemcost[CLOAK-1])
+	}
+
+	if(get_cvar_num("UW_price_MASK") != itemcost[MASK-1])
+	{
+		itemcost[MASK-1] = get_cvar_num("UW_price_MASK")
+		log_amx("Item Price Override Detected : MASK [%d]", itemcost[MASK-1])
+	}
+
+	if(get_cvar_num("UW_price_IMMUNITY") != itemcost[IMMUNITY-1])
+	{
+		itemcost[IMMUNITY-1] = get_cvar_num("UW_price_IMMUNITY")
+		log_amx("Item Price Override Detected : IMMUNITY [%d]", itemcost[IMMUNITY-1])
+	}
+	if(get_cvar_num("UW_price_FROST") != itemcost[FROST-1])
+	{
+		itemcost[FROST-1] = get_cvar_num("UW_price_FROST")
+		log_amx("Item Price Override Detected : FROST [%d]", itemcost[FROST-1])
+	}
+
+	if(get_cvar_num("UW_price_HEALTH") != itemcost[HEALTH-1])
+	{
+		itemcost[HEALTH-1] = get_cvar_num("UW_price_HEALTH")
+		log_amx("Item Price Override Detected : HEALTH [%d]", itemcost[HEALTH-1])
+	}
+
+	if (get_cvar_num("UW_price_TOME") != itemcost[TOME-1])
+	{
+		itemcost[TOME-1] = get_cvar_num("UW_price_TOME")
+		log_amx("Item Price Override Detected : TOME [%d]", itemcost[TOME-1])
+	}
+
+	if (get_cvar_num("UW_price_RESPAWN") != itemcost2[RESPAWN-1])
+	{
+		itemcost2[RESPAWN-1] = get_cvar_num("UW_price_RESPAWN")
+		log_amx("Item Price Override Detected : RESPAWN [%d]", itemcost2[RESPAWN-1])
+	}
+
+	if (get_cvar_num("UW_price_PROTECTANT") != itemcost2[PROTECTANT-1])
+	{
+		itemcost2[PROTECTANT-1] = get_cvar_num("UW_price_PROTECTANT")
+		log_amx("Item Price Override Detected : PROTECTANT [%d]", itemcost2[PROTECTANT-1])
+	}
+
+	if (get_cvar_num("UW_price_HELM") != itemcost2[HELM-1])
+	{
+		itemcost2[HELM-1] = get_cvar_num("UW_price_HELM")
+		log_amx("Item Price Override Detected : HELM [%d]", itemcost2[HELM-1])
+	}
+
+	if (get_cvar_num("UW_price_CAT") != itemcost2[CAT-1])
+	{
+		itemcost2[CAT-1] = get_cvar_num("UW_price_CAT")
+		log_amx("Item Price Override Detected : CAT [%d]", itemcost2[CAT-1])
+	}
+
+		if (get_cvar_num("UW_price_FEATHER") != itemcost2[FEATHER-1])
+		{
+		itemcost2[FEATHER-1] = get_cvar_num("UW_price_FEATHER")
+		log_amx("Item Price Override Detected : FEATHER [%d]", itemcost2[FEATHER-1])
+	}
+
+	if (get_cvar_num("UW_price_INFERNO") != itemcost2[INFERNO-1])
+	{
+		itemcost2[INFERNO-1] = get_cvar_num("UW_price_INFERNO")
+		log_amx("Item Price Override Detected : INFERNO [%d]", itemcost2[INFERNO-1])
+	}
+
+	if (get_cvar_num("UW_price_REGEN") != itemcost2[REGEN-1])
+	{
+		itemcost2[REGEN-1] = get_cvar_num("UW_price_REGEN")
+		log_amx("Item Price Override Detected : REGEN [%d]", itemcost2[REGEN-1])
+	}
+
+	if (get_cvar_num("UW_price_CHAMELEON") != itemcost2[CHAMELEON-1])
+	{
+		itemcost2[CHAMELEON-1] = get_cvar_num("UW_price_CHAMELEON")
+		log_amx("Item Price Override Detected : CHAMELEON [%d]", itemcost2[CHAMELEON-1])
+	}
+
+	if (get_cvar_num("UW_price_MOLE") != itemcost2[MOLE-1])
+	{
+		itemcost2[MOLE-1] = get_cvar_num("UW_price_MOLE")
+		log_amx("Item Price Override Detected : MOLE [%d]", itemcost2[MOLE-1])
+	}
 }
 // **************************************************************************
 // END set_variables subroutine
@@ -776,10 +826,10 @@ public set_variables(){
 public client_authorized(id)
 {
 	xpreadytoload[id] = 1;
+}
 
 	// Remember to add a check in reset hud
 	// Remember to add a check for STEAM_ID_PENDING when saving so it does not save.
-}
 // **************************************************************************
 // END client_authorized subroutine
 // **************************************************************************
@@ -814,10 +864,10 @@ public client_connect(id)
 		playerxp[id] = DEBUG_STARTXP
 
 		for(new j = 0; j < MAX_ATTRIBS; j++)
-			p_attribs[id][j] = ATTRIB_MAX_VALUE
+			p_attribs[id][j] = ATTRIB_MAX_VALUE // use new native in 1.71 to it is faster
 
 		for(new j = 0; j < MAX_RESISTS; j++)
-			p_resists[id][j] = RESIST_MAX_VALUE
+			p_resists[id][j] = RESIST_MAX_VALUE // use new native in 1.71 to it is faster
 	}
 	#endif
 
@@ -869,12 +919,9 @@ public client_disconnect(id)
 
 	// Reset due to Equipment Reincarnation
 	for (new i = 0; i < 32; i++)
-		savedweapons[id][i] = 0
+		savedweapons[id][i] = 0 // use new native in 1.71 to it is faster
 
-	if(playerxp[id] < 100)
-		return;
-
-	if(get_pcvar_num(mpsavexp) && !is_bot[id] && playerxp[id])
+	if(!is_bot[id] && get_pcvar_num(mpsavexp) && playerxp[id] < 100)
 	{
 		if(get_cvar_num("mp_sql"))
 		{
@@ -898,7 +945,7 @@ public client_disconnect(id)
 // BEGIN client_prethink subroutine
 // Prethink routines
 // **************************************************************************
-/*
+
 public client_PreThink(id)
 {
 	// Disable slow down after jumping
@@ -907,7 +954,7 @@ public client_PreThink(id)
 
 	entity_set_float(id, EV_FL_fuser2, 0.0)
 
-	// Fix this later for uwc3
+	/*// Fix this later for uwc3
 	if(Verify_Skill(id, RACE_UNDEAD, SKILL3) && !p_data_b[id][PB_STUNNED] && !p_data_b[id][PB_SLOWED])
 	{
 		new Float:vel[3]
@@ -922,8 +969,8 @@ public client_PreThink(id)
 
 	// With The code above Think we need this
 	if(p_data_b[id][PB_SILENT])
-		entity_set_int(id, EV_INT_flTimeStepSound, 999)
-}*/
+		entity_set_int(id, EV_INT_flTimeStepSound, 999)*/
+}
 // **************************************************************************
 // END client_prethink subroutine
 // **************************************************************************
@@ -941,7 +988,7 @@ public plugin_end()
 	if(get_pcvar_num(mpsavexp))
 	{
 		// Make sure to sync any remaining data before plugin ends!
-		if (task_exists(TASKID_SYNCSQL))
+		if(task_exists(TASKID_SYNCSQL))
 		{
 			remove_task(TASKID_SYNCSQL)
 			sync_sql()
@@ -977,31 +1024,7 @@ public native_set_changeskin(id, num)
 	skinchanged[index] = setting ? true : false
 }
 
-/* Do not know where I want to put theses.*/
-is_freezed(id)
-{
-	set_hud()
-	show_hudmessage(id,"You may not use this ability during freezetime")
-}
 
-is_delay(id)
-{
-	set_hud()
-	show_hudmessage(id, "This ability is disabled^nfor the first %d seconds", get_pcvar_num(ultimatedelay))
-}
-
-set_hud()
-{
-	set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
-}
-
-check_range(index)
-{
-	if(index > 0 && index <= g_MAXPLAYERS)
-		return 1;
-
-	return 0;
-}
 
 /* Check map */
 public native_no_weap(id, num)

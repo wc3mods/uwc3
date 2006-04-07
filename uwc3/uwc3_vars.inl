@@ -300,7 +300,7 @@ new sqltable_skills2[32] = "uwc3_skills2"
 new sqltable_skills3[32] = "uwc3_skills3"
 new sqltable_skills4[32] = "uwc3_skills4"
 new bool:g_sqlite = false 				// added by JGHG
-new g_MAXPLAYERS 						// added by JGHG
+//new g_MAXPLAYERS 						// added by JGHG
 new g_pendingXP[32][1024]				// added by JGHG
 new g_pendingSkills[32][4][1024]		// added by JGHG
 new g_pendingEnh[32][1024]				// added by JGHG
@@ -358,7 +358,6 @@ new gatespr
 new gMsgScreenFade
 new gmsgStatusText
 new gmsgDeathMsg
-new gmsgFade
 new gmsgShake
 //new gmsgIcon
 
@@ -410,7 +409,7 @@ new const deathbyweapon[][] =
 	"Beginner's Luck",
 	"Critical Backfire",
 	"Magic Resistance"
-};
+}
 
 new const weaponname[25][] =
 {
@@ -439,11 +438,10 @@ new const weaponname[25][] =
 	"ak47",
 	"knife",
 	"p90"
-};
+}
 
 /* Cvar Pointers */
 new mpsavexp;
-new ultimatedelay;
-
+//new ultimatedelay;
 
 /* Messages */

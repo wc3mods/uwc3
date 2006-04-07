@@ -218,15 +218,13 @@ public buy_item(id,key){
 
       if (playeritem[id]==HEALTH)
          // Remove health bonus after buying new item
-         set_user_health_log(id, get_user_health(id)-HEALTHBONUS, true,
-                             "buy_item() HEALTH1")
+         set_user_health_log(id, get_user_health(id)-HEALTHBONUS, true, "buy_item() HEALTH1")
 
       playeritem[id]=key+1
 
       if (playeritem[id]==HEALTH){
          // Give health bonus for buying periapt of health
-         set_user_health_log(id, get_user_health(id)+HEALTHBONUS, true,
-                             "buy_item() HEALTH2")
+         set_user_health_log(id, get_user_health(id)+HEALTHBONUS, true, "buy_item() HEALTH2")
          #if defined DEBUG
          if ( get_cvar_num("UW_DEBUG") == 5 ){
             new name[32]
@@ -579,7 +577,7 @@ public weapon_controller( parm[2] )
 			weapid = iweapons[a]
 			if(iweapons[a] != CSW_C4)
 			{
-				get_weaponname(iweapons[a], wpname,31)
+				get_weaponname(weapid, wpname,31)
 				engclient_cmd(id, "drop", wpname)
 			}
 		}
@@ -625,43 +623,41 @@ public weapon_controller( parm[2] )
 
 		if(cs_get_user_shield(id))
 				gotShield[id]=false
-	//if(gotShield[id])
-	//   give_item(id,"weapon_shield")
 
-	for (new j=0; j < savednumber[id]; ++j)
-	{
-		if(weaponid > 0 && weaponid < MAXWEAPON && weaponid !=5)
+		//if(gotShield[id])
+		//   give_item(id,"weapon_shield")
+
+		for (new j=0; j < savednumber[id]; ++j)
 		{
-			weaponid = savedweapons[id][j]
+			if(weaponid > 0 && weaponid < MAXWEAPON && weaponid !=5)
+			{
+				weaponid = savedweapons[id][j]
 
-			give_item(id, weapon_names[weaponid])
+				give_item(id, weapon_names[weaponid])
 
-			if(MaxBPAmmo[weaponid] != 0)
-				cs_set_user_bpammo(id, weaponid, MaxBPAmmo[j]) // Check This later
+				if(MaxBPAmmo[weaponid] != 0)
+					cs_set_user_bpammo(id, weaponid, MaxBPAmmo[j]) // Check This later
+			}
 		}
-	}
 
-	if (iglow[id][1] < 1)
-	{
-		parm[0] = id
-		set_task(0.1, "glow_change", 4, parm, 2)
-	}
+		if (iglow[id][1] < 1)
+		{
+			parm[0] = id
+			set_task(0.1, "glow_change", 4, parm, 2)
+		}
 
-	iglow[id][0] = 0
-	iglow[id][1] += 100
-	iglow[id][2] = 0
-	iglow[id][3] = 0
+		iglow[id][0] = 0
+		iglow[id][1] += 100
+		iglow[id][2] = 0
+		iglow[id][3] = 0
 
-	if(iglow[id][1] > MAXGLOW)
-		iglow[id][1] = MAXGLOW
+		if(iglow[id][1] > MAXGLOW)
+			iglow[id][1] = MAXGLOW
 
-	Create_Fade(id, 1<<10, 1<<10, 1<<12, 0, 255, 0, iglow[id][1])
+		Create_Fade(id, 1<<10, 1<<10, 1<<12, 0, 255, 0, iglow[id][1])
 
-	// Restore Re-Incarnated Player to the map
-	set_user_origin(id, origin)
-	// [08-29-04] Not sure why hasdefuse changes here, removed - K2mia
-	//}else{
-	//   hasdefuse[id]=false
+		// Restore Re-Incarnated Player to the map
+		set_user_origin(id, origin)
 	}
 
 	if(is_connected[id])
@@ -735,7 +731,7 @@ public item_functions(parm[])
 	if(playeritem2[id] == REGEN && !task_exists(9000 + id))
 		regenerate(parm)
 
-	bImmuneHeadshots[id] ? (playeritem2[id] == HELM) true : false
+	bImmuneHeadshots[id] = (playeritem2[id] == HELM) ? true : false
 
 	if(playeritem2[id] == CHAMELEON && is_user_alive(id))
 		changeskin(id, 0)
@@ -764,7 +760,7 @@ public items(parm2[2])
 
 	if(ultlearned[id] && !ultimateused[id] && !freezetime && !u_delay[id])
 		format(temp3, 31, "[ Ultimates Ready ]  ")
-	else if (ultlearned[id]){
+	else if (ultlearned[id])
 		format(temp3, 31, "[ Ultimates NOT Ready ]  ")
 
 
@@ -807,7 +803,7 @@ public items(parm2[2])
 	if(is_user_alive(id) && !endround)
 		show_hudmessage(id, "%s", temp2)
 
-	set_task(1.5, "items", 4511 + id, parm2, 2);
+	set_task(1.5, "items", 4511 + id, parm2, 2)
 }
 // **************************************************************************
 // END items subroutine
@@ -821,8 +817,8 @@ public items(parm2[2])
 public giveheifnothas(parm[2])
 {
 	new id = parm[0]
-	new wpnList[32]
-	new number
+	//new wpnList[32]
+	//new number
 	//new bool:foundNade // No reason to have this.
 
 	/*get_user_weapons(id,wpnList,number)
@@ -951,7 +947,7 @@ public nadetimer(parm[2])
 // **************************************************************************
 public check_weap(id)
 {
-   new weapon = (read_data(1))
+	new weapon = (read_data(1))
 
 	if(weapon == CSW_FLASHBANG)
 		flashg[id]++

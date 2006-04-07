@@ -52,7 +52,7 @@ public ability_wcward(id)
 				return PLUGIN_HANDLED
 			}
 
-			serpentteam[id] = (get_user_team(id) == TEAM_T) TEAM_T : TEAM_CT
+			serpentteam[id] = (get_user_team(id) == TEAM_T) ? TEAM_T : TEAM_CT
 
 			new parm[6]
 			new origin[3]

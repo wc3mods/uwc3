@@ -1012,7 +1012,7 @@ public displaylevel(id,hide){
 
 
    // Unholy Aura handler next - Call unholy routine
-   new parm[1]
+   new parm[2]
    parm[0]=id
    unholyspeed(parm)
 

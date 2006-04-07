@@ -21,10 +21,11 @@ new TSkins[4][] =
 
 public plugin_precache()
 {
+	// Precache std CS player models for use with decoy ability
 	if(file_exists("models/player/zombie/zombie.mdl"))
 		precache_model("models/player/zombie/zombie.mdl")
 
-	// Precache std CS player models for use with decoy ability
+/* // Default models do not need to be precache Tested this in a mini plugin when using cs_set_user_model
 	precache_model("models/player/leet/leet.mdl")
 	precache_model("models/player/arctic/arctic.mdl")
 	precache_model("models/player/guerilla/guerilla.mdl")
@@ -35,7 +36,7 @@ public plugin_precache()
 	precache_model("models/player/gsg9/gsg9.mdl")
 	precache_model("models/player/urban/urban.mdl")
 
-	precache_model("models/player/vip/vip.mdl")
+	precache_model("models/player/vip/vip.mdl")*/
 }
 
 public plugin_init()
