@@ -6,7 +6,7 @@ public ability_wcward(id)
 		client_print(id, print_chat, "You do not know the Serpant Ward ultimate yet")
 		return PLUGIN_HANDLED
 	}
-	
+
 	if(u_delay[id])
 	{
 		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
@@ -165,7 +165,7 @@ public lightpls(parm[6])
 	}
 
 	if(!endround)
-		set_task(0.45, "lightpls", 43, parm, 6)
+		set_task(0.45, "lightpls", SERPANT_WARD + id, parm, 6)
 }
 
 // Special Ability: Repair Armor - fix a teammate's damaged armor
@@ -265,7 +265,10 @@ public ability_wcrepair(id)
 			set_user_armor_log(friend, maxarmor[friend], true, "wcrepair()-2")
 
 		client_print(id, print_chat, "[%s] You have made some repairs to your teammate's armor <%d XP>.", MOD, xpbonus)
+
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(friend, print_chat, "[%s] %s has made some repairs to your armor.", MOD, name)
+		#endif
 
 		emit_sound(id, CHAN_ITEM, "items/suitchargeok1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 	}
@@ -408,31 +411,49 @@ public ability_wcmend(id)
 		{
 			xpbonus += xplevel_lev[p_level[id]]
 			client_print(id, print_chat, "[%s] You have provided medical care to %s : tended burns, cured poison, cured disease <%d XP>", MOD, fname, xpbonus)
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(friend, print_chat, "[%s] %s has provided the following medical care : tended burns, cured poison, cured disease", MOD, name)
+			#endif
 		}
 		else if(cured_burns && (cured_poison || cured_disease))
 		{
 			xpbonus += (2 * MENDXP)
 			client_print(id, print_chat, "[%s] You have provided medical care to %s : tended burns, cured poison(or) disease <%d XP>", MOD, fname, xpbonus)
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(friend, print_chat, "[%s] %s has provided the following medical care : tended burns, cured poison(or) disease", MOD, name)
+			#endif
 		}
 		else if(cured_poison && cured_disease)
 		{
 			xpbonus += floatround(1.5 * MENDXP)
 			client_print(id, print_chat, "[%s] You have provided medical care to %s : cured poison and disease <%d XP>", MOD, fname, xpbonus)
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(friend, print_chat, "[%s] %s has provided the following medical care : cured poison and disease", MOD, name)
+			#endif
 		}
 		else if(cured_poison || cured_disease)
 		{
 			xpbonus += MENDXP
+
 			client_print(id, print_chat, "[%s] You have provided medical care to %s : cured poison(or) disease <%d XP>", MOD, fname, xpbonus)
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(friend, print_chat, "[%s] %s has provided the following medical care : cured poison(or) disease", MOD, name)
+			#endif
 		}
+		#if defined SKILL_PRINT_MESSAGE
 		else
 		{
 			client_print(id, print_chat, "[%s] You have provided basic medical care to %s <%d XP>", MOD, fname, xpbonus)
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(friend, print_chat, "[%s] %s has provided basic medical care to you", MOD, name)
+			#endif
 		}
+		#endif
 
 		playerxp[id] += xpbonus // Award the player XP for their service
 

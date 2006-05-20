@@ -16,7 +16,9 @@ new xpgiven                    // Used to store current level of XP given
 new Float:weaponxpmultiplier[31] = {1.0, ...}
 
 // UWC3 Rank titles
+#if defined UWC3_RANK
 new ranktitles[11][] = { "Orc Fodder", "Elf Acolyte", "Human Squire", "Undead Soldier", "Skilled Combatant", "Crypt Lord Zealot", "Arch Lich", "Blood Elf Champion", "Demon Hunter", "Emissary of Death", "Warchief" }
+#endif
 
 // Defines many variables needed for the skills system
 new sortedskills[MAX_SKILLS]                    // Contains re-indexing after sort
@@ -94,16 +96,20 @@ new p_skills[MAX_PLAYERS][MAX_SKILLS]   // Player skills ( indexed by player id 
 new playerxp[MAX_PLAYERS]               // Player experience ( indexed by player id )
 new playeritem[MAX_PLAYERS]             // Itemslot1 ( indexed by player id )
 new playeritem2[MAX_PLAYERS]            // Itemslot2 ( indexed by player id )
+
+#if defined UWC3_RANK
 new p_rank[MAX_PLAYERS][18]             // Players rank
+#endif
+
 new currentteam[MAX_PLAYERS]            // Players current team
 new deathmessageshown[MAX_PLAYERS]      // Has the death message been shown this round?
 new g_friend[MAX_PLAYERS]               // Used in hide or show Status routines
-new ultlearned[MAX_PLAYERS]=0           // Number of ultimates a player has learned
+new ultlearned[MAX_PLAYERS] ={0, ...}           // Number of ultimates a player has learned
 new iglow[MAX_PLAYERS][4]               // Player glowing
 new CTspawnpts[MAX_PLAYERS][3]          // CT spawnpt (origins)
 new Tspawnpts[MAX_PLAYERS][3]           // T spawnpt (origins)
 new MOLEspawnpts[MAX_PLAYERS]           // MOLE spawn pts (reset each round)
-new maxhealth[MAX_PLAYERS]              // Max. health for player
+new maxhealth[MAX_PLAYERS] = {100, ...}              // Max. health for player
 new maxarmor[MAX_PLAYERS]               // Max. armor for player
 new damageto[MAX_PLAYERS][MAX_PLAYERS]  // Damage dealt table for added XP
 
@@ -336,17 +342,22 @@ new TSkins[4][]= {"arctic", "leet", "guerilla", "terror"}
 new bool:bImmuneHeadshots[33];
 new Float:fLastShotFired[33];
 new bool:silentfeet[MAX_PLAYERS]
-new Sql:sql
 
+
+new Sql:sql
+new sql_count
+
+/*
 new const ultimate_hud[3][] =
 {
 	"",
 	"[ Ultimates Ready ] ",
 	"[ Ultimates  NOT Ready ] "
 }
-
+*/
 new const deathbyweapon[][] =
 {
+	"",
 	"Carrion Beetles",
 	"Thorns Aura",
 	"Trueshot Aura",
@@ -412,3 +423,5 @@ new hostage_map
 new bomb_map
 new vip_map
 #endif
+
+new xpstring[512]

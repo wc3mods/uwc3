@@ -227,9 +227,12 @@
 // **************************************************************************
 // END Backwards-Compatible Defs from War3 and War3FT
 // **************************************************************************
-#define STATUS_HUD 5000
+//#define STATUS_HUD 5000
 #define SERPANT_WARD 5001
 #define NAPALM 5002
 #define POISON 5003
 #define DISEASE 5004
+#define ONFIRE 5005
 #define UTLIMATE_DELAY 12385
+
+#define MAX_ATTEMPT_CONNECTION 5

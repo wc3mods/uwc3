@@ -44,7 +44,8 @@ public ultimate_wcsuicide(id)
 				new parm[1]
 				parm[0]=id
 
-				icon_controller(id,ICON_FLASH)
+				//icon_controller(id, ICON_FLASH)
+				displaylevel(id, 4)
 				suicideAttempt[id] = 1
 
 				set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
@@ -136,7 +137,10 @@ public apacheexplode(parm[]) // Suicide Bomber
 				//client_print(targetid, print_console, "DEBUG: [Immune to Bomber] magic_resist=(%d)", p_resists[targetid][RESISTIDX_MAGIC])
 
 				temp_immunity[targetid] = true
+
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(targetid, print_chat, "[%s] Your magic resistance makes you temporarily immune to a Suicide Bomber's blast waves", MOD)
+				#endif
 
 				new iparm[2]
 
@@ -279,7 +283,8 @@ public ultimate_wcflame(id)
 		if(flame_count[id] > 5)
 		{
 			ultimateused[id] = true
-			icon_controller(id, ICON_HIDE)
+			//icon_controller(id, ICON_HIDE)
+			displaylevel(id, 4)
 			flame_count[id] = 0
 		}
 	}
@@ -436,13 +441,18 @@ burn_victim(id, killer, tk)
 		if(randomnumber < chance_to_avoid)
 		{
 			do_burn = false
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat, "[%s] Your fire resistance protects you from a flamethrower attack", MOD)
 			client_print(killer, print_chat, "[%s] Your flamethrower attack is deflected by your target's fire resistance", MOD)
+			#endif
 		}
 		else if((randomnumber / 2.0) < chance_to_avoid)
 		{
 			ftimer = 3.5
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat, "[%s] Your fire resistance fails to fully protect you from a flamethrower attack", MOD)
+			#endif
 		}
 	}
 
@@ -451,7 +461,7 @@ burn_victim(id, killer, tk)
 		args[0] = id
 		args[1] = killer
 		args[2] = tk
-		set_task(ftimer, "on_fire", 451, args, 4, "a",(hp / 10))
+		set_task(ftimer, "on_fire", ONFIRE + id, args, 4, "a",(hp / 10))
 	}
 	else
 		isburning[id] = 0
@@ -502,11 +512,10 @@ public on_fire(args[])
 
 check_burnzone(id, vec[], aimvec[], speed1, speed2, radius)
 {
-	new maxplayers = g_MAXPLAYERS+1
 	new tbody,tid
 	get_user_aiming(id,tid,tbody,550)
 
-	if((tid > 0) &&(tid < maxplayers))
+	if((tid > 0) && (tid <= g_MAXPLAYERS))
 	{
 		if(cvar_exists("mp_friendlyfire"))
 		{
@@ -553,7 +562,7 @@ check_burnzone(id, vec[], aimvec[], speed1, speed2, radius)
 	burnvec2[2] += vec[2]
 
 	new origin[3]
-	for(new i=1; i<=maxplayers; i++)
+	for(new i=1; i <= g_MAXPLAYERS; i++)
 	{
 		if(cvar_exists("mp_friendlyfire"))
 		{
@@ -690,6 +699,7 @@ public ultimate_wcteleport(id)
 
 					if(get_distance(oldLocation, targetorigin) <= get_cvar_num("FT_blink_radius"))
 					{
+						#if defined DEBUG
 						if(get_cvar_num("UW_DEBUG") == 5)
 						{
 							new tname[32]
@@ -698,6 +708,7 @@ public ultimate_wcteleport(id)
 							log_amx("DEBUG: TELEPORT_FAILED_IMMUNITY_2 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid))
 							client_print(id, print_console, "DEBUG: TELEPORT_FAILED_IMMUNITY_2 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid))
 						}
+						#endif
 
 						set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2,5)
 						show_hudmessage(id, "Teleport Failed^nA Nearby Enemy Has Immunity")
@@ -797,7 +808,8 @@ public ultimate_wcteleport(id)
 			set_task(0.1, "blink_controller", 10098, parm, 2)
 
 			ultimateused[id] = true
-			icon_controller(id, ICON_HIDE)
+			//icon_controller(id, ICON_HIDE)
+			displaylevel(id, 4)
 
 			if(file_exists("sound/warcraft3/blinkarrival.wav"))
 				emit_sound(id,CHAN_ITEM, "warcraft3/blinkarrival.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -1128,6 +1140,7 @@ public blink_controller(parm[2])
 						oldLocation = savedOldLoc[id]
 						//client_print(id,print_chat,"sent back to: x:%i y:%i z%i", oldLocation[0],oldLocation[1],oldLocation[2])
 
+						#if defined DEBUG
 						if(get_cvar_num("UW_DEBUG") == 5)
 						{
 							new tname[32]
@@ -1136,6 +1149,7 @@ public blink_controller(parm[2])
 							log_amx("DEBUG: TELEPORT_FAILED_IMMUNITY_1 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid))
 							client_print( id, print_console, "DEBUG: TELEPORT_FAILED_IMMUNITY_1 Player=(%s) Target=(%s) Is_Target_Alive=(%d)", idname, tname, is_user_alive(targetid))
 						}
+						#endif
 
 						set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2,5);
 						show_hudmessage(id, "Teleport Failed^nAn Enemy Near Your Destination Has Immunity");
@@ -1160,10 +1174,12 @@ public blink_controller(parm[2])
 				{
 					tele_cool = INT_TELEPORT_COOL
 
+					#if defined DEBUG
 					if(get_cvar_num("UW_DEBUG") == 1)
 					{
 						client_print(id, print_console, "[%s DEBUG] Tele_Cool=(%f)", MOD, tele_cool)
 					}
+					#endif
 				}
 
 				set_task(tele_cool, "cooldown", 500 + id, coolparm, 1)
@@ -1339,10 +1355,11 @@ public lightsearchtarget(parm[2])
 	new enemy, body
 	get_user_aiming(id, enemy, body)
 
-	if(0 < enemy <= 32 && get_user_team(id) != get_user_team(enemy) && playeritem[enemy] != IMMUNITY && !hasblink[enemy] && is_user_alive(id) && is_user_alive(enemy))
+	if(0 < enemy <= g_MAXPLAYERS && get_user_team(id) != get_user_team(enemy) && playeritem[enemy] != IMMUNITY && !hasblink[enemy] && is_user_alive(id) && is_user_alive(enemy))
 	{
 		ultimateused[id] = true
-		icon_controller(id, ICON_HIDE)
+		//icon_controller(id, ICON_HIDE)
+		displaylevel(id, 4)
 		new linewidth = 80
 		new damage = 50
 		issearching[id] = false
@@ -1353,12 +1370,16 @@ public lightsearchtarget(parm[2])
 		{
 			actual_damage = actual_damage - floatround((float(p_resists[enemy][RESISTIDX_ELECTRIC]) / float(RESIST_MAX_VALUE)) * float(actual_damage))
 
+			#if defined DEBUG
 			client_print(enemy, print_console, "DEBUG: orig_ltning_dmg=(%d) modified_dmg=(%d)", damage, actual_damage)
+			#endif
 
+			#if defined SKILL_PRINT_MESSAGE
 			if(p_resists[enemy][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
 				client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
 			else
 				client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs some of the Chain Lightning damage", MOD)
+			#endif
 		}
 
 		lightningeffect(id, enemy, linewidth, actual_damage, id)
@@ -1379,7 +1400,8 @@ public lightsearchtarget(parm[2])
 	else
 	{
 		issearching[id]=true
-		icon_controller(id,ICON_FLASH)
+		//icon_controller(id,ICON_FLASH)
+		displaylevel(id, 4)
 		new counter = parm[1]
 		while(counter >= 0)
 		{
@@ -1397,8 +1419,9 @@ public lightsearchtarget(parm[2])
 		}
 		else
 		{
-		issearching[id] = false
-		icon_controller(id, ICON_SHOW)
+			issearching[id] = false
+			//icon_controller(id, ICON_SHOW)
+			displaylevel(id, 4)
 		}
 	}
 }
@@ -1454,10 +1477,12 @@ public lightningnext(parm[4]) // Chain Lightning
 		{
 			actual_damage -=(p_resists[closestid][RESISTIDX_ELECTRIC] / 100) * actual_damage
 
+			#if defined SKILL_PRINT_MESSAGE
 			if(p_resists[closestid][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
 				client_print(closestid, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
 			else
 				client_print(closestid, print_chat, "[%s] Your resistance to electricity absorbs some of the Chain Lightning damage", MOD)
+			#endif
 		}
 
 		lightningeffect(id, closestid, linewidth, actual_damage, caster)
@@ -1484,7 +1509,8 @@ public lightningeffect(id,targetid,linewidth,damage,caster)
 
 	new parm[1]
 	parm[0] = id
-	icon_controller(id, ICON_HIDE)
+	//icon_controller(id, ICON_HIDE)
+	displaylevel(id, 4)
 
 	do_damage(targetid, caster, damage, 11, 3, 0, 0, 0)
 
@@ -1583,12 +1609,15 @@ public searchtarget(parm[2])
 	new enemy, body
 	get_user_aiming(id, enemy, body)
 
-	if((0 < enemy <= 32) && !temp_immunity[enemy])
+	if((0 < enemy <= g_MAXPLAYERS) && !temp_immunity[enemy])
 	{
 		if(p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE || magic_saving_throw(enemy))
 		{
 			temp_immunity[enemy] = true
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] Your magic resistance makes you temporarily immune to Entangling Roots", MOD)
+			#endif
 
 			new iparm[2]
 
@@ -1599,11 +1628,12 @@ public searchtarget(parm[2])
 		}
 	}
 
-	if(0 < enemy <= 32 && !temp_immunity[enemy] && !stunned[enemy] && get_user_team(id) != get_user_team(enemy) && playeritem[enemy] != IMMUNITY && !hasblink[enemy] && is_user_alive(id) && is_user_alive(enemy))
+	if(0 < enemy <= g_MAXPLAYERS && !temp_immunity[enemy] && !stunned[enemy] && get_user_team(id) != get_user_team(enemy) && playeritem[enemy] != IMMUNITY && !hasblink[enemy] && is_user_alive(id) && is_user_alive(enemy))
 	{
 		issearching[id] = false
 		ultimateused[id] = true
-		icon_controller(id, ICON_HIDE)
+		//icon_controller(id, ICON_HIDE)
+		displaylevel(id, 4)
 
 		if(file_exists("sound/warcraft3/entanglingrootstarget1.wav"))
 			emit_sound(id, CHAN_ITEM, "warcraft3/entanglingrootstarget1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -1629,7 +1659,8 @@ public searchtarget(parm[2])
 	else
 	{
 		issearching[id] = true
-		icon_controller(id, ICON_FLASH)
+		//icon_controller(id, ICON_FLASH)
+		displaylevel(id, 4)
 		new counter = parm[1]
 		while(counter >= 0)
 		{
@@ -1646,7 +1677,8 @@ public searchtarget(parm[2])
 		else
 		{
 			issearching[id] = false
-			icon_controller(id, ICON_SHOW)
+			//icon_controller(id, ICON_SHOW)
+			displaylevel(id, 4)
 		}
 	}
 	return PLUGIN_CONTINUE
@@ -1655,16 +1687,16 @@ public searchtarget(parm[2])
 public reset_immunity(parm[2])
 {
 	new id = parm[0]
-	new which = parm[1]
 
-	if(which == 1)
+	#if defined SKILL_PRINT_MESSAGE
+	switch(parm[1])
 	{
-		client_print(id, print_chat, "[%s] Your magic resistance to Entangling Roots has ended", MOD)
+		case 1:
+			client_print(id, print_chat, "[%s] Your magic resistance to Entangling Roots has ended", MOD)
+		case 2:
+			client_print(id, print_chat, "[%s] Your magic resistance to Suicide Bomber blast waves has ended", MOD)
 	}
-	else if(which == 2)
-	{
-		client_print(id, print_chat, "[%s] Your magic resistance to Suicide Bomber blast waves has ended", MOD)
-	}
+	#endif
 
 	temp_immunity[id] = false
 }
@@ -1827,7 +1859,8 @@ public ultimate_wcvoodoo(id)
 			emit_sound(id,CHAN_STATIC, "warcraft3/divineshield.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
 		ultimateused[id] = true
-		icon_controller(id, ICON_FLASH)
+		//icon_controller(id, ICON_FLASH)
+		displaylevel(id, 4)
 	}
 	return PLUGIN_HANDLED
 }
@@ -1849,7 +1882,8 @@ public reset_godmode(parm[])
 	set_task(get_cvar_float("FT_bigbadvoodoo_cooldown"), "cooldown", 500 + id, parm, 1)
 	set_hudmessage(0, 100, 0, 0.05, 0.75, 2, 0.02, 10.0, 0.01, 0.1, 2)
 	show_hudmessage(id, "Your Voodoo has expired")
-	icon_controller(id, ICON_HIDE)
+	//icon_controller(id, ICON_HIDE)
+	displaylevel(id, 4)
 }
 // **************************************************************************
 // END ultimate_wcvoodoo and supporting routines
@@ -1967,16 +2001,21 @@ public drawfunnels(parm[])
 
 	if(p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE || magic_saving_throw(id))
 	{
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(id, print_chat, "[%s] Your magic resistance protects you from a Locust Swarm", MOD)
+		#endif
+
 		ultimateused[caster] = false
-		icon_controller(caster, ICON_SHOW)
+		//icon_controller(caster, ICON_SHOW)
+		displaylevel(id, 4)
 		return
 	}
 
 	if(playeritem[id] == IMMUNITY || hasblink[id] || !is_user_alive(id))
 	{
 		ultimateused[caster] = false
-		icon_controller(caster, ICON_SHOW)
+		//icon_controller(caster, ICON_SHOW)
+		displaylevel(id, 4)
 		return
 	}
 
@@ -1989,7 +2028,7 @@ public drawfunnels(parm[])
 	funnel[1] = parm[1]
 	funnel[2] = parm[2]
 
-	icon_controller(caster,ICON_FLASH)
+	//icon_controller(caster,ICON_FLASH)
 
 	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
 	write_byte(TE_LARGEFUNNEL)
@@ -2039,10 +2078,12 @@ public drawfunnels(parm[])
 
 				//client_print(id, print_console, "DEBUG: orig_locust_dmg=(%d) mod_dmg=(%d)", 35, actual_damage)
 
+				#if defined SKILL_PRINT_MESSAGE
 				if(p_resists[id][RESISTIDX_DISEASE] == RESIST_MAX_VALUE)
 					client_print(id, print_chat, "[%s] Your disease resistance absorbs all of the Locust Swarm damage", MOD)
 				else
 					client_print(id, print_chat, "[%s] Your disease resistance absorbs some of the Locust Swarm damage", MOD)
+				#endif
 			}
 
 			do_damage(id, caster, actual_damage, 15, 3, 0, 0, 0)
@@ -2050,7 +2091,8 @@ public drawfunnels(parm[])
 			if(file_exists("sound/warcraft3/locustswarmloopwav.wav"))
 				emit_sound(id, CHAN_ITEM, "warcraft3/locustswarmloopwav.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
-			icon_controller(caster, ICON_HIDE)
+			//icon_controller(caster, ICON_HIDE)
+			displaylevel(id, 4)
 
 			new cooldownparm[1]
 			cooldownparm[0] = caster
@@ -2108,18 +2150,21 @@ public searchtargetflash(parm[2])
 	new enemy, body
 	get_user_aiming(id, enemy, body)
 
-	if(0 < enemy <= 32 && !stunned[enemy] && get_user_team(id) != get_user_team(enemy) && playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) && is_user_alive(enemy) && p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE && !magic_saving_throw(enemy))
+	if(0 < enemy <= g_MAXPLAYERS && !stunned[enemy] && get_user_team(id) != get_user_team(enemy) && playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) && is_user_alive(enemy) && p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE && !magic_saving_throw(enemy))
 	{
 		issearching[id] = false
 		ultimateused[id] = true
-		icon_controller(id, ICON_HIDE)
+		//icon_controller(id, ICON_HIDE)
+		displaylevel(id, 4)
 
 		new name[32], ename[32]
 		get_user_name(id , name, 31)
 		get_user_name(enemy , ename, 31)
 
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(id, print_chat, "[%s] Your Flash of Light blinds %s", MOD, ename)
 		client_print(enemy, print_chat, "[%s] You are blinded by a Flash of Light from %s", MOD, name)
+		#endif
 
 		message_begin(MSG_ONE, gmsgFade,{0,0,0},enemy)
 		write_short(1<<15)
@@ -2140,7 +2185,8 @@ public searchtargetflash(parm[2])
 	else
 	{
 		issearching[id] = true
-		icon_controller(id, ICON_FLASH)
+		//icon_controller(id, ICON_FLASH)
+		displaylevel(id, 4)
 		new counter = parm[1]
 		while(counter >= 0)
 		{
@@ -2158,7 +2204,8 @@ public searchtargetflash(parm[2])
 		else
 		{
 			issearching[id] = false
-			icon_controller(id, ICON_SHOW)
+			//icon_controller(id, ICON_SHOW)
+			displaylevel(id, 4)
 		}
 	}
 }
@@ -2238,7 +2285,11 @@ public ultimate_wcdecoy(id)
 	if(0 < target <= MAX_PLAYERS)
 	{
 		entity_get_string(target, EV_SZ_classname, sClass, 32)
+
+		#if defined DEBUG
 		client_print(id, print_console, "[%s DEBUG] Decoy triggered on class %s", MOD, sClass)
+		#endif
+
 		if(equal(sClass, "player"))
 		{
 			client_print(id, print_chat, "[%s] You cannot create a Decoy on a player.", MOD)
@@ -2454,10 +2505,12 @@ do_gate(id)
 		write_byte( 255 )
 		message_end()
 	}
+	#if defined SKILL_PRINT_MESSAGE
 	else
 	{
 		client_print(id, print_chat, "[%s] Your gateway failed to open", MOD)
 	}
+	#endif
 }
 
 // Opens a Gateway to Teleport the player back home
@@ -2483,13 +2536,17 @@ public transport_gate(parm[6])
 
 	if(numplayers > 0)
 	{
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(id, print_chat, "[%s] An unknown force causes your gateway to collapse", MOD)
+		#endif
 		return
 	}
 
 	--numgates[id]
 
+	#if defined SKILL_PRINT_MESSAGE
 	client_print(id, print_chat, "[%s] Your gateway opens and is ready to take you home", MOD)
+	#endif
 
 	ultimateused[id] = true
 	new cooldownparm[1]
@@ -2560,7 +2617,8 @@ public cooldown(parm[1])
 	if(get_cvar_num("sv_restrictultimate") == 0)
 	{
 		ultimateused[id] = false
-		icon_controller(id, ICON_SHOW)
+		//icon_controller(id, ICON_SHOW)
+		displaylevel(id, 4)
 	}
 }
 
@@ -2571,7 +2629,8 @@ public cooldown2(parm[1])
 	if(p_skills[id][SKILLIDX_TELEPORT])
 	{
 		blinkdelayed[id] = false
-		icon_controller(id, ICON_SHOW)
+		//icon_controller(id, ICON_SHOW)
+		displaylevel(id, 4)
 	}
 }
 
@@ -2579,5 +2638,7 @@ public udelay_cooldown(DELAY)
 {
 	new id = DELAY - UTLIMATE_DELAY
 	u_delay[id] = false
-	icon_controller(id, ICON_SHOW)
+
+	displaylevel(id, 4)
+	//icon_controller(id, ICON_SHOW)
 }

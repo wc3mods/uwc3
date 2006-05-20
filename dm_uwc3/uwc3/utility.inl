@@ -356,6 +356,7 @@ stock cmd_target2(id,const arg[])
 	return player
 }
 
+#if defined DEBUG
 // Display your location in coordinates
 public admin_loc(id)
 {
@@ -404,6 +405,18 @@ public debug_info(id, enemy)
 	}*/
 	return PLUGIN_HANDLED
 }
+
+public debug_attrib(id)
+{
+	p_attribs[id][ATTRIBIDX_INT] = 30000
+	p_attribs[id][ATTRIBIDX_STR] = 30000
+	p_attribs[id][ATTRIBIDX_DEX] = 30000
+	p_attribs[id][ATTRIBIDX_AGI] = 30000
+	p_attribs[id][ATTRIBIDX_CON] = 30000
+
+	return PLUGIN_HANDLED
+}
+#endif
 
 // Toggle low-res display mode on or off
 public toggle_lowres(id)
@@ -562,6 +575,7 @@ public showStatus(id)
 			show_hudmessage(id, "%s", name)
 		}
 	}
+	displaylevel(id, 4)
 }
 
 // Check for player alive
@@ -641,13 +655,15 @@ public freezetimedone()
 		{
 			if(!(p_skills[id][SKILLIDX_TELEPORT]))
 			{
-				icon_controller(id, ICON_SHOW)
+				//icon_controller(id, ICON_SHOW)
+				displaylevel(id, 4)
 				ultimateused[id] = false
 			}
 		}
 		else
 		{
-			icon_controller(id, ICON_SHOW)
+			//icon_controller(id, ICON_SHOW)
+			displaylevel(id, 4)
 			ultimateused[id] = false
 		}
 		displaylevel(id, 3)
@@ -682,6 +698,7 @@ public teamselect(id)
 }
 
 // Controls the icon to display for ultimate skills
+/*
 public icon_controller(id, value) /// WHYYYYYYY ... THIS DOES SHIT..
 {
 	if(!get_cvar_num("FT_show_icons") || (freezetime) || (u_delay[id]) || (p_skills[id][SKILLIDX_TELEPORT] && blinkdelayed[id] && get_cvar_num("FT_blinkstartdisabled")))
@@ -695,7 +712,7 @@ public icon_controller(id, value) /// WHYYYYYYY ... THIS DOES SHIT..
 	}
 
 	return PLUGIN_CONTINUE
-}
+}*/
 
 // BEGIN glow_change subroutine
 public glow_change(parm[])

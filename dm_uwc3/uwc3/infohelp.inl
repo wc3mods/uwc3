@@ -1,9 +1,9 @@
 // BEGIN show_news subroutine
-public show_news(id) // This should be a dynamic txt file. This should not even be in the plugin itself.
+/*public show_news(id) // This should be a dynamic txt file. This should not even be in the plugin itself.
 {
 	new temp[3076]
 	new pos
-	
+
 	pos += format(temp[pos], 3076 - pos, "<body scroll='no' bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<table border=0><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -21,20 +21,20 @@ public show_news(id) // This should be a dynamic txt file. This should not even 
 	pos += format(temp[pos], 3076 - pos, "<li>[8-29-04] Equip Reincarnation fixed for failures due to Bomb Explosion, Defusers should always reincarnate now, grenades may still have some erratic respawn issues. Vengeance ultimate cooldown added, so ultimates will become available again after vengeance-based respawn.<p>")
 	pos += format(temp[pos], 3076 - pos, "<li>[8-22-04] Testing new bug fix for disease and poison resistance against Carrion Beetles and Shadow Strike<p>")
 	pos += format(temp[pos], 3076 - pos, "</ul></td></tr></table>")
-	
+
 	show_motd(id, temp, "UWC3 News")
-}
+}*/
 
 // The main WC3 menu
 public main_menu(id)
 {
 	if(!warcraft3)
 		return PLUGIN_HANDLED
-	
+
 	new nLoop
 	new pos, i, menu_body[512], menu_items[7][32]
 	new keys = (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<9)
-	
+
 	menu_items[0] = "Skills Menu"
 	menu_items[1] = "Item Menu"
 	menu_items[2] = "Help"
@@ -42,19 +42,19 @@ public main_menu(id)
 	menu_items[4] = "Commands List"
 	menu_items[5] = "Your Character Sheet"
 	menu_items[6] = "Admin Menu"
-	
+
 	pos += format(menu_body[pos], 511-pos, "\yUWC3: Main Menu [ http://www.mudconnect.com/uwc3/ ]^n^n")
-	
+
 	if(!get_cvar_num("UW_disable_adminmenu") && get_user_flags(id) & get_cvar_num("UW_admin_flag"))
 		nLoop = 7
 	else
 		nLoop = 6
-	
+
 	for(i = 0; i< nLoop; i++)
 		pos += format(menu_body[pos], 511-pos, "\w%d. %s^n", i + 1, menu_items[i])
-	
+
 	pos += format(menu_body[pos], 511-pos, "^n\w0. Exit")
-	
+
 	show_menu(id, keys, menu_body, -1)
 	return PLUGIN_HANDLED
 }
@@ -78,20 +78,20 @@ public do_wc3menu(id, key)
 			character_sheet(id)
 		case 6:
 			admin_menu(id)
-	}	
+	}
 	return PLUGIN_HANDLED
 }
 
 // BEGIN change_race subroutine
 // Display the error message since no races in game
-public change_race(id)
+/*public change_race(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<table border=0><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -99,18 +99,18 @@ public change_race(id)
 	pos += format(temp[pos], 2048 - pos, "UWC3 provides players with 34 playable levels and a freeform skills system which allows you to mix and match skills of your choosing. In addition UWC3 offers players a choice of 10 ultimate skills and you can train up to 3 different ultimates, as well as other special abilities. UWC3 also offers an optional Enhancement system to provide your character with even more customization. <p>")
 	pos += format(temp[pos], 2048 - pos, "Interested? Read on! Say <b>/help</b> for UWC3's help menu and say <b>/commands</b> to see the list of UWC3 spoken commands. Say <b>/news</b> to read up on the latest changes to the plugin.<p>")
 	pos += format(temp[pos], 2048 - pos, "</td></tr></table>")
-	
+
 	show_motd(id, temp, "Ultimate Warcraft3")
-	
+
 	return PLUGIN_CONTINUE
-}
+}*/
 
 // Display the help menu
 public help_menu(id)
 {
 	new pos, i, menu_body[512], menu_items[8][32]
 	new keys = (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9)
-	
+
 	menu_items[0] = "UWC3 General Help"
 	menu_items[1] = "About UWC3 Ultimates"
 	menu_items[2] = "UWC3 Credits"
@@ -119,16 +119,16 @@ public help_menu(id)
 	menu_items[5] = "(\rNew\w) Resistances Info"
 	menu_items[6] = "Tips for Playing UWC3 pg.1"
 	menu_items[7] = "Tips for Playing UWC3 pg.2"
-	
+
 	pos += format(menu_body[pos], 511-pos, "\yHelp Menu^n^n")
-	
+
 	for(i = 0; i < 8; i++)
 		pos += format(menu_body[pos], 511-pos, "\w%d. %s^n", i + 1, menu_items[i])
-		
+
 	pos += format(menu_body[pos], 511-pos, "^n^n\w9. Back")
 	pos += format(menu_body[pos], 511-pos, "^n\w0. Exit")
 	show_menu(id, keys, menu_body, -1)
-	
+
 	return PLUGIN_CONTINUE
 }
 
@@ -137,23 +137,23 @@ public do_helpmenu(id, key)
 {
 	switch(key)
 	{
-		case 0: 
+		case 0:
 			war3_info(id)
-		case 1: 
+		case 1:
 			uwc3_ultimates(id)
-		case 2: 
+		case 2:
 			uwc3_credits(id)
-		case 3: 
+		case 3:
 			show_news(id)
-		case 4: 
+		case 4:
 			uwc3_attributes(id)
-		case 5: 
+		case 5:
 			uwc3_resistances(id)
-		case 6: 
+		case 6:
 			uwc3_tips(id)
-		case 7: 
+		case 7:
 			uwc3_tips2(id)
-		case 8: 
+		case 8:
 			main_menu(id)
 	}
 	return PLUGIN_HANDLED
@@ -169,7 +169,7 @@ public do_helpmenu(id, key)
 // **************************************************************************
 admin_menu(id)
 {
-	if(!(get_user_flags(id) & get_cvar_num("UW_admin_flag"))) 
+	if(!(get_user_flags(id) & get_cvar_num("UW_admin_flag")))
 	{
 		if(id != 0)
 		{
@@ -177,29 +177,29 @@ admin_menu(id)
 			return PLUGIN_HANDLED
 		}
 	}
-	
+
 	if(get_cvar_num("UW_disable_adminmenu"))
 	{
 		client_print(id, print_center, "The Admin Menu has been disabled on this server")
 		return PLUGIN_HANDLED
 	}
-	
+
 	new pos, i, menu_body[512], menu_items[3][32]
 	new keys = (1<<0)|(1<<1)|(1<<8)|(1<<9)
-	
+
 	menu_items[0] = "Give Individual Players XP"
 	menu_items[1] = "Give Multiple Players XP"
 	/*menu_items[2] = "Save everyone's XP"*/
-	
+
 	pos += format(menu_body[pos], 511-pos, "\yAdmin Menu^n^n")
-	
+
 	for(i = 0; i < 2; i++)
 		pos += format(menu_body[pos], 511-pos, "\w%d. %s^n", i + 1, menu_items[i])
-		
+
 	pos += format(menu_body[pos], 511-pos, "^n^n\w9. Back")
 	pos += format(menu_body[pos], 511-pos, "^n\w0. Exit")
 	show_menu(id, keys, menu_body, -1)
-	
+
 	return PLUGIN_HANDLED
 }
 
@@ -236,24 +236,24 @@ playerxp_menu(id, pos)
 		admin_menu(id)
 		return PLUGIN_CONTINUE
 	}
-	
+
 	get_players(g_menuPlayers[id],g_menuPlayersNum[id])
 	new menuBody[512]
 	new b
 	new i
 	new name[32], team[4]
 	new start = pos * 7
-	
+
 	if(start >= g_menuPlayersNum[id])
 		start = pos = g_menuPosition[id] = 0
-	
+
 	new len = format(menuBody,511, "\yGive Players XP\R%d/%d^n\w^n", pos + 1, (g_menuPlayersNum[id] / 7 + ((g_menuPlayersNum[id] % 7) ? 1 : 0)))
 	new end = start + 7
 	new keys = (1<<9)|(1<<7)
-	
+
 	if(end > g_menuPlayersNum[id])
 		end = g_menuPlayersNum[id]
-	
+
 	for(new a = start; a < end; ++a)
 	{
 		i = g_menuPlayers[id][a]
@@ -262,9 +262,9 @@ playerxp_menu(id, pos)
 		keys |= (1<<b)
 		len += format(menuBody[len], 511 - len, "\w%d. %s^n\w", ++b, name)
 	}
-	
+
 	len += format(menuBody[len], 511-len, "^n8. Give  %d XP^n", g_menuSettings[id])
-	
+
 	if(end != g_menuPlayersNum[id])
 	{
 		format(menuBody[len], 511 - len, "^n9. More...^n0. %s", pos ? "Back" : "Back")
@@ -272,9 +272,9 @@ playerxp_menu(id, pos)
 	}
 	else
 		format(menuBody[len], 511-len, "^n0. %s", pos ? "Back" : "Exit")
-	
+
 	show_menu(id, keys, menuBody)
-	
+
 	return PLUGIN_CONTINUE
 }
 // **************************************************************************
@@ -293,26 +293,26 @@ public do_playerxpmenu(id, key)
 		case 7:
 		{
 			++g_menuOption[id]
-			
+
 			if(g_menuOption[id] > 6)
 				g_menuOption[id] =1
-	
+
 			switch(g_menuOption[id])
 			{
-				case 1: 
+				case 1:
 					g_menuSettings[id] = 50
-				case 2: 
+				case 2:
 					g_menuSettings[id] = 100
-				case 3: 
+				case 3:
 					g_menuSettings[id] = 500
-				case 4: 
+				case 4:
 					g_menuSettings[id] = 1000
-				case 5: 
+				case 5:
 					g_menuSettings[id] = 5000
-				case 6: 
+				case 6:
 					g_menuSettings[id] = 10000
 			}
-			
+
 			playerxp_menu(id, g_menuPosition[id])
 		}
 		case 8:
@@ -322,21 +322,21 @@ public do_playerxpmenu(id, key)
 		default:
 		{
 			new player = g_menuPlayers[id][g_menuPosition[id] * 7 + key]
-	
+
 			new name[32]
 			new pname[32]
 			get_user_name(id, name, 31)
 			get_user_name(player, pname, 31)
-	
+
 			log_amx("[%s] %s used Admin-Menu XP [%s] for %s", MOD, name, g_menuSettings[id], pname)
-	
+
 			client_print(player, print_chat, "[%s] The admin just awarded you %d experience.", MOD, g_menuSettings[id])
 			playerxp[player] += g_menuSettings[id]
 			displaylevel(player, 1)
 			playerxp_menu(id, g_menuPosition[id])
 		}
 	}
-	
+
 	return PLUGIN_HANDLED
 }
 
@@ -345,16 +345,16 @@ teamxp_menu(id)
 {
 	new pos, i, menu_body[512], menu_items[3][32]
 	new keys = (1<<0)|(1<<1)|(1<<2)|(1<<7)|(1<<8)|(1<<9)
-	
+
 	menu_items[0] = "Terrorist"
 	menu_items[1] = "Counter-Terrorists"
 	menu_items[2] = "Everyone"
-	
+
 	pos += format(menu_body[pos], 511-pos, "\yTeam XP Menu^n^n")
-	
+
 	for(i = 0; i < 3; i++)
 		pos += format(menu_body[pos], 511-pos, "\w%d. %s^n", i + 1, menu_items[i])
-	
+
 	pos += format(menu_body[pos], 511-pos, "^n8. Give  %d XP^n", g_menuSettings[id])
 	pos += format(menu_body[pos], 511-pos, "^n^n\w9. Back")
 	pos += format(menu_body[pos], 511-pos, "^n\w0. Exit")
@@ -367,7 +367,7 @@ public do_teamxpmenu(id, key)
 	// [10-08-04] Added logging of amx_givexp() command - K2mia
 	new name[32]
 	get_user_name(id, name, 31)
-	
+
 	switch(key)
 	{
 		case 0:
@@ -391,10 +391,10 @@ public do_teamxpmenu(id, key)
 		case 7:
 		{
 			++g_menuOption[id]
-			
+
 			if(g_menuOption[id] > 6)
 				g_menuOption[id] =1
-			
+
 			switch(g_menuOption[id])
 			{
 				case 1:
@@ -410,7 +410,7 @@ public do_teamxpmenu(id, key)
 				case 6:
 					g_menuSettings[id] = 10000
 			}
-			
+
 			teamxp_menu(id)
 		}
 		case 8:
@@ -422,14 +422,14 @@ public do_teamxpmenu(id, key)
 }
 
 // Display the UWC3 commands list
-public uwc3_commands(id)
+/*public uwc3_commands(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><table border=1 cellpadding=3 cellspacing=3><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -454,13 +454,14 @@ public uwc3_commands(id)
 	pos += format(temp[pos], 2048 - pos, "say /toggle_lowres - Toggles the position of ultimate/shopitems HUD messages<br>")
 	pos += format(temp[pos], 2048 - pos, "In console: xp_table - Displays the XP/Level table for this server<br>")
 	pos += format(temp[pos], 2048 - pos, "</font></td></tr></table></center>")
-	
+
 	show_motd(id, temp, "UWC3 Commands")
-	
+
 	return PLUGIN_CONTINUE
 }
-
+*/
 // Display the credits for UWC3 plugin
+/*
 public uwc3_credits(id)
 {
    if(!warcraft3)
@@ -487,9 +488,9 @@ public uwc3_credits(id)
    pos += format(temp[pos], 3072 - pos, "Denkkar for some of his code(ie. STEAM_POWERED)<br>Everyone at amxmod.net for help<br>joecool12321 for various health related fixes<br>Tri Moon for various improvements(No Race, war3menu, etc...)<br>xeroblood for spotting some bugs for me :)<br>bad-at-this for contributing the status bar code used for godmode(big bad voodoo)<br>")
    pos += format(temp[pos], 3072 - pos, "kamikaze for help w/testing version before release<br>lui for the delayed ultimate code<br>The following people helped convert the text to German:<br>Walken / Altegarde.com , Fire , ^^plan.los^^<br>")
    pos += format(temp[pos], 3072 - pos, "</font></td></tr></table></center>")
-   
+
    show_motd(id, temp, "Ultimate Warcraft3 Credits")
-   
+
    return PLUGIN_CONTINUE
 }
 
@@ -498,10 +499,10 @@ public war3_info(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><table border=1 cellpadding=3 cellspacing=3><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -515,9 +516,9 @@ public war3_info(id)
 	pos += format(temp[pos], 2048 - pos, "UWC3 allows you to have up to 3 ultimate skills as opposed to just one from the original Warcraft3. In the skills menu(/selectskill) ultimate skills will say(Ultimate: name), for example for the Teleport ultimate it says(Ultimate: wcteleport). Once you learn this skill you can use it by binding a key to the wcteleport command, done by typing: bind key wcteleport in the console.<p>")
 	pos += format(temp[pos], 2048 - pos, "Say <b>/commands</b> to see the list of UWC3 spoken commands and say <b>/help</b> for the UWC3 help menu.<p>")
 	pos += format(temp[pos], 2048 - pos, "</font></td></tr></table></center>")
-	
+
 	show_motd(id, temp, "Ultimate WC3FT Player Help")
-	
+
 	return PLUGIN_CONTINUE
 }
 
@@ -526,10 +527,10 @@ public uwc3_tips(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<table border=0><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -540,9 +541,9 @@ public uwc3_tips(id)
 	pos += format(temp[pos], 2048 - pos, "<li>In Ultimate Warcraft3 you gain levels and skills by earning experience. You earn experience by killing your enemies or seriously injuring them(assisting a teammate in killing), performing game objectives like planting the bomb or rescuring hostages, and other skill based methods such as healing your teamates or repairing their armor.<p>")
 	pos += format(temp[pos], 2048 - pos, "<li>Ultimate skills in UWC3 each have a unique command to bind to a key, the skillsmenu(/selectskill) displays these commands next to Ultimate skills. <p>")
 	pos += format(temp[pos], 2048 - pos, "</td></tr></table>")
-	
+
 	show_motd(id, temp, "UWC3 Tips")
-	
+
 	return PLUGIN_HANDLED
 }
 
@@ -551,10 +552,10 @@ public uwc3_tips2(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<table border=0><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -566,9 +567,9 @@ public uwc3_tips2(id)
 	pos += format(temp[pos], 2048 - pos, "<li>You can reset your current skills by saying <b>/resetskills</b> - at the start of the next round your points will be returned and you may retrain a new set of skills. If by slim chance you ever want to delete your skills and XP you can do so with <b>/deletexp</b><p>")
 	pos += format(temp[pos], 2048 - pos, "<li>UWC3 now offers a complete line of player Attributes and Resistances you can train along with your skills. Complete information about Attributes, Resistances and Enhancement XP is available at our website -- <b>http://www.mudconnect.com/uwc3/enhancements.html</b><p>")
 	pos += format(temp[pos], 2048 - pos, "</td></tr></table>")
-	
+
 	show_motd(id, temp, "UWC3 Tips pg. 2")
-	
+
 	return PLUGIN_HANDLED
 }
 
@@ -577,10 +578,10 @@ public uwc3_ultimates(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[3072]
 	new pos
-	
+
 	pos += format(temp[pos], 3072 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 3072 - pos, "<table border=0><tr><td><font color=#FFB000>")
 	pos += format(temp[pos], 3072 - pos, "<center><b>Ultimate Warcraft3</b><br><a href='http://www.uwc3.com/'><b>http://www.uwc3.com/</b></a></center><p>")
@@ -603,9 +604,9 @@ public uwc3_ultimates(id)
 	pos += format(temp[pos], 3072 - pos, "<tr><td><font color=#FFB000>Ability: Repair Armor</td><td><font color=#FFB000>bind key wcrepair</td></tr>")
 	pos += format(temp[pos], 3072 - pos, "<tr><td><font color=#FFB000>Ability: Serpant Ward</td><td><font color=#FFB000>bind key wcward</td></tr>")
 	pos += format(temp[pos], 3072 - pos, "</td></tr></table>")
-	
+
 	show_motd(id, temp, "UWC3 Ultimates")
-	
+
 	return PLUGIN_CONTINUE
 }
 // **************************************************************************
@@ -621,10 +622,10 @@ public uwc3_attributes(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<b>Attributes Information</b><p>")
 	pos += format(temp[pos], 2048 - pos, "<p>UWC3 provides, in addition to the normal XP system, a new enhancement XP system(E-XP) which allows you to earn Attribute points to spend building your character. These attributes are as follows:</p><ol>")
@@ -633,9 +634,9 @@ public uwc3_attributes(id)
 	pos += format(temp[pos], 2048 - pos, "<li><b>Dexterity</b> - Helps to successfully Evade shots for characters trained in Evasion <p> ")
 	pos += format(temp[pos], 2048 - pos, "<li><b>Agility</b> - Determines your base runspeed, stacks with Unholy Aura <p> ")
 	pos += format(temp[pos], 2048 - pos, "<li><b>Constitution</b> - Provides health regeneration which stacks with Healing Wave ")
-	
+
 	show_motd(id, temp, "Attributes Information")
-	
+
 	return PLUGIN_HANDLED
 }
 
@@ -644,10 +645,10 @@ public uwc3_resistances(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new temp[2048]
 	new pos
-	
+
 	pos += format(temp[pos], 2048 - pos, "<body bgcolor=#000000><font color=#FFB000>")
 	pos += format(temp[pos], 2048 - pos, "<b>Resistances Information</b><p>")
 	pos += format(temp[pos], 2048 - pos, "<p>UWC3 provides, in addition to the normal XP system, a new enhancement XP system(E-XP) which allows you to earn Resistance points to spend building a defense system for your character. Each resistance can be trained to 100 points at which time you should be totally covered from the specified damage type. These resistances are as follows:</p><ol>")
@@ -656,11 +657,11 @@ public uwc3_resistances(id)
 	pos += format(temp[pos], 2048 - pos, "<li><b>Electricity</b> -  protection against Chain Lightning attacks <p>")
 	pos += format(temp[pos], 2048 - pos, "<li><b>Fire</b> - protection against Flamethrower and Napalm Grenade fire-based attacks <p>")
 	pos += format(temp[pos], 2048 - pos, "<li><b>Magic</b> - Similar to a Necklace of Immunity with some exceptions made to attacks covered by other resistance types.<p>")
-	
+
 	show_motd(id, temp, "Resistances Information")
-	
+
 	return PLUGIN_HANDLED
-}
+}*/
 
 // Display a player's character sheet
 public character_sheet(id)
@@ -673,22 +674,22 @@ public character_sheet(id)
 	new sname[64]
 	new bool:bHasASkill
 	new j
-	
+
 	get_user_name(id, name, 31)
-	
+
 	new skillptsavail = get_availskillpts(id)	// Count # skillpts unspent
-	
+
 	new apts = get_availattribpts(id)	// Get the # available attrib pts
 	new rpts = get_availresistpts(id)	// Get the # available resist pts
-	
+
 	// Calculate how many attrib/resist points can be spent
 	new extra_xp = (playerxp[id] - xplevel_lev[enh_minlevel])
-	
+
 	if(extra_xp < 0)
 		extra_xp = 0
-		
+
 	new exp = (extra_xp / 10)
-	
+
 	add(message, 2047, "<body bgcolor=#000000><font color=#FFB000>")
 	format(stemp, 1024, "<center><b>Character Sheet: %s</b></center><p>", name)
 	add(message, 2047, stemp)
@@ -698,19 +699,23 @@ public character_sheet(id)
 	add(message, 2047, stemp)
 	format(stemp, 1024, "Player Level: %d <br>", p_level[id])
 	add(message, 2047, stemp)
+
+#if defined UWC3_RANK
 	format(stemp, 1024, "Player Rank: %s <br>", p_rank[id])
 	add(message, 2047, stemp)
+#endif
+
 	format(stemp, 1024, "Skillpts Available: %d <br>", skillptsavail)
 	add(message, 2047, stemp)
 	add(message, 2047, "</td><td valign=top width=50%><font color=#FFB000>")
-	
+
 	if(p_level[id] == (MAX_LEVEL - 1))
 		format(stemp, 1024, "Player XP: %d <br>", playerxp[id])
 	else
 		format(stemp, 1024, "Player XP: %d / %d <br>", playerxp[id], xplevel_lev[p_level[id] + 1])
-	
+
 	add(message, 2047, stemp)
-	
+
 	if(p_level[id] == (MAX_LEVEL - 1))
 		add(message, 2047, "XP Needed: NA <br>")
 	else
@@ -718,7 +723,7 @@ public character_sheet(id)
 		format(stemp, 1024, "XP Needed: %d <br>", (xplevel_lev[p_level[id] + 1] - playerxp[id]))
 		add(message, 2047, stemp)
 	}
-	
+
 	format(stemp, 1024, "Enhancement XP: %d <br>", exp)
 	add(message, 2047, stemp)
 	format(stemp, 1024, "Attribute Pts Available: %d <br>", apts)
@@ -751,40 +756,40 @@ public character_sheet(id)
 	add(message, 2047, stemp)
 	add(message, 2047, "</td></tr><tr><td colspan=2 valign=top><font color=#FFB000>")
 	add(message, 2047, "<center><b>Skills Trained</b></center><p>")
-	
+
 	for(j = 1; j < MAX_SKILLS; j++)
 	{
-		if(j <= 8) 
+		if(j <= 8)
 			copy(sname, 31, skillset1[j])
-		else if(j <= 16) 
+		else if(j <= 16)
 			copy(sname, 31, skillset2[j-8])
-		else if(j <= 24) 
+		else if(j <= 24)
 			copy(sname, 31, skillset3[j-16])
-		else if(j <= 32) 
+		else if(j <= 32)
 			copy(sname, 31, skillset4[j-24])
-		else if(j <= 40) 
+		else if(j <= 40)
 			copy(sname, 31, skillset5[j-32])
-	
+
 		if(p_skills[id][j])
 		{
 			bHasASkill = true
 			new mstr[32]
-			
+
 			if(p_skills[id][j] == skill_limits[j] && skill_limits[j] > 1)
 				copy(mstr, 31, "(Master)")
-		
+
 			format(temp2,64,"%s [level %d] %s <br>",  sname, p_skills[id][j], mstr )
 			add(temp,1024,temp2)
 		}
 	}
-	
+
 	if(!bHasASkill)
 		add(temp,1024, "No skills trained")
-	
+
 	add(message, 2048, temp)
 	add(message, 2048, "</td></tr>")
 	add(message,2048,"</table></center>")
-	
+
 	show_motd(id, message, "Your Character Sheet")
 }
 // Display a specified player's character sheet to another player
@@ -798,57 +803,59 @@ public cmd_whois(id, arg[])
 	new sname[64]
 	new bool:bHasASkill
 	new j
-	
+
 	new pid = cmd_target(id, arg, 0)
-	
+
 	if(!pid)
 	{
 		client_print(id, print_chat, "[%s] Could not find a matching player [%s]", MOD, arg)
 		return PLUGIN_HANDLED
 	}
-	
+
 	get_user_name(pid, name, 31)
-	
+
 	new skillptsavail = get_availskillpts(pid) // Count # skillpts unspent
-	
+
 	new apts = get_availattribpts(pid) // Get the # available attrib pts
 	new rpts = get_availresistpts(pid) // Get the # available resist pts
-	
+
 	// Calculate how many attrib/resist points can be spent
 	new extra_xp = (playerxp[pid] - xplevel_lev[enh_minlevel])
-	
+
 	if(extra_xp < 0)
 		extra_xp = 0
-		
+
 	new exp = (extra_xp / 10)
-	
+
 	add(message, 2047, "<body bgcolor=#000000><font color=#FFB000>")
 	format(stemp, 1024, "<center><b>Character Sheet: %s</b></center><p>", name)
 	add(message, 2047, stemp)
 	add(message, 2047, "<center><table width=800 border=1 cellpadding=4 cellspacing=4>")
 	add(message, 2047, "<tr><td valign=top width=50%><font color=#FFB000>")
-	
+
 	format(stemp, 1024, "Player Name: %s <br>", name)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Player Level: %d <br>", p_level[pid])
 	add(message, 2047, stemp)
-	
+
+	#if defined UWC3_RANK
 	format(stemp, 1024, "Player Rank: %s <br>", p_rank[pid])
 	add(message, 2047, stemp)
-	
+	#endif
+
 	format(stemp, 1024, "Skillpts Available: %d <br>", skillptsavail)
 	add(message, 2047, stemp)
-	
+
 	add(message, 2047, "</td><td valign=top width=50%><font color=#FFB000>")
-	
+
 	if(p_level[pid] == (MAX_LEVEL - 1))
 		format(stemp, 1024, "Player XP: %d <br>", playerxp[pid])
 	else
 		format(stemp, 1024, "Player XP: %d / %d <br>", playerxp[pid], xplevel_lev[p_level[pid]+1])
-		
+
 	add(message, 2047, stemp)
-	
+
 	if(p_level[pid] == (MAX_LEVEL - 1))
 		add(message, 2047, "XP Needed: NA <br>")
 	else
@@ -856,101 +863,101 @@ public cmd_whois(id, arg[])
 		format(stemp, 1024, "XP Needed: %d <br>", (xplevel_lev[p_level[pid]+1] - playerxp[pid]))
 		add(message, 2047, stemp)
 	}
-	
+
 	format(stemp, 1024, "Enhancement XP: %d <br>", exp)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Attribute Pts Available: %d <br>", apts)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Resistance Pts Available: %d <br>", rpts)
 	add(message, 2047, stemp)
-	
+
 	add(message, 2047, "</td></tr><tr><td valign=top><font color=#FFB000>")
 	add(message, 2047, "<center><b>Attributes</b></center><p>")
-	
+
 	format(stemp, 1024, "Strength: %d / %d <br>", p_attribs[pid][ATTRIBIDX_STR], ATTRIB_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Intellect: %d / %d <br>", p_attribs[pid][ATTRIBIDX_INT], ATTRIB_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Dexterity: %d / %d <br>", p_attribs[pid][ATTRIBIDX_DEX], ATTRIB_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Agility: %d / %d <br>", p_attribs[pid][ATTRIBIDX_AGI], ATTRIB_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Constitution: %d / %d <br>", p_attribs[pid][ATTRIBIDX_CON], ATTRIB_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	add(message, 2047, "</td><td valign=top><font color=#FFB000>")
 	add(message, 2047, "<center><b>Resistances</b></center><p>")
-	
+
 	format(stemp, 1024, "Poison Resistance: %d / %d <br>", p_resists[pid][RESISTIDX_POISON], RESIST_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Disease Resistance: %d / %d <br>", p_resists[pid][RESISTIDX_DISEASE], RESIST_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Electricity Resistance: %d / %d <br>", p_resists[pid][RESISTIDX_ELECTRIC], RESIST_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Fire Resistance: %d / %d <br>", p_resists[pid][RESISTIDX_FIRE], RESIST_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	format(stemp, 1024, "Magic Resistance: %d / %d <br>", p_resists[pid][RESISTIDX_MAGIC], RESIST_MAX_VALUE)
 	add(message, 2047, stemp)
-	
+
 	add(message, 2047, "</td></tr><tr><td colspan=2 valign=top><font color=#FFB000>")
 	add(message, 2047, "<center><b>Skills Trained</b></center><p>")
-	
+
 	for(j = 1; j < MAX_SKILLS; j++)
 	{
-		if(j <= 8) 
+		if(j <= 8)
 			copy(sname, 31, skillset1[j])
-		else if(j <= 16) 
+		else if(j <= 16)
 			copy(sname, 31, skillset2[j-8])
-		else if(j <= 24) 
+		else if(j <= 24)
 			copy(sname, 31, skillset3[j-16])
-		else if(j <= 32) 
+		else if(j <= 32)
 			copy(sname, 31, skillset4[j-24])
-		else if(j <= 40) 
+		else if(j <= 40)
 			copy(sname, 31, skillset5[j-32])
-	
+
 		if(p_skills[pid][j])
 		{
 			bHasASkill = true
 			new mstr[32]
-			
+
 			if(p_skills[pid][j] == skill_limits[j] && skill_limits[j] > 1)
 				copy(mstr, 31, "(Master)")
-		
+
 			format(temp2,64,"%s [level %d] %s <br>",  sname, p_skills[pid][j], mstr )
 			add(temp,1024,temp2)
 		}
 	}
-	
+
 	if(!bHasASkill)
 		add(temp,1024, "No skills trained")
-	
+
 	add(message, 2048, temp)
 	add(message, 2048, "</td></tr>")
-	
+
 	add(message,2048, "</table></center>")
-	
+
 	new mtitle[64]
 	format(mtitle, 64, "Character Sheet for %s", name)
 	show_motd(id, message, mtitle)
-	
+
 	return PLUGIN_HANDLED
 }
-
+#if defined UWC3_RANK
 // Set the player's rank string
 public set_rankstring(id)
 {
 	p_rank[id] = ""
-	
+
 	// Set the player's rank title
 	if(p_level[id] >= RANK11_LEVEL)
 		copy(p_rank[id], 18, ranktitles[10])
@@ -974,33 +981,33 @@ public set_rankstring(id)
 		copy(p_rank[id], 18, ranktitles[1])
 	else
 		copy(p_rank[id], 18, ranktitles[0])
-	
-	return PLUGIN_CONTINUE
 
+	return PLUGIN_CONTINUE
 }
+#endif
 
 // Calculate and display a player's level
 public displaylevel(id, hide)
 {
 	if(!id || !is_user_connected(id))
 		return PLUGIN_CONTINUE
-	
-	new parm2[2]
-	parm2[0] = id
-	
-	if(!itemsrunning[id] && !endround)
-		items(parm2)
-	
+
+	//new parm2[2]
+	//parm2[0] = id
+
+	//if(!itemsrunning[id] && !endround)
+	//	items(parm2)
+
 	new bool:bLvled = false
 	new skillptsavail
-	new addskillmesg
-	new xpstring[511]
+	//new addskillmesg // Temp Disabled
+	xpstring[0] = 0
 	new name[32]
 	get_user_name(id, name, 31)
-	
+
 	if(playerxp[id] < 0)
 		playerxp[id] = 0
-	
+
 	if(p_level[id] < (MAX_LEVEL-1) && playerxp[id] >= xplevel_lev[p_level[id] + 1])
 	{
 		for(new i = (p_level[id] + 1); i < MAX_LEVEL; i++)
@@ -1009,27 +1016,27 @@ public displaylevel(id, hide)
 			{
 				// Level Gain
 				bLvled = true
-				p_level[id] =i
-				
+				p_level[id] = i
+
 				//client_print(id, print_console, "New level: %d pxp= (%d) xplev= (%d)", p_level[id], playerxp[id], xplevel_lev[i])
 			}
 		}
 	}
-	
-	set_rankstring(id)		// Set the player's rank string
-	
+
+	//set_rankstring(id)		// Set the player's rank string
+
 	//client_print(id, print_console, "[%s DEBUG] Rank: %s <%d> XP:(%d / %d)", MOD, p_rank[id], p_level[id], playerxp[id], xplevel)
-	
-	if(hide != 3)
+
+	if(hide != 3 && hide != 4)
 	{
 		// [08-06-04] - Now checks/displays attrib/resist pts avail before skills - K2mia
 		// hide != 3 specifies available attrib/resist/skill pts can be displayed
-		
+
 		new acount = get_attribcount(id)
 		new apts = get_availattribpts(id)
 		new rcount = get_resistcount(id)
 		new rpts = get_availresistpts(id)
-		
+
 		if(apts > 0 && (acount < ((MAX_ATTRIBS-1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE))) && acount < ATTRIB_MAX_PTS)
 		{
 			// Display attribpts available message
@@ -1046,54 +1053,67 @@ public displaylevel(id, hide)
 		{
 			// Determine if player has skills that can be learned
 			skillptsavail = get_availskillpts(id)
-			
+
 			if(skillptsavail)
 			{
-				addskillmesg = 1
-	
+				//addskillmesg = 1 // Temp disabled
+
 				// Display skillpts available message
 				set_hudmessage(200, 100, 0, 0.35, -1.00, 0, 1.0, 5.0, 0.1, 0.2, 2)
 				show_hudmessage(id, "You have %d skillpoints available(use /selectskill)", skillptsavail)
 			}
 		}
 	}
-	
+
 	if(get_cvar_num("FT_items_in_hud"))
 	{
-		if(playeritem2[id] == 0)
+		if(!playeritem[id] && !playeritem2[id]) // No Item
 		{
-			format(xpstring,511,"Rank: %s [%d]   XP: %d", p_rank[id], p_level[id], playerxp[id])
+			format(xpstring, 511, "[%d] XP: %d %s", p_level[id], playerxp[id], (!u_delay[id] && ultlearned[id] && !freezetime && !ultimateused[id]) ? "- Ultimate Ready" :"")
 		}
-		else
+		else if(playeritem[id] && !playeritem2[id]) // Item from Shopmenu
 		{
-			format(xpstring,511,"Rank: %s [%d]   XP: %d", p_rank[id], p_level[id], playerxp[id])
+			format(xpstring, 511, "[%d] XP: %d Item: [ %s ] %s", p_level[id], playerxp[id], shortitemname[playeritem[id] - 1], (!u_delay[id] && ultlearned[id] && !freezetime && !ultimateused[id]) ? "- Ultimate Ready" :"")
+		}
+		else if(!playeritem[id] && playeritem2[id]) // Item from Shopmenu 2
+		{
+			if(playeritem2[id] == REGEN && rings[id] > 1)
+				format(xpstring, 511,"[%d] XP: %d Item: [ %ss x%d ] %s", p_level[id], playerxp[id], shortitemname2[playeritem2[id] - 1], rings[id], (!u_delay[id] && ultlearned[id] && !freezetime && !ultimateused[id]) ? "- Ultimate Ready" :"")
+			else
+				format(xpstring, 511,"[%d] XP: %d Item: [ %s ] %s", p_level[id], playerxp[id], shortitemname2[playeritem2[id] - 1], (!u_delay[id] && ultlearned[id]) ? "- Ultimate Ready" :"")
+		}
+		else if(playeritem[id] && playeritem2[id]) // Both item from shopmenu and shopmenu2
+		{
+			if(playeritem2[id] == REGEN && rings[id] > 1)
+				format(xpstring, 511,"[%d] XP: %d Items: [ %s, %ss x%d ] %s", p_level[id], playerxp[id], shortitemname[playeritem[id] - 1], shortitemname2[playeritem2[id] - 1], rings[id], (!u_delay[id] && ultlearned[id] && !freezetime && !ultimateused[id]) ? "- Ultimate Ready" :"")
+			else
+				format(xpstring, 511,"[%d] XP: %d Items: [ %s, %s ] %s", p_level[id], playerxp[id], shortitemname[playeritem[id] - 1], shortitemname2[playeritem2[id] - 1], (!u_delay[id] && ultlearned[id]) ? "- Ultimate Ready" :"")
 		}
 	}
 	else
 	{
-		new temp2[128] = ""
-		new temp3[128] = ""
-	
-		if(addskillmesg)
-			format(temp3, 127, "[%d skillpts]", skillptsavail)
-	
-		format(xpstring,1023,"Rank: %s [%d]   XP: %d  %s %s", p_rank[id], p_level[id], playerxp[id], temp2, temp3)
+		new temp2[128]
+
+		//if(addskillmesg)
+		//	format(temp3, 127, "[%d skillpts]", skillptsavail)
+
+		format(xpstring,1023,"[%d] XP: %d  %s", p_level[id], playerxp[id], temp2)
 	}
-	
+
 	message_begin(MSG_ONE, gmsgStatusText, {0, 0, 0}, id)
 	write_byte(0)
 	write_string(xpstring)
 	message_end()
-	
-	
+
+
 	if(bLvled)
 	{
 		// Level Gained - Player has gained a level
 		//client_print(id, print_console, "[%s DEBUG] Level Gain p_level= (%d) ", MOD, p_level[id])
-	
+
 		set_hudmessage(200, 100, 0, -1.0, 0.35, 0, 1.0, 7.0, 0.1, 0.2, 2)
-	
-	
+
+
 		if(loadedlevel[id])
 		{
 			show_hudmessage(id, "Congratulations - You gained a level")
@@ -1104,88 +1124,39 @@ public displaylevel(id, hide)
 			loadedlevel[id] = 1    // Now player has initial levels loaded from saved XP
 			show_hudmessage(id, "Status :: Saved XP and Levels Loaded")
 		}
-	
+
 		if(file_exists("sound/warcraft3/levelupcaster.wav") && is_user_alive(id))
 			emit_sound(id,CHAN_ITEM, "warcraft3/levelupcaster.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 		else if(is_user_alive(id))
 			emit_sound(id,CHAN_ITEM, "plats/elevbell1.wav", 1.0, ATTN_NORM, 0, PITCH_LOW)
 	}
-	
-	
-	if(hide != 1 && hide != 3)
+
+
+	if(hide == 0 || hide == 2)
 	{
 		new temp[64]
 		new message[2048]
 		//new bool:bHasSkills=false
-		
+
 		if(p_level[id] <(MAX_LEVEL-1))
 		{
-			format(temp,64,"^n%s %s [%d] XP: %d/%d","Your Rank:", p_rank[id], p_level[id], playerxp[id], xplevel_lev[p_level[id]+1])
+			format(temp,64,"^n[%d] XP: %d/%d", p_level[id], playerxp[id], xplevel_lev[p_level[id]+1])
 		}
 		else
 		{
-			format(temp, 64, "^n%s %s [%d] XP: %d","Your Rank:", p_rank[id], p_level[id], playerxp[id])
+			format(temp, 64, "^n[%d] XP: %d", p_level[id], playerxp[id])
 		}
+
 		add(message, 2048, temp)
-	
 		add(message, 2048, "^n(Say /charsheet for your complete info)")
-	
-		/*format(temp, 64, "^n%s ", "Your Skills Summary:(first 20)")
-		add(message,2048,temp)
-		
-		new sname[32] = ""
-		new nSkills = 0
-		
-		for(new i = 1; i < MAX_SKILLS; i++)
-		{
-			if(i <= 8) 
-				copy(sname, 31, skillset1[i])
-			else if(i <= 16) 
-				copy(sname, 31, skillset2[i-8])
-			else if(i <= 24) 
-				copy(sname, 31, skillset3[i-16])
-			else if(i <= 32) 
-				copy(sname, 31, skillset4[i-24])
-			else if(i <= 40) 
-				copy(sname, 31, skillset5[i-32])
-			
-			if(p_skills[id][i])
-			{
-				++nSkills
-		
-				if(nSkills % 2 == 0)
-				{
-					format(temp, 64, "%s - %d ", sname, p_skills[id][i])
-					add(message, 2048, temp)
-				}
-				else
-				{
-					format(temp, 64, "^n%s - %d ", sname, p_skills[id][i])
-					add(message, 2048, temp)
-				}
-		
-				if(nSkills == 20)
-					break
-			}
-		
-		}
-		
-		if(nSkills > 0)
-			bHasSkills = true
-		
-		if(!bHasSkills)
-		{
-			format(temp,64,"^n%s ","No Skills Learned")
-			add(message,2048,temp)
-		}*/
-	
+
 		set_hudmessage(255, 255, 255, -1.0, 0.3, 0, 3.0, 7.0, 0.1, 0.2, 2)
 		show_hudmessage(id, "%s", message)
 	}
-	
+
 	if(!is_user_connected(id))
 		return PLUGIN_CONTINUE
-	
+
 	if(get_cvar_num("sv_gravity") > 650)
 	{
 		if(p_skills[id][SKILLIDX_LEVITATION] && playeritem2[id] != FEATHER) // Levitation
@@ -1202,7 +1173,7 @@ public displaylevel(id, hide)
 	{
 		set_user_gravity(id, 1.0)
 	}
-	
+
 	if(p_skills[id][SKILLIDX_INVIS])
 	{
 		// Invisibility
@@ -1230,16 +1201,16 @@ public displaylevel(id, hide)
 	{
 		set_user_rendering(id)
 	}
-	
+
 	// Unholy Aura handler next - Call unholy routine
 	new parm[1]
 	parm[0] = id
-	
+
 	unholyspeed(parm)
-	
+
 	//if(bLvled)
 	//	select_skill(id, 1)
-	
+
 	return PLUGIN_CONTINUE
 }
 
@@ -1254,45 +1225,33 @@ public cmd_who(id)
 	new i
 	new playerid
 	new pos
-	
-	get_players(players, numplayers)   
-	
+
+	get_players(players, numplayers)
+
 	pos += format(message[pos], 4096 - pos, "<body bgcolor=#000000 text=#FFB000>^n")
 	pos += format(message[pos], 4096 - pos, "<center><b>The following players are online</b></center><p>^n")
 	pos += format(message[pos], 4096 - pos, "<center><table width=800 border=1 cellpadding=4 cellspacing=4>^n")
 	pos += format(message[pos], 4096 - pos, "<tr><td>Name</td><td>Team</td><td>Level</td></tr>^n")
-	
+
 	for(i = 0; i < numplayers; i++)
 	{
 		playerid = players[i]
-	
-		if(get_user_team(playerid) == TEAM_T) 
+
+		if(get_user_team(playerid) == TEAM_T)
 			team = "Terrorist"
-		else if(get_user_team(playerid) == TEAM_CT) 
+		else if(get_user_team(playerid) == TEAM_CT)
 			team = "CT"
 		else
 			team = "Spectator"
-	
+
 		get_user_name(playerid, name, 31)
-	
+
 		log_amx("Adding player: %s", name)
 		pos += format(message[pos], 4096 - pos, "<tr><td>%s</td><td>%s</td><td>%d</td></tr>^n", name, team, p_level[playerid], name)
 	}
-	
+
 	pos += format(message[pos], 4096 - pos, "</table></center>^n")
-	
-	new whofile[64] // Pointless
-	get_configsdir(whofile, 63) // Pointless
-	format(whofile, 63, "%s/UWC3/uwc3_who.txt", whofile) // Pointless
-	
-	if(file_exists(whofile)) // Pointless
-		delete_file(whofile) // Pointless
-	
-	write_file(whofile, message) // Pointless
-	
-	show_motd(id, whofile, "UWC3 Players Online")
-	
-	return PLUGIN_CONTINUE
+	show_motd(id, message, "UWC3 Players Online")
 }
 
 // Displays the rank and skills for all players
@@ -1300,9 +1259,9 @@ public player_skills(id)
 {
 	if(!warcraft3)
 	return PLUGIN_CONTINUE
-	
+
 	client_print(id, print_chat, "[%s] /Playerskills is deprecated, please use /who instead.", MOD)
-	
+
 	return PLUGIN_CONTINUE
 }
 
@@ -1310,7 +1269,7 @@ public player_skills_OLD(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
-	
+
 	new name[32]
 	new message[2048]
 	new temp[1024]
@@ -1320,18 +1279,18 @@ public player_skills_OLD(id)
 	new numberofplayers
 	new i
 	new playerid
-	
+
 	get_players(players, numberofplayers)
-	
+
 	add(message,2047,"<body bgcolor=#000000><font color=#FFB000>")
 	add(message,2047,"<center><b>The following players are online</b></center><p>")
 	add(message,2047,"<center><table width=800 border=1 cellpadding=4 cellspacing=4>")
-	
+
 	// [07-02-04] K2mia => Motd cannot handle a full server of players' skills
 	// so now we break it up into pages, page # internally kept in lastpspage
 	new sidx = lastpspage[id] * 6
 	new eidx = sidx + 6 - 1
-	
+
 	if(eidx >= numberofplayers)
 	{
 		sidx = ((numberofplayers - 6) >= 0) ? (numberofplayers - 6) : 0
@@ -1342,30 +1301,30 @@ public player_skills_OLD(id)
 	{
 		lastpspage[id] += 1
 	}
-	
+
 	for(i = sidx; i < eidx; i++)
 	{
 		new sname[32]
 		new bool:bHasASkill = false
-	
+
 		playerid = players[i]
 		get_user_name(playerid, name, 31)
-	
+
 		temp = ""
-	
+
 		for(new j = 1; j < MAX_SKILLS; j++)
 		{
-			if(j <= 8) 
+			if(j <= 8)
 				copy(sname, 31, skillset1[j])
-			else if(j <= 16) 
+			else if(j <= 16)
 				copy(sname, 31, skillset2[j-8])
-			else if(j <= 24) 
+			else if(j <= 24)
 				copy(sname, 31, skillset3[j-16])
-			else if(j <= 32) 
+			else if(j <= 32)
 				copy(sname, 31, skillset4[j-24])
-			else if(j <= 40) 
+			else if(j <= 40)
 				copy(sname, 31, skillset5[j-32])
-		
+
 			if(p_skills[playerid][j])
 			{
 				bHasASkill = true
@@ -1373,18 +1332,18 @@ public player_skills_OLD(id)
 				add(temp, 1024, temp2)
 			}
 		}
-	
+
 		if(!bHasASkill)
 		{
 			add(temp, 1024, "No skills trained")
 		}
-	
-	
-		format(temp3, 128, "<tr><td valign=top><font color=#FFB000><b>%s</b>  Rank: %s [%d] - -  ", name, p_rank[playerid], p_level[playerid])
+
+
+		format(temp3, 128, "<tr><td valign=top><font color=#FFB000><b>%s</b>  [%d] - -  ", name, p_level[playerid])
 		add(message, 2048, temp3)
 		add(message, 2048, temp)
 		add(message, 2048, "</td></tr>")
-	
+
 		/*if(i % 2 == 0)
 		{
 			format(temp3 ,128, "<tr><td valign=top><font color=#FFB000><b>%s</b> (Rank: %s [%d]) <br>", name, p_rank[playerid], p_level[playerid])
@@ -1399,12 +1358,12 @@ public player_skills_OLD(id)
 			add(message, 2048, temp)
 			add(message, 2048, "</td></tr>")
 		}*/
-	
+
 	}
-	
+
 	add(message,2048,"</table></center>")
-	
+
 	show_motd(id,message,"UWC3 Player Skills")
-	
+
 	return PLUGIN_CONTINUE
 }

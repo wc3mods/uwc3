@@ -292,19 +292,21 @@ public get_availattribpts(id)
 	// Calculate how many attrib/resist points can be spent
 	new extra_xp = (playerxp[id] - xplevel_lev[enh_minlevel])
 
-	if(extra_xp < 0)
+	if (extra_xp < 0)
 		extra_xp = 0
 
 	new exp = (extra_xp / 10)
 	new acount = get_attribcount(id)
-	new apts = ((exp / attrib_pt_cost) > ATTRIB_MAX_PTS) ? (ATTRIB_MAX_PTS - acount) : ((exp / attrib_pt_cost) - acount)
+	new total_attrib = exp / attrib_pt_cost
+
+	new apts = (total_attrib > ATTRIB_MAX_PTS) ? (ATTRIB_MAX_PTS - acount) : (total_attrib - acount)
 
 	// Prevent players from getting attrib points beyond their max allowed
-	if((acount >= (MAX_ATTRIBS-1 * ATTRIB_MAX_VALUE - ATTRIB_BASE)) || acount >= ATTRIB_MAX_PTS)
+	if((acount >= ((MAX_ATTRIBS - 1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE))) || (acount >= ATTRIB_MAX_PTS))
 		apts = 0
 
-	if(apts > (MAX_ATTRIBS-1 * ATTRIB_MAX_VALUE - ATTRIB_BASE))
-		apts = ((MAX_ATTRIBS-1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE)) - acount
+	if(apts > ((MAX_ATTRIBS - 1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE)))
+		apts = ((MAX_ATTRIBS - 1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE)) - acount
 
 	return apts
 }

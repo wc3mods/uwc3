@@ -38,11 +38,20 @@ public grab_sql_vars()
 
 	//log_amx("UWC3 SQL :: Config Report: host=(%s) user=(%s) pass=(*) db=(%s)", sqlhost, sqluser, sqldb)
 
-	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
+	sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
 
 	if(sql <= SQL_FAILED)
 	{
 		log_amx("UWC3 SQL :: Connect Error [ %s ]", sqlerror)
+
+		sql_count++
+
+		if(sql_count < MAX_ATTEMPT_CONNECTION)
+			set_task(5.0, "grab_sql_vars")
+		else
+			log_amx("[UWC3] SQL :: Connection Failed. ^"%d^" Attempt connection", sql_count)
+
+
 		return PLUGIN_HANDLED
 	}
 	else
@@ -139,7 +148,7 @@ public grab_sql_vars()
 		}
 	}
 
-	dbi_close(sql)
+	//dbi_close(sql)
 	return PLUGIN_CONTINUE
 }
 
@@ -170,14 +179,6 @@ public sync_sql()
 	//if(g_globalQueryLen <= 0)
 		//return
 
-	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: Connect Error [ %s ]", sqlerror)
-		return
-	}
-
 	server_print("[%s] Performing sync to db.", "UWC3")
 	//client_print(0, print_chat, "[%s] Performing sync to db.", "UWC3")
 
@@ -190,7 +191,7 @@ public sync_sql()
 		new errormsg[512]
 		dbi_error(sql, errormsg, 511)
 		log_amx("Error when syncing data to SQL database. Could not begin transaction using ^"BEGIN;^": ", errormsg)
-		dbi_close(sql)
+//		dbi_close(sql)
 		return
 	}
 
@@ -261,7 +262,7 @@ public sync_sql()
 	server_print("[%s] Sync completed.", "UWC3")
 	//client_print(0, print_chat, "[%s] Sync completed.", "UWC3")
 
-	dbi_close(sql)
+//	dbi_close(sql)
 }
 
 // Write a player's xp / info to the SQL table
@@ -298,14 +299,6 @@ public sqlwrite_xp_id(id)
 		//log_amx("In write_xp_id() id=(%d) playerxp=(%d) Not enough XP to save", id, playerxp[id])
 		return PLUGIN_CONTINUE
 	}
-
-	// Connect to the SQL server and create the tables if they do not exist
-	/*new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: sqlwrite_xp_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-	}*/
 
 	//new query[256]
 	format(g_pendingXP[id - 1], 1023, "REPLACE INTO %s(name, steamid, xp, ip, mtime) VALUES('%s', '%s', '%d', '%s', '%s');", sqltable_xp, playername, playerid, playerxp[id], ip, timet) // SQLITE COMPLIANT
@@ -420,19 +413,6 @@ public sqlwrite_enh_id(id, nset)
 
 	replaceall(playername, 32, "'", "")
 
-
-	// Connect to the SQL server and create the tables if they do not exist
-	/*
-	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: sqlwrite_enh_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-	}
-
-	new squery[1024]
-	*/
 	format(g_pendingEnh[id - 1], 1023, "REPLACE INTO %s(name, steamid, nset, att1, att2, att3, att4, att5, res1, res2, res3, res4, res5) VALUES('%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d');", sqltable_enh, playername, playerid, nset, p_attribs[id][1], p_attribs[id][2], p_attribs[id][3], p_attribs[id][4], p_attribs[id][5], p_resists[id][1], p_resists[id][2], p_resists[id][3], p_resists[id][4], p_resists[id][5]) // SQLITE COMPLIANT
 	// = squery //format(g_pendingEnh[id - 1], 1023, squery)
 
@@ -497,14 +477,6 @@ public sqlwrite_skills_id(id, sidx, nset)
 	{
 		// Special Case - save all 4 skills tables
 
-		// Connect to the SQL server and create the tables if they do not exist
-		/*new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-		if(sql <= SQL_FAILED) {
-		log_amx("UWC3 SQL :: sqlwrite_skills_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-		}*/
-
-
 		// Possible overflow here. Fix later. :-)
 		format(g_pendingSkills[id - 1][0], 1023, "REPLACE INTO %s(name, steamid, nset, skill1, skill2, skill3, skill4, skill5, skill6, skill7, skill8, skill9, skill10) VALUES('%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d');", sqltable_skills1, playername, playerid, nset, p_skills[id][1],  p_skills[id][2],  p_skills[id][3],  p_skills[id][4],  p_skills[id][5],  p_skills[id][6],  p_skills[id][7],  p_skills[id][8],  p_skills[id][9],  p_skills[id][10]);
 		//format(g_pendingSkills1[id - 1], 1023, squery);
@@ -549,19 +521,10 @@ public sqlwrite_skills_id(id, sidx, nset)
 	}
 
 	// Connect to the SQL server and create the tables if they do not exist(JGHG: doh... why not create them at plugin_init?)
-	/*new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: sqlwrite_skills_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-	}*/
 
 	//log_amx("In sqlwrite_skills_id: sidx=(%d) sq=(%s)", sidx, squery)
 
 	//dbi_query(sql, "%s", squery)
-
-	//dbi_close(sql)
 
 	return PLUGIN_CONTINUE
 }
@@ -641,13 +604,6 @@ public write_all()
 	{
 		// Connect, query, disconnect
 		// Connect to the SQL server and create the tables if they do not exist
-		new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-		if(sql <= SQL_FAILED)
-		{
-			log_amx("UWC3 SQL :: write_all() :: Connect Error: %s", sqlerror)
-			return PLUGIN_CONTINUE
-		}
 
 		server_print("UWC3 write_all:^n^n%s^n^n", bigsql)
 
@@ -656,7 +612,7 @@ public write_all()
 		if(result > RESULT_NONE)
 			dbi_free_result(result)
 
-		dbi_close(sql)
+//		dbi_close(sql)
 	}*/
 	return PLUGIN_CONTINUE
 }
@@ -677,15 +633,6 @@ public sqlget_xp_id(id)
 
 	replaceall(playername, 32, "'", "")
 
-	// Connect to the SQL server and create the tables if they do not exist
-	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: sqlget_xp_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-	}
-
 	new Result:Res
 
 	if(get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME)
@@ -694,7 +641,7 @@ public sqlget_xp_id(id)
 	}
 	else
 	{
-		Res = dbi_query(sql,"SELECT name, steamid, xp, ip, mtime FROM %s WHERE steamid = '%s'", sqltable_xp, playerid)
+		Res = dbi_query(sql, "SELECT name, steamid, xp, ip, mtime FROM %s WHERE steamid = '%s'", sqltable_xp, playerid)
 	}
 
 	if(Res == RESULT_FAILED)
@@ -702,13 +649,13 @@ public sqlget_xp_id(id)
 		dbi_error(sql, error, 127)
 		client_print(id, print_chat, "[%s] Error Retrieving Your SQL Data: [ %s ]", MOD, error)
 		log_amx("[3] UWC3 SQL :: Error Retrieving SQL Data, %s", error)
-		dbi_close(sql)
+		//dbi_close(sql)
 		return PLUGIN_CONTINUE
 	}
 	else if(Res == RESULT_NONE)
 	{
 		client_print(id, print_chat, "[%s] No Saved XP SQL Data Found for Player %s", MOD, playername)
-		dbi_close(sql)
+//		dbi_close(sql)
 		return PLUGIN_CONTINUE
 	}
 
@@ -729,7 +676,7 @@ public sqlget_xp_id(id)
 		//log_amx("UWC3 SQL :: XP Table Loaded [OK] : name=(%s) steamid=(%s) xp=(%d) last_ip=(%s) last_savetime=(%s)", name, pid, xp, ip, mtime)
 	}
 
-	dbi_close(sql)
+//	dbi_close(sql)
 	return PLUGIN_CONTINUE
 }
 
@@ -804,15 +751,6 @@ public sqlget_enh_id(id)
 
 	replaceall(playername, 32, "'", "")
 
-	// Connect to the SQL server and create the tables if they do not exist
-	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: sqlget_enh_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-	}
-
 	new Result:Res
 
 	if(get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME)
@@ -829,14 +767,14 @@ public sqlget_enh_id(id)
 		dbi_error(sql, error,127)
 		client_print(id, print_chat, "[%s] Error Retrieving Your SQL Data: [ %s ]", MOD, error)
 		log_amx("[1] UWC3 SQL :: Error Retrieving SQL Data for %s, %s", playername, error)
-		dbi_close(sql)
+//		dbi_close(sql)
 		return PLUGIN_CONTINUE
 	}
 	else if(Res == RESULT_NONE)
 	{
 		client_print(id, print_chat, "[%s] No Saved Attribute/Resistance SQL Data Found for Player %s", MOD, playername)
 		//log_amx("UWC3 SQL :: No Attrib/Resist SQL Data Found for %s", playername)
-		dbi_close(sql)
+//		dbi_close(sql)
 		return PLUGIN_CONTINUE
 	}
 
@@ -863,7 +801,7 @@ public sqlget_enh_id(id)
 		//log_amx("UWC3 SQL :: Attrib/Resist Table Loaded: name=(%s) steamid=(%s) Attribs=(%d %d %d %d %d) Resists=(%d %d %d %d %d)", name, pid, att[1], att[2], att[3], att[4], att[5], res[1], res[2], res[3], res[4], res[5])
 	}
 
-	dbi_close(sql)
+//	dbi_close(sql)
 
 	return PLUGIN_CONTINUE
 }
@@ -955,15 +893,6 @@ public sqlget_skills_id(id)
 
 	replaceall(playername, 32, "'", "")
 
-	// Connect to the SQL server and create the tables if they do not exist
-	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-
-	if(sql <= SQL_FAILED)
-	{
-		log_amx("UWC3 SQL :: sqlget_skills_id() :: Connect Error: %s", sqlerror)
-		return PLUGIN_HANDLED
-	}
-
 	new Result:Res1
 	new Result:Res2
 	new Result:Res3
@@ -1002,7 +931,7 @@ public sqlget_skills_id(id)
 		if(Res4 >= RESULT_OK)
 			dbi_free_result(Res4)
 
-		dbi_close(sql)
+//		dbi_close(sql)
 		return PLUGIN_CONTINUE
 	}
 	else if(Res1 == RESULT_NONE && Res2 == RESULT_NONE && Res3 == RESULT_NONE && Res4 == RESULT_NONE)
@@ -1022,7 +951,7 @@ public sqlget_skills_id(id)
 		if(Res4 >= RESULT_OK)
 			dbi_free_result(Res4)
 
-		dbi_close(sql)
+//		dbi_close(sql)
 		return PLUGIN_CONTINUE
 	}
 
@@ -1112,7 +1041,7 @@ public sqlget_skills_id(id)
 
 	//log_amx("%s", tstr)
 
-	dbi_close(sql)
+//	dbi_close(sql)
 
 	return PLUGIN_CONTINUE
 }

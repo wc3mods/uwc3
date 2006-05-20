@@ -68,10 +68,12 @@ public csdm_PostSpawn(id, bool:fake)
 	if(!is_user_connected(id))
 		return PLUGIN_CONTINUE
 
+	// Make sure that respawn stuck will allow these still run. Second check to make sure these aren't running.
 	remove_task(SERPANT_WARD + id) // Ward
 	remove_task(NAPALM + id) // Napalm
 	remove_task(POISON + id) // Poison
 	remove_task(DISEASE + id) // Disease
+	remove_task(ONFIRE + id)
 
 #if defined CSDM
 	repairs[id] = 0
@@ -99,6 +101,7 @@ public csdm_PostSpawn(id, bool:fake)
 	}
 
 
+	#if defined DEBUG
 	if(get_cvar_num("UW_DEBUG") == 5)
 	{
 		// Added special debug info dump
@@ -118,6 +121,7 @@ public csdm_PostSpawn(id, bool:fake)
 		log_amx("DEBUG #2: Server Max_Attribs= (%d) Apts_spent= (%d) Apts_left= (%d)", ATTRIB_MAX_PTS, acount, apts)
 		log_amx("DEBUG #3: Server Max_Resists= (%d) Rpts_spent= (%d) Rpts_left= (%d)", RESIST_MAX_PTS, rcount, rpts)
 	}
+	#endif
 
 
 	// [09-13-04] Fix for Voodoo missing end_round task check - K2mia
@@ -152,10 +156,40 @@ public csdm_PostSpawn(id, bool:fake)
 			ultlearned[id] = 0
 			displaylevel(id, 3)
 
-			if(get_cvar_num("mp_sql"))
-				sqlwrite_skills_id(id, -1, 1)
-			else
-				write_skills_id(id, 1)
+			if(!is_user_bot(id))
+			{
+				if(get_cvar_num("mp_sql"))
+					sqlwrite_skills_id(id, -1, 1)
+				else
+					write_skills_id(id, 1)
+			}
+		}
+
+
+		// Make sure a player never has more attrib then the level.
+
+		new extra_xp = (playerxp[id] - xplevel_lev[enh_minlevel])
+
+		if(extra_xp < 0)
+			extra_xp = 0
+
+		new attribcount = get_attribcount(id)
+
+		if((get_availattribpts(id) + attribcount) > (extra_xp / attrib_pt_cost))
+		{
+			client_print(id, print_chat, "[%s] You have spent too many attribpoints, attrib reset forced.", MOD)
+			log_amx("TOO MANY ATTRIBPOINTS:(%s) level = (%d), attribcount = (%d)", pname, p_level[id], attribcount)
+
+			for(new j = 0; j < MAX_ATTRIBS; j++)
+				p_attribs[id][j] = ATTRIB_BASE
+
+			if(!is_user_bot(id))
+			{
+				if(get_cvar_num("mp_sql"))
+					sqlwrite_skills_id(id, -1, 1)
+				else
+					write_skills_id(id, 1)
+			}
 		}
 	}
 
@@ -168,7 +202,8 @@ public csdm_PostSpawn(id, bool:fake)
 		buycalled = true
 	}
 
-	icon_controller(id, ICON_HIDE)
+	//icon_controller(id, ICON_HIDE)
+	displaylevel(id, 4)
 	deathmessageshown[id] = false
 	to_be_revived[id] = false
 	vengeance_state[id] = VENG_READY
@@ -177,7 +212,7 @@ public csdm_PostSpawn(id, bool:fake)
 		for(new i = 0; i < MAX_PLAYERS; i++)
 			damageto[id][i] = -1
 
-	if(get_cvar_num("mp_savexp") && xpreadytoload[id])
+	if(get_cvar_num("mp_savexp") && !is_user_bot(id) && xpreadytoload[id])
 	{
 		if(get_cvar_num("mp_sql"))
 		{
@@ -244,15 +279,18 @@ public csdm_PostSpawn(id, bool:fake)
 			{
 				serpents[id] += INT_SERPENT_BONUS
 
+				#if defined DEBUG
 				if(get_cvar_num("UW_DEBUG") == 1)
 					client_print(id, print_console, "[%s DEBUG] Intellect-SerpWard #= (%d)", MOD, serpents[id])
+				#endif
 			}
 		}
 		else
 			serpents[id] = 0
 
 		if(!freezetime && !ultimateused[id])
-			icon_controller(id,ICON_SHOW)
+			displaylevel(id, 4)
+			//icon_controller(id,ICON_SHOW)
 
 		if(stunned[id] || slowed[id])
 			set_user_maxspeed(id, 240.0)
@@ -276,8 +314,8 @@ public csdm_PostSpawn(id, bool:fake)
 	{
 		u_delay[id] = true
 
-		if(!task_exists(12385))
-			set_task(get_cvar_float("FT_ultimatedelay"), "udelay_cooldown", 12385)
+		if(!task_exists(UTLIMATE_DELAY + id))
+			set_task(get_cvar_float("FT_ultimatedelay"), "udelay_cooldown", UTLIMATE_DELAY + id)
 	}
 
 	if(task_exists(357)) // Stops the medic sprite display
@@ -392,6 +430,8 @@ public csdm_PostSpawn(id, bool:fake)
 
 	vengeance_used[id] = 0
 
+
+	// Something is wrong here... This is checking for MAX ATTRIB per SKILL.
 	new acount = get_attribcount(id)
 	new apts = get_availattribpts(id)
 	new rcount = get_resistcount(id)

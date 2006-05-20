@@ -21,16 +21,18 @@ public check_for_reviving(victim_id)
 				set_task(0.7, "func_spawn", 2, parm, 2) // Spawns player
 				#endif
 
-				#if defined SKILL_PRINT_MESSAGE
+
 				new name[32]
 				get_user_name(id, name, 31)
 
 				set_hudmessage(200, 100, 0, -0.8, 0.1, 0, 1.0, 5.0, 0.1, 0.2, 2)
 				show_hudmessage(victim_id, "%s has revived you", name)
 
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(victim_id, print_chat, "[%s] %s has revived you", MOD, name)
-				get_user_name(victim_id, name, 31)
 				#endif
+
+				get_user_name(victim_id, name, 31)
 
 				// [07-27-04] - Now gives XP bonus for reviving a teammate
 				new xpbonus = PHOENIXXP + xpgiven_lev[p_level[id]]
@@ -42,8 +44,9 @@ public check_for_reviving(victim_id)
 
 				#if defined SKILL_PRINT_MESSAGE
 				client_print(id, print_chat,"[%s] Your Phoenix has revived %s <%d XP>", MOD, name, xpbonus)
-				show_hudmessage(id, "You have revived %s, way to go !", name)
 				#endif
+
+				show_hudmessage(id, "You have revived %s, way to go !", name)
 
 				#if !defined CSDM
 				to_be_revived[victim_id] = true
@@ -69,14 +72,18 @@ public check_for_reviving(victim_id)
 				set_task(0.7, "func_spawn", 2, parm, 2) // Spawns player
 				#endif
 
-				#if defined SKILL_PRINT_MESSAGE
+
 				new name[32]
 				get_user_name(id, name, 31)
 				set_hudmessage(200, 100, 0, -1.6, 0.1, 0, 1.0, 5.0, 0.1, 0.2, 2)
 				show_hudmessage(victim_id, "%s has revived you", name)
+
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(victim_id, print_chat, "[%s] %s has revived you", MOD, name)
-				get_user_name(victim_id, name, 31)
 				#endif
+
+				get_user_name(victim_id, name, 31)
+
 
 				// [07-27-04] - Now gives XP bonus for reviving a teammate
 				new xpbonus = PHOENIXXP + xpgiven_lev[p_level[id]]
@@ -88,8 +95,9 @@ public check_for_reviving(victim_id)
 
 				#if defined SKILL_PRINT_MESSAGE
 				client_print(id, print_chat,"[%s] Your Phoenix has revived %s <%d XP>", MOD, name, xpbonus)
-				show_hudmessage(id, "You have revived %s, way to go !", name)
 				#endif
+
+				show_hudmessage(id, "You have revived %s, way to go !", name)
 
 				#if !defined CSDM
 				to_be_revived[victim_id] = true
@@ -134,7 +142,8 @@ public func_spawn(parm[2])
 	playerhasspawned[id] = true
 	deathmessageshown[id] = false
 
-	icon_controller(id, ICON_SHOW)
+	//icon_controller(id, ICON_SHOW)
+	displaylevel(id, 4)
 
 	user_spawn(id)
 

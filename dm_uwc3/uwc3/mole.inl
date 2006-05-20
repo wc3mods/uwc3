@@ -67,7 +67,9 @@ public check_spot(parm[])
 {
 	new id = parm[0]
 
+	#if defined SKILL_PRINT_MESSAGE
 	client_print(id, print_console, "MIH check_spot!!!")
+	#endif
 
 	if(get_user_team(id) == 1)
 		mole_CT(id)
@@ -125,7 +127,6 @@ public mole_T(id)
 	else
 	{
 		client_print(id, print_chat, "No Terrorist mole locations available, will try again next round")
-		return PLUGIN_HANDLED
 	}
 	return PLUGIN_HANDLED
 }
@@ -177,7 +178,6 @@ public mole_CT(id)
 	else
 	{
 		client_print(id, print_chat, "No Counter-Terrorist mole locations available, will try again next round")
-		return PLUGIN_HANDLED
 	}
 
 	return PLUGIN_HANDLED
@@ -215,7 +215,9 @@ public transport2(parm[6])
 		return PLUGIN_HANDLED
 	}
 
+	#if defined SKILL_PRINT_MESSAGE
 	client_print(id, print_chat, "Mole location ready, sending you to : < %d %d %d> ", origin[0], origin[1], origin[2])
+	#endif
 
 	ismole[id] = true
 	changeskin(id, 0)

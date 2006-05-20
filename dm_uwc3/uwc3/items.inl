@@ -41,7 +41,7 @@ public do_itemmenu(id, key)
 }
 
 // Display info about items in the shopmenu
-public items_info(id)
+/*public items_info(id)
 {
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
@@ -92,7 +92,7 @@ public items_info2(id)
 	show_motd(id,temp,"Shopmenu2 Item Information")
 
 	return PLUGIN_CONTINUE
-}
+}*/
 
 // Display the shopmenu
 public shopmenu(id)
@@ -918,17 +918,18 @@ public item_functions(parm[])
 // BEGIN items subroutine
 // Displays the player's items in the bottom center of the screen
 // **************************************************************************
+/*
 public items(parm2[2])
 {
 	new id = parm2[0]
 	new temp2[64]
 
-	/*if( get_cvar_num("UW_DEBUG") == 5 ){
+	if( get_cvar_num("UW_DEBUG") == 5 ){
 	new name[32]
 	get_user_name( id, name, 31)
 	log_amx( "In items() Name: %s ultlearned: %d ultused: %d: ftime: %d",
 	name, ultlearned[id], ultimateused[id], freezetime )
-	}*/
+	}
 
 	new type = 0
 
@@ -968,7 +969,7 @@ public items(parm2[2])
 		show_hudmessage(id, "%s", temp2)
 
 	set_task(1.5, "items", STATUS_HUD + id, parm2, 2);
-}
+}*/
 
 // Gives a nade if the player doesn't have one
 public giveheifnothas(parm[2])
@@ -1346,7 +1347,7 @@ public traceline(const Float:v1[3], const Float:v2[3], noMonsters, pentToSkip, T
 #endif
 	new iVictim = get_tr(TR_pHit);
 
-	if((0 < iVictim <= 32) && bImmuneHeadshots[iVictim])
+	if((0 < iVictim <= g_MAXPLAYERS) && bImmuneHeadshots[iVictim])
 	{
 		new iHitZone = (1<<get_tr(TR_iHitgroup));
 		// If so, then we want to block the shot
@@ -1360,7 +1361,7 @@ public traceline(const Float:v1[3], const Float:v2[3], noMonsters, pentToSkip, T
 
 			new iAttacker = pentToSkip;
 
-			if((0 < iAttacker <= 32) && time - fLastShotFired[iAttacker] < 0.1)
+			if((0 < iAttacker <= g_MAXPLAYERS) && time - fLastShotFired[iAttacker] < 0.1)
 			{
 				message_begin(MSG_ONE, gmsgFade, {0,0,0}, iVictim);
 				write_short(1<<10);

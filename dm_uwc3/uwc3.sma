@@ -79,19 +79,30 @@
 	 - Compiled for amxx 1.60 by Geesu on 9/22/2005
 	 - Renamed log_error to log_sql_error to avoid conflicts
 */
-//#define CSDM // Enable support for CSDM 2.0
-//#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
-#define SKILL_PRINT_MESSAGE
 
-//#define DEBUG
+
+//#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
+#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
+#define CONNECT_MESSAGE // Enabled connecting message
+//#define DEBUG // Enable Debug
+
+
+//#if defined UWC3_ORIGINAL // Something
 
 #include <amxmodx>
 #include <amxmisc>
-#include <fakemeta>
-#include <engine>
 #include <cstrike>
+#include <engine>
+#include <fakemeta>
+#include <uwc3>
 #include <dbi>
-#include <sqlx>
+
+#if AMXX_VERSION_NUM >= 175
+//	#define CSDM // Enable support for CSDM 2.0
+//	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
+
+	#include <sqlx>
+#endif
 
 #if defined CSDM
 	#include <csdm>
@@ -100,7 +111,7 @@
 #endif
 
 
-new VER[32] = "1.6.3-beta"
+new VER[] = "1.6.3-beta"
 
 #include "uwc3/defs.inl"		// Include the UWC3 #defines file
 #include "uwc3/vars.inl"		// Include the UWC3 global variables file
@@ -123,7 +134,7 @@ new VER[32] = "1.6.3-beta"
 // Plugin Initialization and Registration
 public plugin_init()
 {
-	register_plugin( "UWC3", VER, "K2mia")
+	register_plugin("UWC3", VER, "K2mia")
 
 	// Added by JGHG: Check if we're using Sqlite
 	new dbitype[16]
@@ -150,8 +161,6 @@ public plugin_init()
 	register_clcmd("wc3menu", "main_menu", -1, "- Display the UWC3 Main Menu")
 	register_clcmd("warcraft", "main_menu", -1, "- Display the UWC3 Main Menu")
 	register_clcmd("help", "help_menu", -1, "- Displays the main help menu")
-	register_clcmd("news", "show_news", -1, "- Displays news about the Ultimate Warcraft3 plugin")
-	register_clcmd("war3help", "war3_info", -1, "- Displays help information for the UWC3 module")
 	register_clcmd("wc3start", "restart_round", ADMIN_MENU, "- Restarts the UWC3 mod fresh")
 	register_clcmd("charsheet", "character_sheet", -1, "- Displays your character sheet")
 	register_clcmd("savexp", "uwc3_savexp", -1, "-In long term XP mode, saves your XP to the vault")
@@ -177,13 +186,10 @@ public plugin_init()
 	register_clcmd("debug_info", "debug_info", ADMIN_MENU, "-Dumps some debug info to the admin")
 	register_clcmd("debuginfo", "debug_info", ADMIN_MENU, "-Dumps some debug info to the admin")
 	register_clcmd("loc", "admin_loc", ADMIN_MENU, "-Displays your coordinate location")
+	register_clcmd("giveattrib", "debug_attrib", ADMIN_MENU)
 	#endif
 	// ****************** END TEST COMMANDS ******************
 
-	register_clcmd("changerace", "change_race", -1, "-Display UWC3 info")
-	register_clcmd("/changerace", "change_race", -1, "-Display UWC3 info")
-	register_clcmd("selectrace", "change_race", -1, "-Display UWC3 info")
-	register_clcmd("/selectrace", "change_race", -1, "-Display UWC3 info")
 	register_clcmd("selectskill", "select_skill", -1, "-Displays the skills menu")
 	register_clcmd("/selectskill", "select_skill", -1, "-Displays the skills menu")
 	register_clcmd("selectattrib", "select_attrib", -1, "-Displays the attributes menu")
@@ -221,7 +227,6 @@ public plugin_init()
 	// Console command entries follow
 	register_concmd("amx_givexp", "amx_givexp", -1,"-Console command used to give XP")
 	register_concmd("amx_givemole", "amx_givemole", -1, "-Admin make a mole command")
-	register_concmd("playerskills", "player_skills", -1, "-Displays the players rank and skills")
 
 	// Menu related entries follow
 	register_menucmd(register_menuid("\yUWC3: Main Menu"), 1023, "do_wc3menu")
@@ -233,8 +238,8 @@ public plugin_init()
 	register_menucmd(register_menuid("\yItem Options"), 1023, "do_itemmenu")
 	register_menucmd(register_menuid("\yGive Players XP"), 1023,"do_playerxpmenu")
 	register_menucmd(register_menuid("\yTeam XP Menu"), 1023, "do_teamxpmenu")
-	register_menucmd(register_menuid("Select Skill: "), 1023, "set_skill")
-	register_menucmd(register_menuid("Drop Skill: "), 1023, "unset_skill")
+	register_menucmd(register_menuid("Select Skill: "), (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9), "set_skill")
+	register_menucmd(register_menuid("Drop Skill: "), (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9), "unset_skill")
 	register_menucmd(register_menuid("\yBuy An Item"), 1023, "buy_item2")
 	register_menucmd(register_menuid("\yBuy Item"), 1023, "buy_item")
 	register_menucmd(register_menuid("BuyItem"),(1<<2),"flashbuy")
@@ -266,7 +271,7 @@ public plugin_init()
 		register_event("DeathMsg", "death", "a")
 	#endif
 
-	#if !defined CSDM_NO_OBJECTIVE
+	#if !defined CSDM_NO_OBJECTIVES
 		register_event("StatusIcon", "got_defuse", "be", "1=1", "1=2", "2=defuser")
 		register_event("TextMsg", "Target_Bombed", "a", "2&#Target_Bombed")
 		register_logevent("event_player_action", 3, "1=triggered")
@@ -302,7 +307,6 @@ public plugin_init()
 	register_cvar("FT_centerhud","1")
 	register_cvar("FT_saveby","0")
 	register_cvar("FT_position","0")
-	register_cvar("FT_8race","1")
 	register_cvar("FT_glove_timer","25")
 	register_cvar("FT_competitive","0")
 	register_cvar("FT_glove_orc_damage","1")
@@ -334,7 +338,7 @@ public plugin_init()
 	register_cvar("FT_blinkenabled","1")
 	register_cvar("FT_blinkstartdisabled","0")
 	register_cvar("FT_spec_info","1")   // Show spectating information
-	register_cvar("FT_items_in_hud","0")
+	register_cvar("FT_items_in_hud","1")
 	register_cvar("mp_savexp","1", FCVAR_SERVER)
 	register_cvar("mp_sql","1")
 	register_cvar("mp_sql_saveby","1")
@@ -860,14 +864,15 @@ public client_disconnect(id)
 	isdiseasedcb[id] = 0		// Reset diseased status for player
 	repairs[id] = 0		// Reset number of repairs done
 	mends[id] = 0		// Reset number of mends done
-	he[id] = 0			// Reset he grenade status
-	threwnapalm[id] = 0		// Reset status of napalm gren for round
-	diedlastround[id] = false	// Reset status for player death previous round
-	lastpspage[id] = 0		// Reset last player skill page read to 0
-	hasmole[id] = false 		// Reset mole item global
-	itemsrunning[id] = false     // Reset itemsrunning for userid
-	loadedlevel[id] = 0		// Reset status for having initial level loaded
-	vengeance_used[id] = 0	// Reset vengeance status
+	he[id] = 0			 // Reset he grenade status
+	threwnapalm[id] = 0		 // Reset status of napalm gren for round
+	diedlastround[id] = false // Reset status for player death previous round
+	lastpspage[id] = 0        // Reset last player skill page read to 0
+	hasmole[id] = false       // Reset mole item global
+	itemsrunning[id] = false  // Reset itemsrunning for userid
+	loadedlevel[id] = 0       // Reset status for having initial level loaded
+	vengeance_used[id] = 0    // Reset vengeance status
+	maxhealth[id] = 100       // Reset maxhealth.
 
 	if(get_cvar_num("UW_lowres_default"))
 		lowres[id] = true		// Reset lowres to true for player slot
@@ -1076,7 +1081,9 @@ public plugin_end()
 		}
 		//write_all()
 	}
-	dbi_close(sql)
+
+	if(sql)
+		dbi_close(sql)
 }
 
 #if defined CSDM

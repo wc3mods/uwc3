@@ -21,7 +21,7 @@ public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, 
 	new userkilled
 	new string[48]
 
-	//get_deathbystr(deathby, string, 47)	// Get the string form of deathby
+	copy(string, 47, deathbyweapon[deathby])	// Get the string form of deathby
 
 	#if defined DEBUG
 	if(get_cvar_num("UW_DEBUG") == 1)
@@ -124,14 +124,14 @@ public do_damage(id, enemy, damage, deathby, victim_or_enemy, weapon, bodypart, 
 		if(is_user_connected(enemy))
 			set_user_frags(enemy, get_user_frags(enemy) + 1)
 
-		if(!get_cvar_num("mp_weaponxpmodifier") && get_user_team(id)!=get_user_team(enemy))
+		if(!get_cvar_num("mp_weaponxpmodifier") && get_user_team(id) != get_user_team(enemy))
 		{
 			playerxp[enemy] += xpgiven
 
 			if(get_cvar_num("FT_kill_objectives"))
 				client_print(enemy, print_chat, "[%s] You just gained %d XP for killing %s with %s", MOD, xpgiven, idname, string)
 		}
-		else if(get_user_team(id)!=get_user_team(enemy))
+		else if(get_user_team(id) != get_user_team(enemy))
 		{
 			playerxp[enemy] += floatround(xpgiven * weaponxpmultiplier[weapon])
 
@@ -160,12 +160,12 @@ public damage_event(id)
 	if(!warcraft3)
 		return PLUGIN_CONTINUE
 
-	if(id < 1 || id > 32)
+	if(id < 1 || id > g_MAXPLAYERS)
 		return PLUGIN_CONTINUE
 
 	new weapon, bodypart, enemy = get_user_attacker(id, weapon, bodypart)
 
-	if(enemy < 1 || enemy > 32)
+	if(enemy < 1 || enemy > g_MAXPLAYERS)
 		return PLUGIN_CONTINUE
 
 	new damage = read_data(2)
@@ -174,6 +174,7 @@ public damage_event(id)
 	get_user_name(id, name1, 31)
 	get_user_name(enemy, name2, 31)
 
+	#if defined SKILL_PRINT_MESSAGE
 	if(get_cvar_num("UW_medicalerts") && !medicalert[id])
 	{
 		// Send out medic alert calls to all medics on the team
@@ -199,6 +200,7 @@ public damage_event(id)
 			}
 		}
 	}
+	#endif
 
 	if(get_cvar_num("UW_dmgxpbonus"))
 		damageto[enemy][id] += damage
@@ -211,7 +213,11 @@ public damage_event(id)
 	{
 		damage = read_data(2)
 		set_user_health_log(id, get_user_health(id) + damage, true, "damage_event() PROTECTANT1")
+
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(id, print_chat,"[%s] A shot by a mole was deflected", MOD)
+		#endif
+
 		return PLUGIN_HANDLED
 	}
 
@@ -287,8 +293,10 @@ public damage_event(id)
 
 			set_user_health_log(id, get_user_health(id) + damage, true, "damage_event() EVADE(health+damage)")
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat,"[%s] You skillfully evade a shot by %s", MOD, name1)
 			client_print(enemy, print_chat, "[%s] %s skillfully evades your shot", MOD, name2)
+			#endif
 
 
 			if(iglow[id][2] < 1)
@@ -335,8 +343,10 @@ public damage_event(id)
 			damage = (get_user_health(enemy) / 2)
 			do_damage(enemy, id, damage, 21, 2, weapon, bodypart,0)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] Your Critical Strike and Trueshot Auras have caused a backfire!", MOD)
 			client_print(id, print_chat, "[%s] %s experienced a backfire from Critical Strike and Trueshot Auras", MOD, name2)
+			#endif
 
 			if(iglow[enemy][0] < 1)
 			{
@@ -406,8 +416,10 @@ public damage_event(id)
 			if(file_exists("sound/warcraft3/shadowstrikemissile1.wav"))
 				emit_sound(enemy, CHAN_STATIC, "warcraft3/shadowstrikemissile1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] Your poison darts hit their mark on %s", MOD, name1)
 			client_print(id, print_chat, "[%s] Poison darts from %s take their toll on you, seek a medic quickly!", MOD, name2)
+			#endif
 
 			// 6-19-2004 - Damage modified to be based on level(K2mia)
 			damage = floatround(p_level[enemy] / 2.0)
@@ -427,15 +439,17 @@ public damage_event(id)
 			new args[2]
 			args[0] = id
 			args[1] = enemy
-			set_task(2.0, "do_sspoison", 452, args, 2, "b");
+			set_task(2.0, "do_sspoison", POISON + id, args, 2, "b");
 
 		}
+		#if defined SKILL_PRINT_MESSAGE
 		else if(randomnumber <= p_shadow[p_skills[enemy][SKILLIDX_SSTRIKE]-1] && shadowcount[enemy] > 0 && is_user_alive(id) && !ispoisonedss[id])
 		{
 			// If we are here then the resistance is what caused Shadow Strike to fail
 			client_print(id, print_chat, "[%s] Your resistance to poison helps to shield you from a Shadow Strike", MOD)
 			client_print(enemy, print_chat, "[%s] Your Shadow Strike is absorbed by your target's poison resistance", MOD)
 		}
+		#endif
 	}
 	#if defined DEBUG
 	else if(p_skills[enemy][SKILLIDX_SSTRIKE] && p_evadethisshot[id])
@@ -490,8 +504,10 @@ public damage_event(id)
 			if(file_exists("sound/warcraft3/carrionswarmdamage1.wav") == 1)
 				emit_sound(id, CHAN_STATIC, "warcraft3/carrionswarmdamage1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] Your Carrion Beetles infect %s with disease", MOD, name1)
 			client_print(id, print_chat, "[%s] Carrion Beetles from %s infect you with disease, seek a medic quickly!", MOD, name2)
+			#endif
 
 			// 6-19-2004 - Carrion Beetles damage modified, now based on level(K2mia)
 			damage = floatround(p_level[enemy] / 2.0)
@@ -511,14 +527,16 @@ public damage_event(id)
 			new args[2]
 			args[0] = id
 			args[1] = enemy
-			set_task(3.0, "do_cbdisease", 452, args, 2, "b");
+			set_task(3.0, "do_cbdisease", DISEASE + id, args, 2, "b");
 		}
+		#if defined SKILL_PRINT_MESSAGE
 		else if(randomnumber <= p_carrion[p_skills[enemy][SKILLIDX_CARRION] - 1] && carrioncount[enemy] > 0 && is_user_alive(id) && !isdiseasedcb[id])
 		{
 			// If we are here then the resistance is what caused Carrion Beetles to fail
 			client_print(id, print_chat, "[%s] Your resistance to disease helps to shield you from Carrion Beetles", MOD)
 			client_print(enemy, print_chat, "[%s] Your Carrion Beetles are absorbed by your target's disease resistance", MOD)
 		}
+		#endif
 	}
 	#if defined DEBUG
 	else if(p_skills[enemy][SKILLIDX_CARRION] && p_evadethisshot[id])
@@ -549,8 +567,10 @@ public damage_event(id)
 
 				//client_print(0, print_chat, "[%s-DEBUG] B.Luck Evasion: Setting health to= (%d)", MOD, nHealth)
 
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(id, print_chat, "[%s] Your Beginner's Luck allows you to evade a shot from %s.", MOD, name2)
 				client_print(enemy, print_chat, "[%s] %s has Beginner's Luck and evades your shot.", MOD, name1)
+				#endif
 			}
 		}
 		else if((0 <= p_level[enemy] <= 4) && p_level[id] >= 15 && !p_evadethisshot[id])
@@ -567,8 +587,10 @@ public damage_event(id)
 
 				//client_print(0, print_chat, "[%s-DEBUG] B.Luck DBM Dmg: dmg= (%d)", MOD, nDmg)
 
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(enemy, print_chat, "[%s] Your Beginner's Luck causes you to do extra damage to %s.", MOD, name1)
 				client_print(id, print_chat, "[%s] %s uses Beginner's Luck to cause you extra damage.", MOD, name2)
+				#endif
 			}
 		}
 	}
@@ -603,8 +625,10 @@ public damage_event(id)
 			set_task(0.01, "glow_change", 8, parm, 2)
 		}
 
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(enemy, print_chat, "[%s] The Thorns Aura surrounding %s inflicts damage on you.", MOD,  name1)
 		client_print(id, print_chat, "[%s] Your Thorns Aura inflicts damage on %s", MOD, name2)
+		#endif
 
 		iglow[enemy][0] += 3 * damage
 		iglow[enemy][1] = 0
@@ -691,8 +715,10 @@ public damage_event(id)
 
 		do_damage(enemy, id, damage, 4, 2, weapon, bodypart,0)
 
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(enemy, print_chat, "[%s] The spiked armor about %s causes you pain", MOD, name1)
 		client_print(id, print_chat, "[%s] Your spiked carapace hurts %s", MOD, name2)
+		#endif
 
 		if(get_user_armor(id) < 101)
 			set_user_armor_log(id, (get_user_armor(id) + damage), true, "spiked-1")
@@ -755,8 +781,10 @@ public damage_event(id)
 			if(file_exists("sound/warcraft3/impalehit.wav"))
 				emit_sound(id, CHAN_ITEM, "warcraft3/impalehit.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] You cause the ground to shake beneath %s", MOD, name1)
 			client_print(id, print_chat, "[%s] The ground shakes beneath your feet", MOD)
+			#endif
 
 			message_begin(MSG_ONE, gmsgShake, {0, 0, 0}, id)
 			write_short(255<<14) //ammount
@@ -792,8 +820,10 @@ public damage_event(id)
 			jumper(parm)
 			changeskin(id, 2)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id,print_chat, "[%s] %s has morphed you into an undesirable form", MOD, name2)
 			client_print(enemy,print_chat, "[%s] You have morphed %s into an undesirable form", MOD, name1)
+			#endif
 		}
 	}
 
@@ -851,8 +881,10 @@ public damage_event(id)
 			if(iglow[id][3] > MAXGLOW)
 				iglow[id][3] = MAXGLOW
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] You have banished %s", MOD, name1)
 			client_print(id, print_chat, "[%s] You have been banished by %s", MOD, name2)
+			#endif
 
 			message_begin(MSG_ONE, gmsgFade, {0, 0, 0}, id)
 			write_short(1<<10) // fade lasts this long duration
@@ -887,11 +919,18 @@ public damage_event(id)
 		if(!is_user_connected(id) || !is_user_connected(enemy))
 			return PLUGIN_CONTINUE
 
+		#if defined UWC3_ORIGINAL
 		cs_set_user_money(enemy, cs_get_user_money(enemy) + money, 1)
 		cs_set_user_money(id, cs_get_user_money(id) - money, 1)
+		#else
+		cs_set_user_money(enemy, cs_get_user_money(enemy) + money, 0)
+		cs_set_user_money(id, cs_get_user_money(id) - money, 0)
+		#endif
 
+		#if defined SKILL_PRINT_MESSAGE
 		client_print(enemy, print_chat, "[%s] You siphon $%d from %s", MOD, money, name1)
 		client_print(id, print_chat, "[%s] You have been robbed of $%d by %s", MOD, money, name2)
+		#endif
 
 		if(iglow[enemy][1] < 1)
 		{
@@ -966,20 +1005,23 @@ public damage_event(id)
 
 			if(get_user_armor(enemy) > atotal)
 			set_user_armor_log(enemy, atotal, true, "sskin-2")
-			//set_user_armor(enemy, atotal)
 
+			#if defined SKILL_PRINT_MESSAGE
 			if(vampiric_hits[enemy] % 5 == 0)
 				client_print(enemy, print_chat, "[%s] Your Steel Skin gleams as your Vampiric Aura strengthens your armor", MOD)
+			#endif
 		}
 
 		vampiric_hits[enemy] += 1
 
+		#if defined SKILL_PRINT_MESSAGE
 		if(vampiric_hits[enemy] % 5 == 0)
 		{
 			// Only show Vampiric Aura messages after every 5 hits
 			client_print(enemy, print_chat, "[%s] Your Vampiric Aura steals health from %s", MOD, name1)
 			client_print(id, print_chat, "[%s] Your lifeforce has been drained by %s", MOD, name2)
 		}
+		#endif
 
 		if(iglow[enemy][1] < 1)
 		{
@@ -1034,8 +1076,10 @@ public damage_event(id)
 			set_user_maxspeed(id, 1.0)
 			set_task(1.0, "reset_maxspeed", 1000 + id, parm, 2)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(enemy, print_chat, "[%s] Your Bash has stunned %s", MOD, name1)
 			client_print(id, print_chat, "[%s] You have been stunned by %s", MOD, name2)
+			#endif
 
 			if(iglow[id][3] < 1)
 			{
@@ -1080,16 +1124,24 @@ public damage_event(id)
 			get_user_name(id, idname, 31)
 			get_user_name(enemy, ename, 31)
 
+			#if defined SKILL_PRINT_MESSAGE
 			if(hasgodmode[id])
 			{
+
 				client_print(enemy, print_chat, "[%s] Your critical strike is deflected by Big Bad Voodoo", MOD)
 				client_print(id, print_chat, "[%s] Your Big Bad Voodoo protects you from a critical strike", MOD)
 			}
 			else
+			#else
+			if(!hasgodmode[id])
+			#endif
 			{
 				do_damage(id, enemy, damage, 6, 1, weapon, bodypart,0)
+
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(enemy, print_chat, "[%s] You strike a critical blow to %s", MOD,  name1)
 				client_print(id, print_chat, "[%s] You were hit by a critical strike from %s", MOD, name2)
+				#endif
 			}
 
 			//client_print(0, print_console, "[%s DEBUG] In Critical Strike(%s => %s) Skills Dump Follows", MOD, ename, idname)
@@ -1142,7 +1194,10 @@ public damage_event(id)
 		if(weapon == 4 && (p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE || magic_saving_throw(id)))
 		{
 			allow = false
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat, "[%s] Your magic resistance protects you from Critical Grenade damage", MOD)
+			#endif
 		}
 
 		if(weapon == 4 && allow)
@@ -1226,8 +1281,10 @@ public damage_event(id)
 
 			burn_victim_napalm(id, enemy, 0)
 
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat, "[%s] %s has burned you with a Napalm Grenade, Eeek!", MOD, name2)
 			client_print(enemy, print_chat, "[%s] Your Napalm Grenade burns %s", MOD, name1)
+			#endif
 		}
 	}
 
@@ -1347,7 +1404,7 @@ public damage_event(id)
 #if !defined CSDM
 public death()
 #else
-public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
+public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 #endif
 {
 	if(!warcraft3)
@@ -1373,7 +1430,14 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 
 	// [07-27-04] - Added Logging for all deaths to determine if Voodoo is bugged
 	//log_amx("In death() %s killed by %s :: Victim-Godmode= (%d) Killer-Godmode= (%d) :: Killer-Blink= (%d) Killer-Items= (%d , %d)", vname, kname, hasgodmode[victim_id], hasgodmode[killer_id], p_skills[killer_id][SKILLIDX_BLINK], playeritem[killer_id], playeritem2[killer_id])
-	remove_task(STATUS_HUD + victim_id) // Status Hud
+
+
+	// Make sure that respawn stuck will allow these still run
+	remove_task(SERPANT_WARD + victim_id) // Ward
+	remove_task(NAPALM + victim_id) // Napalm
+	remove_task(POISON + victim_id) // Poison
+	remove_task(DISEASE + victim_id) // Disease
+	remove_task(ONFIRE + victim_id)
 
 	// Determine if victim has Nightvision
 	hasnvision[victim_id] = cs_get_user_nvg(victim_id)
@@ -1382,7 +1446,8 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 		remove_task(2000 + victim_id)
 
 	// Remove icon because you don't have an ultimate when you're dead
-	icon_controller(victim_id, ICON_HIDE)
+	//icon_controller(victim_id, ICON_HIDE)
+	displaylevel(victim_id, 4)
 
 	ismole[victim_id] = false // For use w/mole protectant
 
@@ -1392,7 +1457,7 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 	if(playeritem2[victim_id] == HELM)
 		bImmuneHeadshots[victim_id] = false;
 
-	#if defined CSDM
+	#if !defined CSDM
 	if(playeritem2[victim_id] == RESPAWN && !changingteam[victim_id])
 	{
 		new parm[2]
@@ -1409,16 +1474,18 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 		set_task(0.5, "func_spawn", 72, parm, 2)
 		spawnedfromitem[victim_id] = true
 	}
+
+	new weaponname[20]
+	read_data(4, weaponname, 31)
 	#endif
 
 	rings[victim_id] = 0
 	set_user_footsteps(victim_id, 0)
 
-	new weaponname[20]
-	new weapon
-
-	read_data(4, weaponname, 31)
-	get_user_attacker(victim_id, weapon)
+	#if !defined CSDM
+	new weaponid
+	get_user_attacker(victim_id, weaponid)
+	#endif
 
 	//client_print(0, print_console, "[%s DEBUG] [In death()-2] killer= (%s) victim= (%s) hs= (%d) weaponname= (%s)", MOD, kname, vname, headshot, weaponname)
 
@@ -1436,6 +1503,12 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 			client_print(killer_id,print_chat,"[%s] You are awarded %d XP for having a headshot", MOD, HEADSHOT_BONUS)//?
 		}
 	}*/
+	#if defined CSDM
+	new weaponname[32]
+	copy(weaponname, 31, weapon_name)
+
+	new weaponid = get_weaponid(weapon_name)
+	#endif
 
 	if(!deathmessageshown[victim_id] && killer_id != victim_id && !equal(weaponname, "world"))
 	{
@@ -1549,7 +1622,7 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 			{
 				if(get_cvar_num("FT_kill_objectives"))
 				{
-					playerxp[killer_id] += floatround(xpgiven*weaponxpmultiplier[weapon])
+					playerxp[killer_id] += floatround(xpgiven * weaponxpmultiplier[weaponid])
 					client_print(killer_id, print_chat, "[%s] You are awarded %d XP for killing %s", MOD, xpgiven, name)
 				}
 			}
@@ -1600,7 +1673,9 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon[])
 
 				//client_print(0, print_console, "[%s] AFTER serious injury bonus for [%d](%s) xp= (%d) bonus= (%d)", MOD, dmg_id, dname, playerxp[dmg_id], dmgxp)
 
+				#if defined SKILL_PRINT_MESSAGE
 				client_print(dmg_id, print_chat, "[%s] You receive an XP bonus of %d for seriously injuring %s", MOD, dmgxp, name)
+				#endif
 				//client_print(0, print_console, "[%s] You receive an XP bonus of %d for seriously injuring %s", MOD, dmgxp, name)
 			}
 		}
@@ -1781,13 +1856,19 @@ burn_victim_napalm(id,killer,tk)
 		if(randomnumber < chance_to_avoid)
 		{
 			do_burn = false
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat, "[%s] Your fire resistance protects you from a napalm grenade attack", MOD)
 			client_print(killer, print_chat, "[%s] Your napalm grenade attack is deflected by your target's fire resistance", MOD)
+			#endif
 		}
 		else if((randomnumber / 2.0) < chance_to_avoid)
 		{
 			ftimer = 4.0
+
+			#if defined SKILL_PRINT_MESSAGE
 			client_print(id, print_chat, "[%s] Your fire resistance fails to fully protect you from a napalm grenade attack", MOD)
+			#endif
 		}
 	}
 
@@ -1796,7 +1877,7 @@ burn_victim_napalm(id,killer,tk)
 		args[0] = id
 		args[1] = killer
 		args[2] = tk
-		set_task(ftimer, "on_fire_napalm", 451, args, 4, "b");
+		set_task(ftimer, "on_fire_napalm", NAPALM + id, args, 4, "b");
 	}
 	else
 	{
