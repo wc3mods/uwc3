@@ -341,7 +341,7 @@ public csdm_PostSpawn(id, bool:fake)
 	set_task(1.0, "monitor_players", 358)
 
 	buytime = true
-	checkmap()
+
 	new parm[2]
 	parm[0] = id
 

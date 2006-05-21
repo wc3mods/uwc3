@@ -81,9 +81,9 @@
 */
 
 
-//#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
-#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
-#define CONNECT_MESSAGE // Enabled connecting message
+#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
+//#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
+//#define CONNECT_MESSAGE // Enabled connecting message
 //#define DEBUG // Enable Debug
 
 
@@ -98,8 +98,8 @@
 #include <dbi>
 
 #if AMXX_VERSION_NUM >= 175
-//	#define CSDM // Enable support for CSDM 2.0
-//	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
+	#define CSDM // Enable support for CSDM 2.0
+	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
 
 	#include <sqlx>
 #endif
@@ -454,6 +454,8 @@ public plugin_cfg()
 	if(find_ent_by_class(-1, "vip"))
 		vip_map = true
 	#endif
+
+	checkmap()
 }
 
 // Specify resources to be precached on client side
@@ -588,7 +590,6 @@ public plugin_precache()
 	precache_model("models/player/urban/urban.mdl")
 
 	precache_model("models/player/vip/vip.mdl")
-	precache_model("models/guerilla.mdl")
 }
 
 // Setup variables and use cvar data where applicable

@@ -1457,6 +1457,8 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 	if(playeritem2[victim_id] == HELM)
 		bImmuneHeadshots[victim_id] = false;
 
+	new weaponname[20]
+
 	#if !defined CSDM
 	if(playeritem2[victim_id] == RESPAWN && !changingteam[victim_id])
 	{
@@ -1475,17 +1477,16 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 		spawnedfromitem[victim_id] = true
 	}
 
-	new weaponname[20]
-	read_data(4, weaponname, 31)
+	read_data(4, weaponname, 19)
+	#else
+	copy(weaponname, 19, weapon_name)
 	#endif
 
 	rings[victim_id] = 0
 	set_user_footsteps(victim_id, 0)
 
-	#if !defined CSDM
 	new weaponid
 	get_user_attacker(victim_id, weaponid)
-	#endif
 
 	//client_print(0, print_console, "[%s DEBUG] [In death()-2] killer= (%s) victim= (%s) hs= (%d) weaponname= (%s)", MOD, kname, vname, headshot, weaponname)
 
@@ -1503,12 +1504,6 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 			client_print(killer_id,print_chat,"[%s] You are awarded %d XP for having a headshot", MOD, HEADSHOT_BONUS)//?
 		}
 	}*/
-	#if defined CSDM
-	new weaponname[32]
-	copy(weaponname, 31, weapon_name)
-
-	new weaponid = get_weaponid(weapon_name)
-	#endif
 
 	if(!deathmessageshown[victim_id] && killer_id != victim_id && !equal(weaponname, "world"))
 	{
@@ -1604,7 +1599,6 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 			if(get_cvar_num("FT_kill_objectives"))
 			{
 				playerxp[killer_id] -= xpgiven
-
 				client_print(killer_id, print_chat, "[%s] You have been penalized %d XP for killing %s", MOD, xpgiven, name)
 			}
 		}

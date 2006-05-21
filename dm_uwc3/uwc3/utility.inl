@@ -595,8 +595,11 @@ public check_alive(parm[])
 }
 
 // Routine to change a players skin as needed by item or skill
-public changeskin(id,reset)
+public changeskin(id, reset)
 {
+	if(!is_user_connected(id))
+		return PLUGIN_CONTINUE
+
 	if(reset==1)
 	{
 		cs_reset_user_model(id)

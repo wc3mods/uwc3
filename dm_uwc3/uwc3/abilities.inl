@@ -444,7 +444,6 @@ public ability_wcmend(id)
 			client_print(friend, print_chat, "[%s] %s has provided the following medical care : cured poison(or) disease", MOD, name)
 			#endif
 		}
-		#if defined SKILL_PRINT_MESSAGE
 		else
 		{
 			client_print(id, print_chat, "[%s] You have provided basic medical care to %s <%d XP>", MOD, fname, xpbonus)
@@ -453,7 +452,6 @@ public ability_wcmend(id)
 			client_print(friend, print_chat, "[%s] %s has provided basic medical care to you", MOD, name)
 			#endif
 		}
-		#endif
 
 		playerxp[id] += xpbonus // Award the player XP for their service
 
