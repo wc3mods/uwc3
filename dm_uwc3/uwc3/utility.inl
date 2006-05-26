@@ -81,14 +81,7 @@ public init_pdata(id, limited)
 public check_say(id)
 {
 	new said[32]
-	new tsaid[32]
-	new arg1[32]
-	new arg2[32]
 	read_args(said, 31)
-
-	tsaid = said
-	remove_quotes(tsaid)
-	strbreak(tsaid, arg1, 32, arg2, 32)
 
 	//client_print(0, print_chat, "DEBUG: tsaid=(%s) arg1=(%s) arg2=(%s)", tsaid, arg1, arg2)
 
@@ -114,9 +107,9 @@ public check_say(id)
 		displaylevel(id,0)
 	else if(equali(said,"^"/character^"") || equali(said,"^"character^"") || equali(said,"^"/charactersheet^"") || equali(said,"^"charactersheet^"") || equali(said,"^"/charsheet^"") || equali(said,"^"charsheet^""))
 		character_sheet(id)
-	else if(equali(arg1,"/whois") || equali(arg1,"whois"))
+	else if(equali(said, "^"/whois", 7) || equali(said, "^"whois", 6))
 	{
-		cmd_whois(id, arg2)
+		cmd_whois(id, said)
 		return PLUGIN_HANDLED
 	}
 	else if(equali(said,"^"/selectskill^"") || equali(said,"^"selectskill^""))
@@ -147,8 +140,8 @@ public check_say(id)
 		resetattribs(id)
 	else if(equali(said, "^"/resetresists^"") || equali(said, "^"resetresists^""))
 		resetresists(id)
-	else if(equali(said, "^"/playerskills^"") || equali(said, "^"playerskills^""))
-		player_skills(id)
+	//else if(equali(said, "^"/playerskills^"") || equali(said, "^"playerskills^""))
+	//	player_skills(id)
 	else if(equali(said, "^"/who^"") || equali(said, "^"who^""))
 		cmd_who(id)
 	else if(equali(said, "^"/skillsinfo^"") || equali(said, "^"skillsinfo^""))

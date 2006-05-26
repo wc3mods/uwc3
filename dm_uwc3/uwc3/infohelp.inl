@@ -501,8 +501,14 @@ public character_sheet(id)
 	show_motd(id, message, "Your Character Sheet")
 }
 // Display a specified player's character sheet to another player
-public cmd_whois(id, arg[])
+public cmd_whois(id, args[])
 {
+	remove_quotes(args)
+	new arg[32]
+	new arg1[32]
+
+	strbreak(args, arg1, 32, arg, 32)
+
 	new name[32]
 	new message[2048]
 	new temp[1024]
@@ -769,7 +775,7 @@ public displaylevel(id, hide)
 	{
 		new temp2[128]
 
-		//if(addskillmesg)
+		//if
 		//	format(temp3, 127, "[%d skillpts]", skillptsavail)
 
 		format(xpstring,1023,"[%d] XP: %d  %s", p_level[id], playerxp[id], temp2)
@@ -927,17 +933,6 @@ public cmd_who(id)
 
 	pos += format(message[pos], 4096 - pos, "</table></center>^n")
 	show_motd(id, message, "UWC3 Players Online")
-}
-
-// Displays the rank and skills for all players
-public player_skills(id)
-{
-	if(!warcraft3)
-	return PLUGIN_CONTINUE
-
-	client_print(id, print_chat, "[%s] /Playerskills is deprecated, please use /who instead.", MOD)
-
-	return PLUGIN_CONTINUE
 }
 
 public player_skills_OLD(id)

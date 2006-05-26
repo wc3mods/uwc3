@@ -577,7 +577,7 @@ public set_skill(id, key)
          }
 
          set_hudmessage(200, 100, 0, -1.0, 0.3, 0, 1.0, 7.0, 0.1, 0.2, 3)
-         show_hudmessage(id, utext)
+         show_hudmessage(id, "%s", utext)
 
          //icon_controller(id, icon_SHOW)
          displaylevel(id, 4)

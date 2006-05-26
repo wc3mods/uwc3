@@ -12,14 +12,14 @@ public ultimate_wcsuicide(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"Ultimates are disabled^nfor the first %d seconds",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -48,7 +48,7 @@ public ultimate_wcsuicide(id)
 				displaylevel(id, 4)
 				suicideAttempt[id] = 1
 
-				set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+				set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 				show_hudmessage(id,"Suicide Bomb Armed^nPress Again To Detonate")
 			}
 		}
@@ -255,14 +255,14 @@ public ultimate_wcflame(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "Ultimates are disabled for the^nfirst %d seconds of the round", get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -635,14 +635,14 @@ public ultimate_wcteleport(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "Ultimates are disabled for the^nfirst %d seconds of the round", get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -710,7 +710,7 @@ public ultimate_wcteleport(id)
 						}
 						#endif
 
-						set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2,5)
+						set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2, 3)
 						show_hudmessage(id, "Teleport Failed^nA Nearby Enemy Has Immunity")
 
 						new coolparm[1]
@@ -905,7 +905,7 @@ public ultimate_wcteleport(id)
 			}
 			else
 			{
-				set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
+				set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 3)
 				show_hudmessage(id, "No valid targets found!")
 			}
 		}
@@ -999,12 +999,12 @@ public ceiling_check(parm[2]) // Sooooooo Waste of cpu cycle
 	else if(equali(mapname, "cs_militia"))
 	{
 		if(z > 500)
-		slay = 1
+			slay = 1
 	}
 	else if(equali(mapname, "cs_militia_cz"))
 	{
 		if(z > 500)
-		slay = 1
+			slay = 1
 	}
 	else if(equali(mapname, "cs_italy"))
 	{
@@ -1098,7 +1098,7 @@ public blink_controller(parm[2])
 			oldLocation = savedOldLoc[id]
 			//client_print(id,print_chat,"sent back to: x:%i y:%i z%i", oldLocation[0],oldLocation[1],oldLocation[2])
 
-			set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2, 5);
+			set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2, 3);
 			show_hudmessage(id, "Teleport Failed^nBad Destination");
 			set_user_origin(id, oldLocation)
 
@@ -1151,7 +1151,7 @@ public blink_controller(parm[2])
 						}
 						#endif
 
-						set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2,5);
+						set_hudmessage(255, 255, 10, -1.0, -0.4, 1, 0.5, get_cvar_float("FT_blink_cooldown"), 0.2, 0.2, 3);
 						show_hudmessage(id, "Teleport Failed^nAn Enemy Near Your Destination Has Immunity");
 						set_user_origin( id, oldLocation)
 
@@ -1320,14 +1320,14 @@ public ultimate_wcchain(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -1573,14 +1573,14 @@ public ultimate_wcentangle(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -1798,14 +1798,14 @@ public ultimate_wcvoodoo(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -1907,14 +1907,14 @@ public ultimate_wclocust(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "Ultimates are disabled for the^nfirst %d seconds of the round", get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -1955,7 +1955,7 @@ public calllocustfunction(id)
 
 	if(count == 0)
 	{
-		set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
+		set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 3)
 		show_hudmessage(id, "No valid targets found!")
 		return
 	}
@@ -1972,7 +1972,7 @@ public calllocustfunction(id)
 
 	if(parm[6] > numberofplayers)
 	{
-		set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 5)
+		set_hudmessage(178, 14, 41, -1.0, 0.3, 0, 1.0, 5.0, 0.1, 0.2, 3)
 		show_hudmessage(id, "No valid targets found!")
 		return
 	}
@@ -2115,14 +2115,14 @@ public ultimate_wcflash(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -2224,14 +2224,14 @@ public ultimate_wcdecoy(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -2398,14 +2398,14 @@ public ultimate_wcgate(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"You may not use your ultimate during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id,"Ultimates are disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}

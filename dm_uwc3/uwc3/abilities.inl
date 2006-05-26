@@ -9,7 +9,7 @@ public ability_wcward(id)
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "This ability is disabled for the^nfirst %d seconds of the round", get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -182,14 +182,14 @@ public ability_wcrepair(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "You may not use this ability during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "This ability is disabled for the^nfirst %d seconds of the round", get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}
@@ -299,14 +299,14 @@ public ability_wcmend(id)
 
 	if(freezetime == 1)
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "You may not use this ability during freezetime")
 		return PLUGIN_HANDLED
 	}
 
 	if(u_delay[id])
 	{
-		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+		set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2, 3)
 		show_hudmessage(id, "This ability is disabled for the^nfirst %d seconds of the round", get_cvar_num("FT_ultimatedelay"))
 		return PLUGIN_HANDLED
 	}

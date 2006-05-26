@@ -425,3 +425,4 @@ new vip_map
 #endif
 
 new xpstring[512]
+new admin_flag

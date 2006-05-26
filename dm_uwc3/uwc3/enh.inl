@@ -295,18 +295,25 @@ public get_availattribpts(id)
 	if (extra_xp < 0)
 		extra_xp = 0
 
-	new exp = (extra_xp / 10)
-	new acount = get_attribcount(id)
-	new total_attrib = exp / attrib_pt_cost
+	// This should get the cvar for max attribs
 
-	new apts = (total_attrib > ATTRIB_MAX_PTS) ? (ATTRIB_MAX_PTS - acount) : (total_attrib - acount)
+	new total_attrib = ((extra_xp / 10) / attrib_pt_cost)
+	new acount = get_attribcount(id)
+
+	new max_attribs = get_cvar_num("UW_max_attribpts")
+
+	//new apts = (total_attrib > ATTRIB_MAX_PTS) ? (ATTRIB_MAX_PTS - acount) : (total_attrib - acount)
+	new apts = (total_attrib > max_attribs) ? (max_attribs - acount) : (total_attrib - acount)
 
 	// Prevent players from getting attrib points beyond their max allowed
-	if((acount >= ((MAX_ATTRIBS - 1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE))) || (acount >= ATTRIB_MAX_PTS))
-		apts = 0
+	if((acount >= total_attrib) || (acount >= max_attribs) || (acount >= ATTRIB_MAX_PTS))
+		return 0
 
-	if(apts > ((MAX_ATTRIBS - 1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE)))
-		apts = ((MAX_ATTRIBS - 1) * (ATTRIB_MAX_VALUE - ATTRIB_BASE)) - acount
+	if(apts > max_attribs)
+		apts = max_attribs - acount
+
+	if(apts < 0)
+		return 0
 
 	return apts
 }
@@ -326,14 +333,20 @@ public get_availresistpts(id)
 
 	new exp = (extra_xp / 10)
 	new rcount = get_resistcount(id)
+
+	new max_resistpts = get_cvar_num("UW_max_resistpts")
+
 	new rpts = ((exp / resist_pt_cost) > RESIST_MAX_PTS) ? (RESIST_MAX_PTS - rcount) : ((exp / resist_pt_cost) - rcount)
 
 	// Prevent players from getting resist points beyond their max allowed
-	if((rcount >= (MAX_RESISTS-1 * RESIST_MAX_VALUE)) || rcount >= RESIST_MAX_PTS)
-		rpts = 0
+	if(rcount >= max_resistpts) || (rcount >= max_resistpts) || rcount >= RESIST_MAX_PTS)
+		return 0
 
-	if(rpts > ((MAX_RESISTS - 1) * RESIST_MAX_VALUE))
-		rpts = ((MAX_RESISTS - 1) * RESIST_MAX_VALUE) - rcount
+	if(rpts > max_resistpts)
+		rpts = max_resistpts - rcount
+
+	if(rpts < 1)
+		return 0
 
 	return rpts
 }

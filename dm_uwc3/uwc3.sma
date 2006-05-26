@@ -380,7 +380,7 @@ public plugin_init()
 
 	register_cvar("UW_round_check","1")
 	register_cvar("UW_admin_mode","0")
-	register_cvar("UW_admin_flag","1048576")
+	admin_flag = register_cvar("UW_admin_flag", "u")
 	register_cvar("UW_disable_adminmenu","0")
 	register_cvar("UW_disable_givexp","0")
 	register_cvar("UW_lowres_default","0")
