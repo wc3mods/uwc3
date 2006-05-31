@@ -339,7 +339,7 @@ public get_availresistpts(id)
 	new rpts = ((exp / resist_pt_cost) > RESIST_MAX_PTS) ? (RESIST_MAX_PTS - rcount) : ((exp / resist_pt_cost) - rcount)
 
 	// Prevent players from getting resist points beyond their max allowed
-	if(rcount >= max_resistpts) || (rcount >= max_resistpts) || rcount >= RESIST_MAX_PTS)
+	if((rcount >= max_resistpts) || (rcount >= max_resistpts) || rcount >= RESIST_MAX_PTS)
 		return 0
 
 	if(rpts > max_resistpts)
