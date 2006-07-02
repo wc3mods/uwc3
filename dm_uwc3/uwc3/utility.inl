@@ -80,6 +80,9 @@ public init_pdata(id, limited)
 // **************************************************************************
 public check_say(id)
 {
+	if(!is_user_connected(id))
+		return PLUGIN_CONTINUE
+
 	new said[32]
 	read_args(said, 31)
 
@@ -170,8 +173,8 @@ public check_say(id)
 		items_info2(id)
 	else if(equali(said, "^"/examine^"") || equali(said, "^"examine^""))
 		do_examine(id)
-	else if(equali(said, "^"/toggle_lowres^"") || equali(said, "^"toggle_lowres^""))
-		toggle_lowres(id)
+	//else if(equali(said, "^"/toggle_lowres^"") || equali(said, "^"toggle_lowres^""))
+	//	toggle_lowres(id)
 
 	return PLUGIN_CONTINUE
 }
@@ -524,51 +527,73 @@ public set_buytime()
 
 public showStatus(id)
 {
+	if(!warcraft3)
+		return;
+
 	new pid = read_data(2)
 
-	if(get_user_team(id) == get_user_team(pid) && (playeritem2[pid]==CHAMELEON || skinchanged[pid]) && is_user_alive(pid))
-	{
-		client_print(id, print_center, "He's on your team, DON'T SHOOT")
+	new teamone = get_user_team(id)
+	new teamtwo = get_user_team(pid)
 
-		if(file_exists("sound/warcraft3/antend.wav"))
+	if (teamone == teamtwo && (playeritem2[pid]==CHAMELEON || skinchanged[pid]) && is_user_alive(pid))
+	{
+		client_print(id,print_center,"He's on your team, DON'T SHOOT")
+
+		if (file_exists("sound/warcraft3/antend.wav")==1)
 			emit_sound(id,CHAN_ITEM, "warcraft3/antend.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
 	}
 
 	if(get_cvar_num("FT_show_player") && !freezetime)
 	{
 		new name[32]
-		get_user_name(pid, name, 31)
-		new color1, color2
+		get_user_name(pid,name,31)
+		new color1 = 0, color2 = 0
 
-		if(get_user_team(pid) == 1)
-			color1 = 255
+		if((teamone != teamtwo) && (playeritem2[pid] == CHAMELEON || skinchanged[pid]))
+		{
+			if(teamone == 1)
+			{
+				color1 = 255
+				color2 = 0
+			}
+			else if(teamone == 2)
+			{
+				color1 = 0
+				color2 = 255
+			}
+		}
 		else
-			color2 = 255
+		{
+			if(teamtwo == 1)
+				color1 = 255
+			else
+				color2 = 255
+		}
 
-		if(g_friend[id]==1) // friend
+		if (g_friend[id]==1 || (playeritem2[pid] == CHAMELEON || skinchanged[pid]))  // friend
 		{
 			/*new clip = 0, ammo = 0, wpnid = 0
 			wpnid = get_user_weapon(pid,clip,ammo)
 			new wpnname[32]
 			get_weaponname(wpnid,wpnname,31)*/
 
-			set_hudmessage(color1, 50, color2, -1.0, 0.60, 1, 0.01, 3.0, 0.01, 0.01, 4)
+			set_hudmessage(color1,50,color2,-1.0,0.60,1, 0.01, 3.0, 0.01, 0.01, 4)
 			new health = get_user_health(pid)
 
 			if(health > 1500)
 				health = health - 2048
-			else if(health > 500)
+			else if (health > 500)
 				health = health - 1024
 
-			show_hudmessage(id, "%s -- %d HP / %d AP", name, health, get_user_armor(pid))
+			show_hudmessage(id,"%s -- %d HP / %d AP", name, health, get_user_armor(pid))
 		}
 		else
 		{
 			set_hudmessage(color1, 50, color2, -1.0, 0.60, 1, 0.01, 3.0, 0.01, 0.01, 4)
 			show_hudmessage(id, "%s", name)
 		}
+		displaylevel(id, 4)
 	}
-	displaylevel(id, 4)
 }
 
 // Check for player alive

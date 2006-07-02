@@ -1428,7 +1428,7 @@ public lightsearchtarget(parm[2])
 
 public lightningnext(parm[4]) // Chain Lightning
 {
-	new id=  parm[0]
+	new id = parm[0]
 	new caster = parm[3]
 	new origin[3]
 	get_user_origin(id, origin)
@@ -1456,7 +1456,7 @@ public lightningnext(parm[4]) // Chain Lightning
 		if(get_user_team(id) == get_user_team(targetid) && is_user_alive(targetid) && is_user_alive(id))
 		{
 			get_user_origin(targetid, targetorigin)
-			distancebetween=get_distance(origin, targetorigin)
+			distancebetween = get_distance(origin, targetorigin)
 
 			if(distancebetween < LIGHTNING_RANGE && playeritem[targetid] != IMMUNITY && !lightninghit[targetid] && !hasblink[targetid] && p_resists[targetid][RESISTIDX_MAGIC] < RESIST_MAX_VALUE && !magic_saving_throw(targetid))
 			{
@@ -1464,6 +1464,7 @@ public lightningnext(parm[4]) // Chain Lightning
 				{
 					closestdistance = distancebetween
 					closestid = targetid
+					break
 				}
 			}
 		}
@@ -1487,7 +1488,7 @@ public lightningnext(parm[4]) // Chain Lightning
 
 		lightningeffect(id, closestid, linewidth, actual_damage, caster)
 
-		parm[0] = targetid
+		parm[0] = closestid
 		parm[1] = damage
 		parm[2] = linewidth
 		parm[3] = caster

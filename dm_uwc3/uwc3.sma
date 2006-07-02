@@ -413,32 +413,6 @@ public plugin_init()
 
 	register_forward(FM_TraceLine, "traceline");
 	register_forward(FM_PlayerPreThink, "FN_PreThink");
-
-	// set_task calls for functions needed by init or to run continuously
-	set_task(10.0, "check_war3", 456, "", 0, "b")
-	set_task(1.0, "check_war3", 457)
-	set_task(3.0, "set_xpfrontend", 458)
-	set_task(0.6, "set_variables", 822)
-
-	set_xpmultiplier()	// Set weapon xp modifiers
-	set_skill_limits()	// Set skills-based tables(skill levels, effects, etc)
-
-	new cfgfile[64]
-	get_configsdir(cfgfile, 63)
-	format(cfgfile, 63, "%s/UWC3/UWC3.cfg", cfgfile)
-
-	if(file_exists(cfgfile))
-	{
-		log_amx("UWC3 Startup :: Loading Configuration File [ UWC3.cfg ]...")
-		server_cmd("exec %s", cfgfile)
-		log_amx("UWC3 Startup :: Configuration File Loaded [OK]")
-	}
-	else
-	{
-		log_amx("UWC3 Startup :: Configuration File NOT FOUND [ Using Default settings ]")
-	}
-
-	set_task(0.6, "check_sql", 823)
 }
 
 public plugin_cfg()
@@ -456,6 +430,32 @@ public plugin_cfg()
 	#endif
 
 	checkmap()
+
+	new cfgfile[64]
+	get_configsdir(cfgfile, 63)
+	format(cfgfile, 63, "%s/UWC3/UWC3.cfg", cfgfile)
+
+	if(file_exists(cfgfile))
+	{
+		log_amx("UWC3 Startup :: Loading Configuration File [ UWC3.cfg ]...")
+		server_cmd("exec %s", cfgfile)
+		log_amx("UWC3 Startup :: Configuration File Loaded [OK]")
+	}
+	else
+	{
+		log_amx("UWC3 Startup :: Configuration File NOT FOUND [ Using Default settings ]")
+	}
+
+	// set_task calls for functions needed by init or to run continuously
+	set_task(10.0, "check_war3", 456, "", 0, "b")
+	set_task(1.0, "check_war3", 457)
+	set_task(3.0, "set_xpfrontend", 458)
+	set_task(0.6, "set_variables", 822)
+
+	set_xpmultiplier()	// Set weapon xp modifiers
+	set_skill_limits()	// Set skills-based tables(skill levels, effects, etc)
+
+	set_task(0.6, "check_sql", 823)
 }
 
 // Specify resources to be precached on client side

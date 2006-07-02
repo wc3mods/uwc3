@@ -1679,29 +1679,29 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 			// Handler for underdog kill XP bonuses
 			new lev_diff = (p_level[victim_id] - p_level[killer_id])
 			new udogxp = (lev_diff * XPBONUS)
-			new udogpenalty = udogxp
+			//new udogpenalty = udogxp
 
 			if(lev_diff >= 30)
 			{
 				udogxp += (3 * xpgiven_lev[p_level[victim_id]])
-				udogpenalty += (2 * xpgiven_lev[p_level[killer_id]])
+			//	udogpenalty += (2 * xpgiven_lev[p_level[killer_id]])
 			}
 			else if(lev_diff >= 20)
 			{
 				udogxp += (2 * xpgiven_lev[p_level[victim_id]])
-				udogpenalty += floatround(2.25 * xpgiven_lev[p_level[killer_id]])
+			//	udogpenalty += floatround(2.25 * xpgiven_lev[p_level[killer_id]])
 			}
 			else if(lev_diff >= 10)
 			{
 				udogxp += floatround(1.5 * xpgiven_lev[p_level[victim_id]])
-				udogpenalty += floatround(1.75 * xpgiven_lev[p_level[killer_id]])
+			//	udogpenalty += floatround(1.75 * xpgiven_lev[p_level[killer_id]])
 			}
 
 			playerxp[killer_id] += udogxp
-			playerxp[victim_id] -= udogpenalty
+			//playerxp[victim_id] -= udogpenalty
 
 			client_print(killer_id, print_chat, "[%s] You receive an Underdog XP bonus of %d for killing %s", MOD, udogxp, name)
-			client_print(victim_id, print_chat, "[%s] You lose an Underdog XP penalty of %d for being killed by %s", MOD, udogpenalty, kname)
+			//client_print(victim_id, print_chat, "[%s] You lose an Underdog XP penalty of %d for being killed by %s", MOD, udogpenalty, kname)
 		}
 		displaylevel(killer_id, 1)
 	}
