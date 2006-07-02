@@ -7,8 +7,6 @@
   #endinput
 #endif
 
-#include <uwc3_const>
-
 enum
 {
 	give_pistol = 0,
@@ -54,13 +52,13 @@ native uwc3_ultimates(index);
 native change_race(index);
 
 /* reset = 1 Reset model, reset = 2 zombie, reset 3 = Mole/chameleon */
-native changeskin(id, reset);
+//native changeskin(id, reset);
 
-native set_changeskin(id, setting);
+//native set_changeskin(id, setting);
 
 /* return the count of team. team = 1 T's team = 2 CT's*/
 native count_team(team);
-
+/*
 stock MaxBPAmmo[] =
 {
 	0,  //Nothing
@@ -145,9 +143,9 @@ stock str_break(const String[], Left[], Right[], lMax, rMax)
 stock replaceall(text[], len, what[], with[])
 {
 	replace_all(text, len, what, with);
-}
+}*/
 
-stock const MOD[] = "UWC3";
+//stock const MOD[] = "UWC3";
 
 stock bool:is_connected[33];
 stock pMax = 0;
@@ -166,7 +164,7 @@ stock check_player(index)
 	}
 	return 0;
 }
-
+/*
 stock gmsgFade;
 stock Create_Fade(id, duration, holdtime, type, r, g, b, alpha)
 {
@@ -179,4 +177,4 @@ stock Create_Fade(id, duration, holdtime, type, r, g, b, alpha)
 	write_byte(b) // fade blue;
 	write_byte(alpha) // fade alpha;
 	message_end();
-}
+}*/

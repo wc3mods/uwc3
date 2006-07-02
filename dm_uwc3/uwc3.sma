@@ -81,13 +81,13 @@
 */
 
 
-#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
-//#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
-//#define CONNECT_MESSAGE // Enabled connecting message
+//#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
+#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
+#define CONNECT_MESSAGE // Enabled connecting message
 //#define DEBUG // Enable Debug
 
 
-//#if defined UWC3_ORIGINAL // Something
+#define UWC3_ORIGINAL // Something
 
 #include <amxmodx>
 #include <amxmisc>
@@ -98,8 +98,8 @@
 #include <dbi>
 
 #if AMXX_VERSION_NUM >= 175
-	#define CSDM // Enable support for CSDM 2.0
-	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
+	//#define CSDM // Enable support for CSDM 2.0
+	//#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
 
 	#include <sqlx>
 #endif
