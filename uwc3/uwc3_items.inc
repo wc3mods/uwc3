@@ -369,7 +369,7 @@ public buy_item2(id,key){
       if (playeritem2[id]==FEATHER)
          set_user_gravity(id,1.0)
       if (playeritem2[id]==HELM)
-         bImmuneHeadshots[id] = false;
+         set_user_hitzones(0,id,255)
       if (playeritem2[id]==CHAMELEON)
          changeskin(id,1)
       if (playeritem2[id]!=REGEN){
@@ -385,7 +385,7 @@ public buy_item2(id,key){
       if (playeritem2[id]==CHAMELEON && is_user_alive(id))
          changeskin(id,0)
       if (playeritem2[id]==HELM)
-         bImmuneHeadshots[id] = true;
+         set_user_hitzones(0,id,253)
       if (playeritem2[id]==CAT){
          set_user_footsteps(id, 1)
       }
@@ -838,9 +838,9 @@ public item_functions(parm[]){
       regenerate(parm)
 
    if (playeritem2[id]==HELM)
-      bImmuneHeadshots[id] = true;
+      set_user_hitzones(0,id,253)
    else
-      bImmuneHeadshots[id] = false;
+      set_user_hitzones(0,id,255)
 
    if (playeritem2[id]==CHAMELEON && is_user_alive(id))
       changeskin(id,0)
@@ -1092,9 +1092,6 @@ public change_weapon(id) {
 
    if ( !is_user_connected( id ) )
       return PLUGIN_CONTINUE
-	
-   // Find out when they last fired
-   fLastShotFired[id] = halflife_time();
 
    if (playeritem2[id]==INFERNO){
       // Gives person a grenade if they weren't just given one
@@ -1145,6 +1142,111 @@ public change_weapon(id) {
    else
       set_user_rendering(id)
 
+   #if STEAM_POWERED
+                if (!freezetime && !slowed[id] && !stunned[id]) {
+                        if (weaponnum==3){ //scout
+                                if (zoomed[id]==1)
+                                        set_user_maxspeed(id,220.0)
+                                else
+                                        set_user_maxspeed(id,260.0) //220 zoomed
+                        }
+                        else if (weaponnum==4){ //hegrenad
+                                set_user_maxspeed(id,260.0)
+                        }
+                        else if (weaponnum==5){ //xm1014
+                                set_user_maxspeed(id,230.0)
+                        }
+                        else if (weaponnum==7){ //mac10
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==8){ //aug - bollup
+                                set_user_maxspeed(id,240.0)
+                        }
+                        else if (weaponnum==9){ //smokegrenade
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==12){ //ump45
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==13){ //sg550
+                                if (zoomed[id]==1)
+                                        set_user_maxspeed(id,150.0)
+                                else
+                                        set_user_maxspeed(id,210.0) //150 zoomed
+                        }
+                        else if (weaponnum==18){ //awp
+                                if (zoomed[id]==1)
+                                        set_user_maxspeed(id,150.0)
+                                else
+                                        set_user_maxspeed(id,210.0) //150 zoomed
+                        }
+                        else if (weaponnum==19){ //mp5
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==20){ //m249
+                                set_user_maxspeed(id,220.0)
+                        }
+                        else if (weaponnum==21){ //auto-shotty (m3)
+                                set_user_maxspeed(id,240.0)
+                        }
+                        else if (weaponnum==14){ //galil
+                                set_user_maxspeed(id,240.0)
+                        }
+                        else if (weaponnum==15){ //famas
+                                set_user_maxspeed(id,240.0)
+                        }
+                        else if (weaponnum==22){ //M4A1
+                                set_user_maxspeed(id,230.0)
+                        }
+
+                        else if (weaponnum==23){ //TMP
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==24){ //G3SG1
+                                if (zoomed[id]==1)
+                                        set_user_maxspeed(id,150.0)
+                                else    
+                                        set_user_maxspeed(id,210.0) //150 zoomed
+                        }
+                        else if (weaponnum==25){ //flashbang
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==27){ //sg552
+                                set_user_maxspeed(id,235.0)
+                        }
+                        else if (weaponnum==28){ //AK47
+                                set_user_maxspeed(id,221.0)
+                        }
+                        else if (weaponnum==30){ //P90
+                                set_user_maxspeed(id,245.0)
+                        }
+                        else if (weaponnum==1){ //p228
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==10 ){ //elite
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==11){ //fiveseven
+                                set_user_maxspeed(id,250.0)
+                        }       
+                        else if (weaponnum==26){ //deagle
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==16){ //usp
+                                set_user_maxspeed(id,250.0)
+                        }       
+                        else if (weaponnum==17){ //glock
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==29){ //knife
+                                set_user_maxspeed(id,250.0)
+                        }
+                        else if (weaponnum==6){ //BOMB
+                                set_user_maxspeed(id,250.0)
+                        }
+                }               
+   #endif               
+                        
    new parm[1]                  
    parm[0]=id           
    unholyspeed(parm)    
@@ -1311,40 +1413,4 @@ public checkmap(){
 // END checkmap subroutine
 // **************************************************************************
 
-// Used for immunity to headshots!
-#define HITGROUP_HEAD (1 << 1)
 
-public traceline(Float:v1[3], Float:v2[3], noMonsters, pentToSkip)
-{
-	new iAttacker = pentToSkip;
-	new iVictim = get_tr(TR_pHit);
-	new iHitZone = (1 << get_tr(TR_iHitgroup));
-
-	if ( iVictim >= 1 && iVictim <= get_maxplayers() && bImmuneHeadshots[iVictim] && iAttacker >= 1 && iAttacker <= get_maxplayers())
-	{
-		// If so, then we want to block the shot
-		if ( iHitZone & HITGROUP_HEAD )
-		{
-			set_tr(TR_flFraction, 1.0);
-			
-			// Do the check to see if we should flash the screen orange?
-			new Float:time = halflife_time();
-			if ( time - fLastShotFired[iAttacker] < 0.1 )
-			{
-				message_begin( MSG_ONE, gMsgScreenFade, {0,0,0}, iVictim );
-				write_short( 1<<10 );
-				write_short( 1<<10 );
-				write_short( 1<<12 );
-				write_byte( 250 );
-				write_byte( 164 );
-				write_byte( 20 );
-				write_byte( 150 );
-				message_end();
-			}
-			
-			return FMRES_SUPERCEDE;
-		}
-	}
-	
-	return FMRES_IGNORED;
-}

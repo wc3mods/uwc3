@@ -167,8 +167,6 @@ public check_say(id){
       return PLUGIN_HANDLED
    }else if (equali(said,"^"/selectskill^"") || equali(said,"^"selectskill^""))
       select_skill(id,1)
-   else if (equali(said,"^"/dropskill^"") || equali(said,"^"dropskill^""))
-      drop_skill(id,1)
    else if (equali(said,"^"/selectattrib^"") || equali(said,"^"selectattrib^""))
       select_attrib(id)
    else if (equali(said,"^"/selectresist^"") || equali(said,"^"selectresist^""))
@@ -1169,7 +1167,7 @@ stock bool:sqlite_table_exists(Sql:sql, table[]) {
 	else
 		exists = false
 
-	if (result >= RESULT_OK)
+	if (result > RESULT_NONE)
 		dbi_free_result(result)
 
 	return exists

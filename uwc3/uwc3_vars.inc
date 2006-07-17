@@ -161,7 +161,6 @@ new damageto[MAX_PLAYERS][MAX_PLAYERS]  // Damage dealt table for added XP
 new bool:spawnedfromitem[MAX_PLAYERS] = false   // Is player spawned from item
 new bool:gotShield[MAX_PLAYERS]                 // Does player have tactical shield
 new bool:resetskill[MAX_PLAYERS]                // Is player waiting to reset skills
-new bool:dropskill[MAX_PLAYERS]                 // Is player currently dropping skills
 new bool:resetattrib[MAX_PLAYERS]               // Is player waiting to reset attributes
 new bool:resetresist[MAX_PLAYERS]               // Is player waiting to reset resists
 new bool:teleportmenu[MAX_PLAYERS]              // Is player viewing teleport menu
@@ -313,6 +312,7 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
+new VER[32] = {"1.6.0-unofficial"}
 new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS
@@ -388,6 +388,4 @@ new TSkins[4][]={"arctic","leet","guerilla","terror"}
 // END Global Variable Declarations
 // **************************************************************************
 
-// Stores if the user should be immune to headshots or not
-new bool:bImmuneHeadshots[33];
-new Float:fLastShotFired[33];
+
