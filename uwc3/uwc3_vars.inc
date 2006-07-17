@@ -2,11 +2,11 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Global Variables 
+*** UWC3 Module:   Global Variables
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Global Variables 
+*  Module: Global Variables
 *  All global variables are defined in this module.
 *----------------------------------------------------------------------------
 *
@@ -313,7 +313,6 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
-new VER[32] = {"1.6.1-unofficial"}
 new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS

@@ -378,14 +378,14 @@ public select_skill(id, page){
       }
 
       add(message, 2048, temp2)
-   } 
+   }
 
    format(temp3, 32, "^n^n9. Next Page")
    add(message, 2048, temp3)
-      
+
    format(temp3, 32, "^n^n0. Exit")
    add(message, 2048, temp3)
-      
+
    show_menu(id, keys, message, -1)
 
    return PLUGIN_HANDLED
@@ -603,16 +603,15 @@ public set_skill(id, key){
       // Set global skills page variable
       nSkillsPage[id] = (nSkillsPage[id] < MAX_SKILL_PAGES) ? nSkillsPage[id] + 1 : 1
       select_skill(id, nSkillsPage[id])
-      return PLUGIN_HANDLED 
-   }     
-            
-   return PLUGIN_HANDLED 
-         
-}     
+      return PLUGIN_HANDLED
+   }
+
+   return PLUGIN_HANDLED
+
+}
 // **************************************************************************
 // END set_skill subroutine
 // **************************************************************************
-
 
 // **************************************************************************
 // BEGIN drop_skill subroutine
@@ -660,7 +659,7 @@ public drop_skill(id, page){
 
          if (get_cvar_num("UW_admin_mode"))
             format(sLevelText, 32, "[ Lvl %d ]", skill_minlev[idx])
-         else
+        else
             format(sLevelText, 32, "[Lvl %d required]", skill_minlev[idx])
 
          if (equali(skillname,"NOSKILL"))
@@ -727,13 +726,6 @@ public unset_skill(id, key){
          return PLUGIN_HANDLED
       } 
 
-      // Fix Steel Skin Bug: do not drop vamp or leather below steel skin
-      // prerequisites. -Marticus, 19 Feb 2006
-      if ((p_skills[id][SKILLIDX_SSKIN] == 1) && (((skill_idx == SKILLIDX_LSKIN) && (p_skills[id][SKILLIDX_LSKIN] == 3)) || ((skill_idx == SKILLIDX_VAMPIRIC) && (p_skills[id][SKILLIDX_VAMPIRIC] == 1)))) {
-         client_print(id, print_chat, "[%s] You must first drop Steel Skin", MOD)
-         return PLUGIN_HANDLED
-      }
-
       // Do not drop below 0 in index skill_idx
       if ( p_skills[id][skill_idx] == 0 ) {
          client_print(id, print_chat, "[%s] You have no points in %s",
@@ -751,10 +743,6 @@ public unset_skill(id, key){
             sqlwrite_skills_id( id, skill_idx, 1)
          else
             write_skills_id( id, 1 )
-
-         // if its an ultimate we are dropping - Lantz69, 22 Feb 2006
-         if (skill_ultimates[skill_idx][0])
-            ultlearned[id]--; 
 
          if ( p_skills[id][skill_idx] == 0 )
             client_print(id, print_chat, "[%s] You are no longer trained in %s",
@@ -783,11 +771,10 @@ public unset_skill(id, key){
 // **************************************************************************
 // END unset_skill subroutine
 // **************************************************************************
- 
 
 // **************************************************************************
 // BEGIN get_skillcount subroutine
-// Count the number of skill pts a player has 
+// Count the number of skill pts a player has
 // **************************************************************************
 public get_skillcount(id){
 
@@ -824,25 +811,25 @@ public get_availskillpts(id){
 
 // **************************************************************************
 // BEGIN resetskills subroutine
-// Sets a flag to reset all skill values to 0 
+// Sets a flag to reset all skill values to 0
 // **************************************************************************
 public resetskills(id){
    if (!warcraft3)
      return PLUGIN_CONTINUE
-         
+
    if (get_cvar_num("FT_reset_skills")){
       client_print(id, print_center, "Your skills will be reset next round")
       resetskill[id] = true
    }else{
       client_print(id, print_center, "This server has disabled that option")
       resetskill[id] = false
-   }  
-         
+   }
+
    return PLUGIN_HANDLED
 }
 // **************************************************************************
 // END resetskills subroutine
-// **************************************************************************  
+// **************************************************************************
 
 
 // **************************************************************************
@@ -931,9 +918,9 @@ public set_maxhealth(id, sethealth){
    if ( get_cvar_num("UW_DEBUG") == 5 ){
       new name[32]
       get_user_name(id, name, 31)
-      log_amx( "In set_maxhealth() :: [%s} maxhealth=(%d) devotion=(%d) str=(%d)", 
-               name, maxhealth[id], p_skills[id][SKILLIDX_DEVOTION], 
-               p_attribs[id][ATTRIBIDX_STR] ) 
+      log_amx( "In set_maxhealth() :: [%s} maxhealth=(%d) devotion=(%d) str=(%d)",
+               name, maxhealth[id], p_skills[id][SKILLIDX_DEVOTION],
+               p_attribs[id][ATTRIBIDX_STR] )
    }
 
    return PLUGIN_CONTINUE
@@ -1120,14 +1107,14 @@ public phoenix_count(id){
       // Pheonix
       new Float:randomnumber = random_float(0.0,1.0)
       new teamnumber = get_user_team(id)
-      
+
       if (randomnumber <= p_phoenix[p_skills[id][SKILLIDX_PHOENIX]-1]){
          phoenix[id]=true
          if (teamnumber == 1)
             pheonixexistsT++
          else if (teamnumber == 2)
             pheonixexistsCT++
-      }  
+      }
    }
 
    return PLUGIN_CONTINUE
@@ -1148,25 +1135,25 @@ public check_skills(id, sethealth){
 
    set_maxhealth( id, sethealth )	// Set user id's maxhealth[] for the round
    check_conregen( id )	 		// Check if constitution regen should be started
-   check_skinbonus( id )		// Set user id's maxarmor[] for the round 
+   check_skinbonus( id )		// Set user id's maxarmor[] for the round
    check_blink( id )	 		// Check if user id gets blink active this round
    check_tasks (id )	 		// Check for task cleanup/restarts
    check_serpwards( id ) 		// Give serpant wards if necessary
    phoenix_count( id )	 		// Count phoenixes for each team
-   
-      
+
+
    if (p_skills[id][SKILLIDX_GATE]){
       // Gate Ultimate, determine number of gates this round by level
       if (p_level[id] >= 30) numgates[id] = 3
       else if (p_level[id] >= 20) numgates[id] = 2
       else numgates[id] = 1
    }
-   
+
    icon_controller(id,ICON_SHOW)
-      
+
    return PLUGIN_CONTINUE
-         
-}        
+
+}
 // **************************************************************************
 // END check_skills subroutine
 // **************************************************************************
@@ -1250,7 +1237,7 @@ public skills_info(id, tier){
          case SKILLIDX_SERPWARD:
             pos+= format(temp[pos],2048-pos,"<li>Serpent Ward (Special Ability): You receive (%d, %d or %d) serpent wards each round that damage nearby enemy units ( bind a key to wcward to plant one)<p>",p_serpent[0],p_serpent[1],p_serpent[2] )
          case SKILLIDX_THORNS:
-            pos+= format(temp[pos],2048-pos,"<li>Thorns Aura: Does (10%% to 37%%) mirror damage to the person who shot you<p>" ) 
+            pos+= format(temp[pos],2048-pos,"<li>Thorns Aura: Does (10%% to 37%%) mirror damage to the person who shot you<p>" )
          case SKILLIDX_INVIS:
             pos+= format(temp[pos],2048-pos,"<li>Invisibility: Makes you partially invisible, you will be harder to see<p>" )
          case SKILLIDX_TELEPORT:
@@ -1262,13 +1249,13 @@ public skills_info(id, tier){
          case SKILLIDX_VENGEANCE:
             pos+= format(temp[pos],2048-pos,"<li>Vengeance (Ultimate Ability): Respawn once with 50 health<p>" )
          case SKILLIDX_LOCUST:
-            pos+= format(temp[pos],2048-pos,"<li>Locust Swarm (Ultimate Ability): A Swarm of Green Locusts attacks the enemy<p>") 
+            pos+= format(temp[pos],2048-pos,"<li>Locust Swarm (Ultimate Ability): A Swarm of Green Locusts attacks the enemy<p>")
          case SKILLIDX_BLINK:
-            pos+= format(temp[pos],2048-pos,"<li>Blink: Chance to disables ALL enemy ultimates (20%% to 100%%)<p>" ) 
+            pos+= format(temp[pos],2048-pos,"<li>Blink: Chance to disables ALL enemy ultimates (20%% to 100%%)<p>" )
          case SKILLIDX_PHOENIX:
             pos+= format(temp[pos],2048-pos,"<li>Phoenix: You have a (20%% to 100%%) chance of reviving the first teammate who dies<p>" )
          case SKILLIDX_NAPALM:
-            pos+= format(temp[pos],2048-pos,"<li>Napalm Grenades: Each round your first he grenade will coat your enemies with napalm, anyone they touch will spread the napalm<p>" )        
+            pos+= format(temp[pos],2048-pos,"<li>Napalm Grenades: Each round your first he grenade will coat your enemies with napalm, anyone they touch will spread the napalm<p>" )
          case SKILLIDX_SUICIDE:
             pos+= format(temp[pos],2048-pos,"<li>Suicide Bomber (Ultimate Ability): When you die you will explode killing nearby enemies and regenerate<p>")
          case SKILLIDX_LIGHTNING:
@@ -1278,17 +1265,17 @@ public skills_info(id, tier){
          case SKILLIDX_GATE:
             pos+= format(temp[pos],2048-pos,"<li>Gate (Ultimate Ability): Opens a Gateway for you to be teleported back to your spawn point and away from danger (hopefully)<p>")
       }
-   }     
-            
-   pos+= format(temp[pos],2048-pos,"</ol><p>" ) 
-         
+   }
+
+   pos+= format(temp[pos],2048-pos,"</ol><p>" )
+
    //add(message,2047,temp)
 
    show_motd( id, temp,"Skills Information")
-            
+
    return PLUGIN_HANDLED
 
-}        
+}
 // **************************************************************************
 // END skills_info subroutine
 // **************************************************************************
@@ -1325,7 +1312,7 @@ public dolskin(parm[2]){
       // Leather skin armor regen here
       //set_user_armor(id, get_user_armor(id) + 2)
       set_user_armor_log(id, (get_user_armor(id) + 2) , true, "dolskin()-1")
-      if (get_user_armor(id) > atotal) 
+      if (get_user_armor(id) > atotal)
          set_user_armor_log(id, atotal , true, "dolskin()-2")
          //set_user_armor(id, atotal)
    }
@@ -1354,18 +1341,18 @@ public dolskin(parm[2]){
 
 // **************************************************************************
 // BEGIN healingitnow healingnext and healingeffect subroutines
-// Handles Healing Wave effects       
+// Handles Healing Wave effects
 // **************************************************************************
 public healitnow(parm[2]){
    new id = parm[0]
-         
+
    if (!endround && is_user_alive(id) && p_skills[id][SKILLIDX_HEALWAVE])
       set_task(p_heal[p_skills[id][SKILLIDX_HEALWAVE]-1],"healitnow",id+90,parm,2)
    healingnext(parm)
-   
+
    return PLUGIN_CONTINUE
-}  
-   
+}
+
 public healingnext(parm[2]){
    // Healing Wave
    new id=parm[0]
@@ -1385,16 +1372,16 @@ public healingnext(parm[2]){
    new closestid = 0
    for (i = 0; i < numberofplayers; ++i){
       targetid=players[i]
-      
+
       if ( get_user_team(id) != get_user_team(targetid) ) continue
-      
+
       if (get_user_team(id)==get_user_team(targetid) && is_user_alive(targetid)){
          get_user_origin(targetid,targetorigin)
          distancebetween=get_distance(origin,targetorigin)
          if (distancebetween < get_cvar_num("FT_healing_range") &&!healinghit[targetid])
             closestid = targetid
       }
-   }  
+   }
 
    if (closestid){
       healingeffect(id,closestid,heal)
@@ -1465,15 +1452,15 @@ public healingeffect(id,targetid,heal){
 // BEGIN jumper subroutine
 // Set the goomba jumping
 // **************************************************************************
-public jumper(parm[2]){ 
+public jumper(parm[2]){
    new id = parm[0]
    client_cmd(id,"+jump;wait;-jump")
-   parm[1]++     
+   parm[1]++
    if(!endround && is_user_alive(id))
       set_task(3.0, "jumper", 2000+id, parm, 1)
-            
+
    return PLUGIN_CONTINUE
-}           
+}
 // **************************************************************************
 // END jumper subroutine
 // **************************************************************************
@@ -1481,7 +1468,7 @@ public jumper(parm[2]){
 
 // **************************************************************************
 // BEGIN walker subroutine
-// Legacy routine from War3FT, no longer footstep related code 
+// Legacy routine from War3FT, no longer footstep related code
 // **************************************************************************
 public walker(parm[2]){
    new id = parm[0]

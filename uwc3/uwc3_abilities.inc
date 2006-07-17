@@ -125,7 +125,7 @@ public lightpls(parm[6]){
          if ((distancebetween < 85)){
 
             // [08-08-04] - Check if Magic Resistance protects against Ward - K2mia
-            if ( (p_resists[targetid][RESISTIDX_MAGIC] >= 100) ||
+            if ( (p_resists[targetid][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
                  magic_saving_throw(targetid))
             {
                client_print(targetid, print_chat,

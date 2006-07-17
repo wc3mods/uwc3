@@ -6,7 +6,7 @@
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Help and Info / Menu Subroutines 
+*  Module: Help and Info / Menu Subroutines
 *  Subroutines for help and info text and menus
 *----------------------------------------------------------------------------
 *
@@ -48,7 +48,7 @@ public show_news(id){
    pos += format(temp[pos], 3076-pos, "<b>http://forums.uwc3.com/ - See forums for complete ChangeLog</b><br><ul>")
 
    pos += format(temp[pos], 3076-pos, "<li>[10-30-04] Necklaces no longer protect against serpent wards.<p>")
-   
+
    pos += format(temp[pos], 3076-pos, "<li>[10-24-04] Testing Teleport Immunity issues bugfix. Testing Mask of Death bugfix. Mirror damage skills/evasion bug fixed. Testing fix for skill/attrib/health known reset issue. Testing bugfix for Vengeance/Phoenix overlap. Fixed Ultimate-status HUD message. Playerskills has been replaced by /who, added /whois playername command to display player character sheets.<p>")
 
    pos += format(temp[pos], 3076-pos, "<li>[10-10-04] Many run-time errors fixed, thanks to Hellion and Kamikaze for sending their bug reports and error logs!<p>")
@@ -103,7 +103,7 @@ public main_menu(id){
 
    pos += format(menu_body[pos], 511-pos, "\yUWC3: Main Menu [ http://www.mudconnect.com/uwc3/ ]^n^n")
 
-   if ( !get_cvar_num("UW_disable_adminmenu") && 
+   if ( !get_cvar_num("UW_disable_adminmenu") &&
         (get_user_flags(id) & get_cvar_num("UW_admin_flag")) )
    {
       nLoop = 7
@@ -397,7 +397,7 @@ public do_playerxpmenu(id,key){
          get_user_name(id, name, 31)
          get_user_name(player, pname, 31)
 
-         log_amx( "[%s] %s used Admin-Menu XP [%s] for %s", 
+         log_amx( "[%s] %s used Admin-Menu XP [%s] for %s",
                   MOD, name, g_menuSettings[id], pname )
 
          client_print(player, print_chat,
@@ -455,19 +455,19 @@ public do_teamxpmenu(id,key){
 
    switch(key){
       case 0:{
-         log_amx( "[%s] %s used Admin-Menu XP [%d] for team Terrorist", 
+         log_amx( "[%s] %s used Admin-Menu XP [%d] for team Terrorist",
                   MOD, name, g_menuSettings[id] )
          server_cmd("amx_givexp @TERRORIST %d", g_menuSettings[id])
          teamxp_menu(id)
       }
       case 1:{
-         log_amx( "[%s] %s used Admin-Menu XP [%d] for team CT", 
+         log_amx( "[%s] %s used Admin-Menu XP [%d] for team CT",
                   MOD, name, g_menuSettings[id] )
          server_cmd("amx_givexp @CT %d",g_menuSettings[id])
          teamxp_menu(id)
       }
       case 2:{
-         log_amx( "[%s] %s used Admin-Menu XP [%d] for EVERYONE", 
+         log_amx( "[%s] %s used Admin-Menu XP [%d] for EVERYONE",
                   MOD, name, g_menuSettings[id] )
          server_cmd("amx_givexp @ALL %d",g_menuSettings[id])
          teamxp_menu(id)
@@ -555,13 +555,13 @@ public uwc3_commands(id){
 // Display the credits for UWC3 plugin
 // **************************************************************************
 public uwc3_credits(id){
-      
+
    if (warcraft3==false)
       return PLUGIN_CONTINUE
-   
+
    new temp[3072]
    new pos = 0
-   
+
    pos += format(temp[pos], 3072-pos, "<body bgcolor=#000000><font color=#FFB000>")
    pos += format(temp[pos], 3072-pos, "<center><table border=1 cellpadding=3 cellspacing=3><tr><td><font color=#FFB000>")
 
@@ -576,15 +576,15 @@ public uwc3_credits(id){
    pos += format(temp[pos], 3072-pos, "Thanks to: SpaceDude, Pimp-Daddy, BAILOPAN, PM, AssKicr<br>jjkiller and the members of amxmodx.org forums<br>")
    pos += format(temp[pos], 3072-pos, "bigboom for the 'fullupdate' bug report.<br>")
    pos += format(temp[pos], 3072-pos, "</font></td></tr><tr><td><font color=#FFB000>")
-   pos += format(temp[pos], 3072-pos, "<center><b>Warcraft3 and Warcraft3FT Credits</b></center><p>" ) 
+   pos += format(temp[pos], 3072-pos, "<center><b>Warcraft3 and Warcraft3FT Credits</b></center><p>" )
    pos += format(temp[pos], 3072-pos, "Warcraft 3: Frozen Throne by Pimp Daddy (OoTOAoO)<br>[ email: PimpDaddy@cinci.rr.com / MSN: PimpDaddy@cinci.rr.com ]<p>")
    pos += format(temp[pos], 3072-pos, "Spacedude (for War3 MOD)<br>Ludwig Van (for flamethrower)<br>OLO (for spectating rank info)<br>JGHG for the mole code<br>[AOL]Demandred, [AOL]LuckyJ for help coding it for steam<br>[AOL]Demandred for freezetime exploit fix<br>")
    pos += format(temp[pos], 3072-pos, "Denkkar for some of his code (ie. STEAM_POWERED)<br>Everyone at amxmod.net for help<br>joecool12321 for various health related fixes<br>Tri Moon for various improvements (No Race, war3menu, etc...)<br>xeroblood for spotting some bugs for me :)<br>bad-at-this for contributing the status bar code used for godmode (big bad voodoo)<br>")
    pos += format(temp[pos], 3072-pos, "kamikaze for help w/testing version before release<br>lui for the delayed ultimate code<br>The following people helped convert the text to German:<br>Walken / Altegarde.com , Fire , ^^plan.los^^<br>")
    pos += format(temp[pos], 3072-pos, "</font></td></tr></table></center>")
-   
+
    show_motd( id, temp, "Ultimate Warcraft3 Credits")
-   
+
    return PLUGIN_CONTINUE
 
 }
@@ -599,13 +599,13 @@ public uwc3_credits(id){
 // Display the help info for the WC3FT-Unlimited plugin
 // **************************************************************************
 public war3_info(id){
-   
+
    if (warcraft3==false)
       return PLUGIN_CONTINUE
-   
+
    new temp[2048]
    new pos = 0
-   
+
    pos += format(temp[pos], 2048-pos, "<body bgcolor=#000000><font color=#FFB000>")
    pos += format(temp[pos], 2048-pos, "<center><table border=1 cellpadding=3 cellspacing=3><tr><td><font color=#FFB000>")
 
@@ -908,19 +908,19 @@ public character_sheet(id){
    add( message, 2047, "<center><b>Resistances</b></center><p>" )
 
    format( stemp, 1024, "Poison Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_POISON], 100 )
+      p_resists[id][RESISTIDX_POISON], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Disease Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_DISEASE], 100 )
+      p_resists[id][RESISTIDX_DISEASE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Electricity Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_ELECTRIC], 100 )
+      p_resists[id][RESISTIDX_ELECTRIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Fire Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_FIRE], 100 )
+      p_resists[id][RESISTIDX_FIRE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Magic Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_MAGIC], 100 )
+      p_resists[id][RESISTIDX_MAGIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
 
 
@@ -1061,19 +1061,19 @@ public cmd_whois(id, arg[]){
    add( message, 2047, "<center><b>Resistances</b></center><p>" )
 
    format( stemp, 1024, "Poison Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_POISON], 100 )
+      p_resists[pid][RESISTIDX_POISON], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Disease Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_DISEASE], 100 )
+      p_resists[pid][RESISTIDX_DISEASE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Electricity Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_ELECTRIC], 100 )
+      p_resists[pid][RESISTIDX_ELECTRIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Fire Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_FIRE], 100 )
+      p_resists[pid][RESISTIDX_FIRE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Magic Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_MAGIC], 100 )
+      p_resists[pid][RESISTIDX_MAGIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
 
    add( message, 2047, "</td></tr><tr><td colspan=2 valign=top><font color=#FFB000>" )
@@ -1164,7 +1164,7 @@ public set_rankstring(id){
 public displaylevel(id,hide){
    if ( !id || !is_user_connected(id) )
       return PLUGIN_CONTINUE
-   
+
    new parm2[2]
    parm2[0] = id
    if (!itemsrunning[id] && !endround)
@@ -1350,7 +1350,7 @@ public displaylevel(id,hide){
 
    if ( !is_user_connected( id ) )
       return PLUGIN_CONTINUE
- 
+
    if (get_cvar_num("sv_gravity")>650){
       if (p_skills[id][SKILLIDX_LEVITATION] && playeritem2[id]!=FEATHER){
          // Levitation
@@ -1430,11 +1430,9 @@ public cmd_who(id){
 
       get_user_name( playerid, name, 31 )
 
-      // Added level and xp to this log message, Marticus, 28 Feb 2006
-      log_amx( "Adding player: [%d:%d] %s", p_level[playerid], 
-	      playerxp[playerid], name )
+      log_amx( "Adding player: %s", name )
 
-      pos += format( message[pos], 4096-pos, "<tr><td>%s</td><td>%s</td><td>%d</td></tr>^n", 
+      pos += format( message[pos], 4096-pos, "<tr><td>%s</td><td>%s</td><td>%d</td></tr>^n",
                      name, team, p_level[playerid], name)
 
    }
@@ -1448,7 +1446,7 @@ public cmd_who(id){
    if ( file_exists( whofile ) )
       delete_file( whofile )
 
-   write_file( whofile, message ) 
+   write_file( whofile, message )
 
    show_motd( id, whofile, "UWC3 Players Online" )
 

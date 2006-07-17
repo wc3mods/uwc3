@@ -58,14 +58,14 @@ public check_war3(){
 public init_pdata(id, limited){
 
    if (limited){
-      // Limited initialize only, for new_round event mainly 
+      // Limited initialize only, for new_round event mainly
       issearching[id] = false	// Init player searching state (for some ultimates)
       stunned[id] = false	// Init player stunned state
       slowed[id] = false	// Init player slowed state
       hasblink[id] = false	// Init player has blink status
       ultimateused[id] = false	// Init ultimateused status
-      decoyused[id] = false	// Init decoyused status for round 
-      medicalert[id] = false	// Init medicalert status 
+      decoyused[id] = false	// Init decoyused status for round
+      medicalert[id] = false	// Init medicalert status
       temp_immunity[id] = false	// Init temporary immunity status
       hasrespawned[id] = false 	// Init player has respawned status
       isburning[id] = 0		// Init player burning from flamethrower status
@@ -77,7 +77,7 @@ public init_pdata(id, limited){
       he[id] = 0		// Init player he-grenade status
       threwnapalm[id] = 0	// Init player has thrown a napalm nade status
       vengeance_used[id] = 0	// Init player's Vengeance used status
-      vampiric_hits[id] = 0	// Init vampiric aura hits 
+      vampiric_hits[id] = 0	// Init vampiric aura hits
    }
 
    // It limited passed, make sure to exit routine here
@@ -87,17 +87,17 @@ public init_pdata(id, limited){
    // If limited init NOT set, we make it here
    p_level[id] = 0	// Init player level to 0
    playerxp[id] = 0	// Init playerxp to 0
-   loadedlevel[id] = 0	// Init player has loaded xp/level data state	
+   loadedlevel[id] = 0	// Init player has loaded xp/level data state
    playeritem[id] = 0	// Init player item slot 1
    playeritem2[id] = 0	// Init player item slot 2
    ultlearned[id] = 0	// Init # of ultimates learned
-   
+
    if ( get_cvar_num("UW_lowres_default") )
       lowres[id] = true		// Init player's lowres setting to on
    else
-      lowres[id] = false	// Init player's lowres setting to off 
-  
- 
+      lowres[id] = false	// Init player's lowres setting to off
+
+
    // Set all skills for this player slot to 0
    for (new j=0; j<MAX_SKILLS; j++)
       p_skills[id][j] = 0
@@ -252,15 +252,15 @@ public set_user_armor_log(id, armor, blog, sdesc[]){
    get_user_name(id, name, 31)
 
    //if (blog)
-   //   client_print(0, print_console, 
-   //      "[%s DEBUG] [In set_user_armor_log()] (%s) id=(%d)<%s> BEFORE-armor=(%d)", 
+   //   client_print(0, print_console,
+   //      "[%s DEBUG] [In set_user_armor_log()] (%s) id=(%d)<%s> BEFORE-armor=(%d)",
    //      MOD, sdesc, id, name, get_user_armor(id))
 
    set_user_armor(id, armor)
 
    //if (blog)
-   //   client_print(0, print_console, 
-   //       "[%s DEBUG] [In set_user_armor_log()] (%s) id=(%d)<%s> AFTER-armor=(%d)", 
+   //   client_print(0, print_console,
+   //       "[%s DEBUG] [In set_user_armor_log()] (%s) id=(%d)<%s> AFTER-armor=(%d)",
    //       MOD, sdesc, id, name, get_user_armor(id))
 
    return PLUGIN_CONTINUE
@@ -286,7 +286,7 @@ public set_user_health_log(id, health, blog, sdesc[]){
 
    if ( get_cvar_num("UW_DEBUG") == 5 ){
       if ( health > maxhealth[id] ){
-         
+
          if ( hasgodmode[id] ){
             log_amx( "In set_user_health_log() :: [%s] Set Health [%d] EXCEEDS Maxhealth [%d] (Voodoo Active) Reason=(%s)", name, health, maxhealth[id], sdesc )
          }else{
@@ -296,15 +296,15 @@ public set_user_health_log(id, health, blog, sdesc[]){
    }
 
    //if (blog)
-   //   client_print(0, print_console, 
-   //      "[%s DEBUG] [In set_user_health_log()] (%s) id=(%d)<%s> BEFORE-health=(%d)", 
+   //   client_print(0, print_console,
+   //      "[%s DEBUG] [In set_user_health_log()] (%s) id=(%d)<%s> BEFORE-health=(%d)",
    //      MOD, sdesc, id, name, get_user_health(id))
 
    set_user_health(id, health)
 
    //if (blog)
-   //   client_print(0, print_console, 
-   //       "[%s DEBUG] [In set_user_health_log()] (%s) id=(%d)<%s> AFTER-health=(%d)", 
+   //   client_print(0, print_console,
+   //       "[%s DEBUG] [In set_user_health_log()] (%s) id=(%d)<%s> AFTER-health=(%d)",
    //       MOD, sdesc, id, name, get_user_health(id))
 
    return PLUGIN_CONTINUE
@@ -1142,13 +1142,13 @@ public monitor_players(){
 
 
 // **************************************************************************
-// BEGIN stock user_spawn 
+// BEGIN stock user_spawn
 // Spawn a user
 // **************************************************************************
 stock user_spawn(index)
    return spawn(index)
 // **************************************************************************
-// END stock user_spawn 
+// END stock user_spawn
 // **************************************************************************
 
 

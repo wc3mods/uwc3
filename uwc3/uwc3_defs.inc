@@ -2,11 +2,11 @@
 /** *************************************************************************
 *** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
 *** Plugin Author: K2mia
-*** UWC3 Module:   Global Defines 
+*** UWC3 Module:   Global Defines
 *** Date:          May 25, 2004
 *** Last Update:   September 23, 2004
 *
-*  Module: Global Defines 
+*  Module: Global Defines
 *  All #defines are included in this module.
 *----------------------------------------------------------------------------
 *

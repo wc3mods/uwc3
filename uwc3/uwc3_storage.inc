@@ -62,56 +62,56 @@ public check_sql(){
 
 public grab_sql_vars(){
 
-   get_cvar_string("UW_sql_host", sqlhost, 63)
-   get_cvar_string("UW_sql_user", sqluser, 31)
-   get_cvar_string("UW_sql_pass", sqlpass, 31)
+	get_cvar_string("UW_sql_host", sqlhost, 63)
+	get_cvar_string("UW_sql_user", sqluser, 31)
+	get_cvar_string("UW_sql_pass", sqlpass, 31)
 	get_cvar_string("UW_sql_db", sqldb, 1023)
 
 	//log_amx("UWC3 SQL :: Config Report: host=(%s) user=(%s) pass=(*) db=(%s)", sqlhost, sqluser, sqldb)
 
-   new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
-   if (sql <= SQL_FAILED) {
-     log_amx("UWC3 SQL :: Connect Error [ %s ]", sqlerror)
-     return PLUGIN_HANDLED
+	new Sql:sql = dbi_connect(sqlhost, sqluser, sqlpass, sqldb, sqlerror, 127)
+	if (sql <= SQL_FAILED) {
+		log_amx("UWC3 SQL :: Connect Error [ %s ]", sqlerror)
+		return PLUGIN_HANDLED
 	}
 	else{
 		//log_amx("UWC3 SQL :: Connected [OK]" )
-   }
+	}
 
 
-   // Create the uwc3_xp table if necessary
+	// Create the uwc3_xp table if necessary
 	if (!g_sqlite)
-   dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY ( steamid ) )", sqltable_xp)
+		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY ( steamid ) )", sqltable_xp)
 	else if (!sqlite_table_exists(sql, sqltable_xp))
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY ( steamid ) )", sqltable_xp) // SQLITE COMPLIANT
 
 
 	if (!g_sqlite) {
-   if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
+		if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name )", sqltable_xp) // NON SQLITE COMPLIANT
-   }else{
+		}else{
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid )", sqltable_xp) // NON SQLITE COMPLIANT
 		}
-   }
+	}
 
-   /*
-   new squery[2048]
-   new len = 0
-   len += format(squery[len], 512, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, ", sqltable_skills)
-   len += format(squery[len], 512-len, "skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, ")
-   len += format(squery[len], 512-len, "skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, ")
-   len += format(squery[len], 512-len, "skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY ( steamid, nset ) )")
-   dbi_query(sql, "%s", squery)
+	/*
+	new squery[2048]
+	new len = 0
+	len += format(squery[len], 512, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, ", sqltable_skills)
+	len += format(squery[len], 512-len, "skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, ")
+	len += format(squery[len], 512-len, "skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, ")
+	len += format(squery[len], 512-len, "skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY ( steamid, nset ) )")
+	dbi_query(sql, "%s", squery)
 
-   if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
-      dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_skills)
-   }else{
-      dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_skills)
-   }
-   */
+	if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
+	dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_skills)
+	}else{
+	dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_skills)
+	}
+	*/
 
 	if (!g_sqlite)
-   dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills1)
+		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills1)
 	else if (!sqlite_table_exists(sql, sqltable_skills1))
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills1) // SQLITE COMPLIANT
 
@@ -131,36 +131,36 @@ public grab_sql_vars(){
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY ( steamid, nset ) )", sqltable_skills4) // SQLITE COMPLIANT
 
 	if (!g_sqlite) {
-   if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
+		if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_skills1) // NON SQLITE COMPLIANT
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_skills2) // NON SQLITE COMPLIANT
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_skills3) // NON SQLITE COMPLIANT
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_skills4) // NON SQLITE COMPLIANT
-   }else{
+		}else{
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_skills1) // NON SQLITE COMPLIANT
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_skills2) // NON SQLITE COMPLIANT
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_skills3) // NON SQLITE COMPLIANT
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_skills4) // NON SQLITE COMPLIANT
 		}
-   }
+	}
 
-   // Create the uwc3_enh table if necessary
+	// Create the uwc3_enh table if necessary
 	if (!g_sqlite)
-   dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY ( steamid, nset ) ) ", sqltable_enh)
+		dbi_query(sql, "CREATE TABLE IF NOT EXISTS %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY ( steamid, nset ) ) ", sqltable_enh)
 	else if (!sqlite_table_exists(sql, sqltable_enh))
 		dbi_query(sql, "CREATE TABLE %s ( name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY ( steamid, nset ) ) ", sqltable_enh) // SQLITE COMPLIANT
 
 	if (!g_sqlite) {
-   if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
+		if (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME){
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( name, nset )", sqltable_enh) // NON SQLITE COMPLIANT
-   }else{
+		}else{
 			dbi_query(sql, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY ( steamid, nset )", sqltable_enh) // NON SQLITE COMPLIANT
 		}
-   }
+	}
 
-   dbi_close(sql)
+	dbi_close(sql)
 
-   return PLUGIN_CONTINUE
+	return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END check_sql and grab_sql_vars subroutines
@@ -374,7 +374,7 @@ sqlgetsql_xp_id(id, sqlline[], const LEN){
 public write_xp_id(id){
    if (!warcraft3)
       return PLUGIN_HANDLED
-   
+
    if (!get_cvar_num("mp_savexp") || xpreadytoload[id]){
       // Do not write XP if it mp_savexp not set or xp hasn't been loaded yet
       //log_amx("In write_xp_id() id=(%d) mp_savexp=(%d) xpready=(%d)",
@@ -385,31 +385,31 @@ public write_xp_id(id){
    new playerid[32], playername[32], timet[32], ip[32]
    new pkey[128]
    new pdata[512]
-   
+
    get_time("%m %d %H %M", timet, 31)
    get_user_authid(id, playerid, 31)
    get_user_name(id, playername, 31)
    get_user_ip(id, ip, 31)
-   
+
    if (playerxp[id] <= 150){
       // Do not save XP if <= 150
       //log_amx("In write_xp_id() id=(%d) playerxp=(%d) Not enough XP to save",
       //  id, playerxp[id] )
       return PLUGIN_CONTINUE
-   }  
-   
+   }
+
    format(pdata, 255, "%s %d %s %s", playerid, playerxp[id], ip, timet)
-   
-   format(pkey, 127, "%s", playerid ) 
+
+   format(pkey, 127, "%s", playerid )
    set_vaultdata(pkey, pdata)
-     
+
    return PLUGIN_CONTINUE
-}  
+}
 // **************************************************************************
 // END write_xp_id subroutine
 // **************************************************************************
 
-   
+
 // **************************************************************************
 // BEGIN sqlwrite_enh_id subroutine
 // Write a player's enh info (attribs / resists) to the SQL table
@@ -952,7 +952,7 @@ public get_enh_id(id){
 
       // [09-07-04] Now check to make sure total attrib/resist pts meet server limits - K2
       new acount = get_attribcount( id )
-      new rcount = get_resistcount( id ) 
+      new rcount = get_resistcount( id )
 
       if (acount > ATTRIB_MAX_PTS){
          resetattrib[id] = true
@@ -1034,13 +1034,13 @@ public sqlget_skills_id(id){
          "[%s] Error Retrieving Your Skills SQL Data: [ %s ]", MOD, error)
       log_amx("[2] UWC3 SQL :: Error Retrieving SQL Data for %s, %s", playername, error)
       if (Res1 >= RESULT_OK)
-      dbi_free_result(Res1)
+		  dbi_free_result(Res1)
       if (Res2 >= RESULT_OK)
-      dbi_free_result(Res2)
+		  dbi_free_result(Res2)
       if (Res3 >= RESULT_OK)
-      dbi_free_result(Res3)
+		  dbi_free_result(Res3)
       if (Res4 >= RESULT_OK)
-      dbi_free_result(Res4)
+		  dbi_free_result(Res4)
       dbi_close(sql)
       return PLUGIN_CONTINUE
    }else if (Res1 == RESULT_NONE && Res2 == RESULT_NONE && Res3 == RESULT_NONE &&
@@ -1050,13 +1050,13 @@ public sqlget_skills_id(id){
        "[%s] No Saved Skills SQL Data Found for Player %s", MOD, playername )
       //log_amx("UWC3 SQL :: No Skills SQL Data Found for %s", playername)
       if (Res1 >= RESULT_OK)
-      dbi_free_result(Res1)
+		  dbi_free_result(Res1)
       if (Res2 >= RESULT_OK)
-      dbi_free_result(Res2)
+		  dbi_free_result(Res2)
       if (Res3 >= RESULT_OK)
-      dbi_free_result(Res3)
+		  dbi_free_result(Res3)
       if (Res4 >= RESULT_OK)
-      dbi_free_result(Res4)
+		  dbi_free_result(Res4)
       dbi_close(sql)
       return PLUGIN_CONTINUE
    }
@@ -1236,13 +1236,13 @@ public get_skills_id(id, set){
             //server_print("NEW - Parsing skills: i=(%d) j=(%d) val=(%d)", i, j, Nskills[j])
          }
       }
-     
+
       //for (i = 1; i<= skills_loaded; i++)
       for (i = 1; i< MAX_SKILLS; i++){
          new tnum = Nskills[i]
          if (tnum >= 0 && tnum <= 10){
             p_skills[id][i] = tnum
-      
+
             // Check for an Ultimate ability in saved skills
             new skill_idx = i
 
@@ -1251,10 +1251,10 @@ public get_skills_id(id, set){
             else if (i <= 24) copy(sname, 31, skillset3[i-16])
             else if (i <= 32) copy(sname, 31, skillset4[i-24])
             else if (i <= 40) copy(sname, 31, skillset5[i-32])
-            
+
             server_print("Loading %d for skill %s", tnum, sname)*/
-            
-            if ((tnum >= 1) && (skill_ultimates[skill_idx][0])){ 
+
+            if ((tnum >= 1) && (skill_ultimates[skill_idx][0])){
                // This is an Ultimate ability being retrieved from saved skills
                client_print(id, print_console, "[%s] Retrieved saved ultimate (%s)",
                   MOD, skill_ultimates[skill_idx][0] )
@@ -1263,20 +1263,20 @@ public get_skills_id(id, set){
          }else{
             p_skills[id][i] = 0
          }
-      }     
-               
-         
-      //server_print("Loaded %d skills [skillset%d] for %s ", skills_loaded, set, playername)         
-            
+      }
+
+
+      //server_print("Loaded %d skills [skillset%d] for %s ", skills_loaded, set, playername)
+
       client_print(id, print_chat, "Your skillset %d has been loaded from the vault", set)
-      displaylevel(id, 0) 
-   }else{   
+      displaylevel(id, 0)
+   }else{
       client_print(id, print_chat, "No Skills found for skillset %d , SteamID %s",
          set, playerid)
-   }           
+   }
 
    return PLUGIN_CONTINUE
-}           
+}
 // **************************************************************************
 // END get_skills_id subroutine
 // **************************************************************************
