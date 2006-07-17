@@ -1656,7 +1656,7 @@ public death(){
       changeskin(victim_id,1)
 
    if (playeritem2[victim_id]==HELM)
-      set_user_hitzones(0,victim_id,255)
+	   bImmuneHeadshots[victim_id] = false;
 
    if(playeritem2[victim_id]==RESPAWN && !changingteam[victim_id]){
       new parm[2]

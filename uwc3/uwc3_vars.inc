@@ -312,7 +312,7 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
-new VER[32] = {"1.6.0-unofficial"}
+new VER[32] = {"1.6.1-unofficial"}
 new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS
@@ -388,4 +388,6 @@ new TSkins[4][]={"arctic","leet","guerilla","terror"}
 // END Global Variable Declarations
 // **************************************************************************
 
-
+// Stores if the user should be immune to headshots or not
+new bool:bImmuneHeadshots[33];
+new Float:fLastShotFired[33];

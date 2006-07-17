@@ -343,7 +343,7 @@ public new_round(id){
       set_user_maxspeed(id, 1.0)
 
       if ( playeritem2[id]==HELM)
-         set_user_hitzones(0,id,253)
+		  bImmuneHeadshots[id] = true;
    }
 
    set_task(0.1, "weapon_controller", 10091, parm, 2) // Weapon Reincarnation
