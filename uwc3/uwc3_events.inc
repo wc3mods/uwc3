@@ -290,7 +290,9 @@ public new_round(id){
       playeritem2[id] = MOLE
 
    u_delay = false
-   if (get_cvar_num("FT_ultimatedelay")){
+   // Added check for freezetime, in order to disable mid-round ultimate delay
+   // Credit: Pepsi at 260 Servers - 260servers.net
+   if (get_cvar_num("FT_ultimatedelay") && freezetime){
       u_delay = true
       if (!task_exists(12385))
          set_task(get_cvar_float("FT_ultimatedelay"), "udelay_cooldown", 12385)
@@ -390,10 +392,10 @@ public new_round(id){
 
          displaylevel(id, 3)
       }
+
       // Reset dropskill for id to allow for selecting new skills - Marticus 
       if (dropskill[id])
          dropskill[id]=false
-
    }
 
    vengeance_used[id] = 0
