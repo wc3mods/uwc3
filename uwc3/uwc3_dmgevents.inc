@@ -134,7 +134,7 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
    }
 
    if (hasgodmode[id] && !hasblink[enemy] && playeritem[enemy]!=IMMUNITY &&
-      (p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
+      (p_resists[enemy][RESISTIDX_MAGIC] < 100) &&
       !magic_saving_throw(enemy))
    {
       return PLUGIN_HANDLED
@@ -419,7 +419,7 @@ public damage_event(id){
          if(godshealth[id]<0){
             do_damage(id,enemy, godshealth[id]+2048, 16, 1, weapon, bodypart, 0)
          }
-      }else if ( (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+      }else if ( (p_resists[enemy][RESISTIDX_MAGIC] >= 100) ||
                   magic_saving_throw(enemy))
       {
          godshealth[id] = godshealth[id] - damage
@@ -571,12 +571,12 @@ public damage_event(id){
       new Float:ss_chance = p_shadow[p_skills[enemy][SKILLIDX_SSTRIKE]-1]
 
       if (USE_ENH && p_resists[id][RESISTIDX_POISON]){
-         ss_chance = ss_chance - ((float(p_resists[id][RESISTIDX_POISON]) / float(RESIST_MAX_VALUE)) * ss_chance)
+         ss_chance = ss_chance - ((float(p_resists[id][RESISTIDX_POISON]) / float(100)) * ss_chance)
       }
 
 
       // [07-14-04] - Now only poisons a person one time - K2mia
-      if ( (p_resists[id][RESISTIDX_POISON] < RESIST_MAX_VALUE) &&
+      if ( (p_resists[id][RESISTIDX_POISON] < 100) &&
            (randomnumber <= ss_chance) && (shadowcount[enemy] > 0) &&
            is_user_alive(id) && !ispoisonedss[id] )
       {
@@ -664,7 +664,7 @@ public damage_event(id){
       new Float:cb_chance = p_carrion[p_skills[enemy][SKILLIDX_CARRION]-1]
 
       if (USE_ENH && p_resists[id][RESISTIDX_DISEASE]){
-         cb_chance = cb_chance - ((float(p_resists[id][RESISTIDX_DISEASE]) / float(RESIST_MAX_VALUE)) * cb_chance)
+         cb_chance = cb_chance - ((float(p_resists[id][RESISTIDX_DISEASE]) / float(100)) * cb_chance)
       }
 
       new idname[32], ename[32]
@@ -678,7 +678,7 @@ public damage_event(id){
       //log_amx(sDmesg)
 
       // [07-14-04] - Now only diseases a person one time - K2mia
-      if ( (p_resists[id][RESISTIDX_DISEASE] < RESIST_MAX_VALUE) &&
+      if ( (p_resists[id][RESISTIDX_DISEASE] < 100) &&
            (randomnumber <= cb_chance) && (carrioncount[enemy] > 0) &&
            is_user_alive(id) && !isdiseasedcb[id])
       {
@@ -1412,7 +1412,7 @@ public damage_event(id){
          allow=false
 
       if ( (weapon == 4) &&
-          ((p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) || magic_saving_throw(id)))
+          ((p_resists[id][RESISTIDX_MAGIC] >= 100) || magic_saving_throw(id)))           
       {
          allow = false
          client_print(id, print_chat,
@@ -2041,8 +2041,8 @@ burn_victim_napalm(id,killer,tk){
    new bool:do_burn = true
 
    if (USE_ENH && p_resists[id][RESISTIDX_FIRE]){
-      new Float:chance_to_avoid = (p_resists[id][RESISTIDX_FIRE] >= RESIST_MAX_VALUE) ?
-             1.00 : (float(p_resists[id][RESISTIDX_FIRE]) / float(RESIST_MAX_VALUE))
+      new Float:chance_to_avoid = (p_resists[id][RESISTIDX_FIRE] >= 100) ?
+             1.00 : (float(p_resists[id][RESISTIDX_FIRE]) / float(100))
 
       new Float:randomnumber = random_float(0.0,1.0)
 

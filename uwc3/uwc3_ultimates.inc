@@ -171,7 +171,7 @@ public apacheexplode(parm[]){
       {
 
          if ( (!temp_immunity[targetid] && is_user_alive(targetid)) &&
-              ((p_resists[targetid][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+              ((p_resists[targetid][RESISTIDX_MAGIC] >= 100) ||
               magic_saving_throw(targetid)) )
          {
             //client_print(targetid, print_console,
@@ -191,7 +191,7 @@ public apacheexplode(parm[]){
          }
 
          if (!temp_immunity[targetid] &&
-             (p_resists[targetid][RESISTIDX_MAGIC] < RESIST_MAX_VALUE))
+             (p_resists[targetid][RESISTIDX_MAGIC] < 100))
          {
             multiplier = get_cvar_num("FT_explosion_max_damage") *
                get_cvar_num("FT_explosion_max_damage") / get_cvar_num("FT_explosion_range")
@@ -464,8 +464,8 @@ burn_victim(id,killer,tk){
    new bool:do_burn = true
 
    if (USE_ENH && p_resists[id][RESISTIDX_FIRE]){
-      new Float:chance_to_avoid = (p_resists[id][RESISTIDX_FIRE] >= RESIST_MAX_VALUE) ?
-             1.00 : (float(p_resists[id][RESISTIDX_FIRE]) / float(RESIST_MAX_VALUE))
+      new Float:chance_to_avoid = (p_resists[id][RESISTIDX_FIRE] >= 100) ?
+             1.00 : (float(p_resists[id][RESISTIDX_FIRE]) / float(100))
 
       new Float:randomnumber = random_float(0.0,1.0)
 
@@ -714,7 +714,7 @@ public ultimate_wcteleport(id){
                continue
 
             if( (playeritem[targetid] == IMMUNITY) ||
-                (p_resists[targetid][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+                (p_resists[targetid][RESISTIDX_MAGIC] >= 100) ||
                 magic_saving_throw(targetid))
             {
                get_user_origin(targetid, targetorigin)
@@ -1111,7 +1111,7 @@ public blink_controller(parm[2]){
 
 
             if ( (playeritem[targetid] == IMMUNITY) ||
-                 (p_resists[targetid][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+                 (p_resists[targetid][RESISTIDX_MAGIC] >= 100) ||
                  magic_saving_throw(targetid) )
             {
                get_user_origin(targetid, targetorigin)
@@ -1342,12 +1342,12 @@ public lightsearchtarget(parm[2]){
       new actual_damage = damage
       if (USE_ENH && p_resists[enemy][RESISTIDX_ELECTRIC]){
 
-         actual_damage = actual_damage - floatround((float(p_resists[enemy][RESISTIDX_ELECTRIC]) / float(RESIST_MAX_VALUE)) * float(actual_damage) )
+         actual_damage = actual_damage - floatround((float(p_resists[enemy][RESISTIDX_ELECTRIC]) / float(100)) * float(actual_damage) )
 
          client_print(enemy, print_console, "DEBUG: orig_ltning_dmg=(%d) modified_dmg=(%d)",
             damage, actual_damage)
 
-         if (p_resists[enemy][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
+         if (p_resists[enemy][RESISTIDX_ELECTRIC] == 100)
             client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
          else
             client_print(enemy, print_chat, "[%s] Your resistance to electricity absorbs some of the Chain Lightning damage", MOD)
@@ -1414,7 +1414,7 @@ public lightningnext(parm[4]){
          distancebetween=get_distance(origin,targetorigin)
          if (distancebetween < LIGHTNING_RANGE && playeritem[targetid] != IMMUNITY &&
             !lightninghit[targetid] && !hasblink[targetid] &&
-            (p_resists[targetid][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
+            (p_resists[targetid][RESISTIDX_MAGIC] < 100) &&
             !magic_saving_throw(targetid))
          {
             if (distancebetween < closestdistance || closestid==0){
@@ -1430,7 +1430,7 @@ public lightningnext(parm[4]){
       // [08-05-04] - Added Electricity resistance check - K2mia
       if (USE_ENH && p_resists[closestid][RESISTIDX_ELECTRIC]){
          actual_damage -= (p_resists[closestid][RESISTIDX_ELECTRIC] / 100) * actual_damage
-         if (p_resists[closestid][RESISTIDX_ELECTRIC] == RESIST_MAX_VALUE)
+         if (p_resists[closestid][RESISTIDX_ELECTRIC] == 100)
             client_print(closestid, print_chat, "[%s] Your resistance to electricity absorbs all of the Chain Lightning damage", MOD)
          else
             client_print(closestid, print_chat, "[%s] Your resistance to electricity absorbs some of the Chain Lightning damage", MOD)
@@ -1564,7 +1564,7 @@ public searchtarget(parm[2]){
    new enemy, body
    get_user_aiming(id,enemy,body)
 
-   if ( (0<enemy<=32) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+   if ( (0<enemy<=32) && (p_resists[enemy][RESISTIDX_MAGIC] >= 100) ||
         (!temp_immunity[enemy] && magic_saving_throw(enemy)) )
    {
       temp_immunity[enemy] = true
@@ -1872,7 +1872,7 @@ public calllocustfunction(id){
       player=players[i]
       if (get_user_team(player)!=get_user_team(id) && is_user_alive(player) &&
          !hasblink[player] && playeritem[player] != IMMUNITY &&
-         (p_resists[player][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
+         (p_resists[player][RESISTIDX_MAGIC] < 100) &&
          !magic_saving_throw(player))
       {
          possibility[count] = player
@@ -1923,7 +1923,7 @@ public drawfunnels(parm[]){
    new id = parm[6]
    new caster = parm[7]
 
-   if ( (p_resists[id][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+   if ( (p_resists[id][RESISTIDX_MAGIC] >= 100) ||
         magic_saving_throw(id))
    {
       client_print(id, print_chat,
@@ -1991,12 +1991,12 @@ public drawfunnels(parm[]){
          // [08-05-04] - Added Disease resistance check - K2mia
          if (USE_ENH && p_resists[id][RESISTIDX_DISEASE]){
 
-            actual_damage = actual_damage - floatround((float(p_resists[id][RESISTIDX_DISEASE]) / float(RESIST_MAX_VALUE)) * float(actual_damage) )
+            actual_damage = actual_damage - floatround((float(p_resists[id][RESISTIDX_DISEASE]) / float(100)) * float(actual_damage) )
 
             client_print(id, print_console, "DEBUG: orig_locust_dmg=(%d) mod_dmg=(%d)",
                35, actual_damage)
 
-            if (p_resists[id][RESISTIDX_DISEASE] == RESIST_MAX_VALUE)
+            if (p_resists[id][RESISTIDX_DISEASE] == 100)
                client_print(id, print_chat,
                   "[%s] Your disease resistance absorbs all of the Locust Swarm damage",
                   MOD)
@@ -2076,7 +2076,7 @@ public searchtargetflash(parm[2]){
    if ( 0<enemy<=32 && !stunned[enemy] && get_user_team(id)!=get_user_team(enemy) &&
         playeritem[enemy]!=IMMUNITY && !hasblink[enemy] && is_user_alive(id) &&
         is_user_alive(enemy) &&
-        (p_resists[enemy][RESISTIDX_MAGIC] < RESIST_MAX_VALUE) &&
+        (p_resists[enemy][RESISTIDX_MAGIC] < 100) &&
         !magic_saving_throw(enemy) )
    {
       issearching[id]=false
