@@ -1,6 +1,6 @@
 Change Log:
 
-1.6.3 BETA 1 - 5:03 PM 7/17/2006 - Marticus
+1.6.2+idlenexus - 5:03 PM 7/17/2006 - Marticus
 Note: bug fixes by various community members, see source code for details.
 
 -BugFix-001: HP above maximum Vampiric Aura
