@@ -1430,7 +1430,9 @@ public cmd_who(id){
 
       get_user_name( playerid, name, 31 )
 
-      log_amx( "Adding player: %s", name )
+      // Added level and xp to this log message, Marticus, 28 Feb 2006
+      log_amx( "Adding player: [%d:%d] %s", p_level[playerid], 
+	      playerxp[playerid], name )
 
       pos += format( message[pos], 4096-pos, "<tr><td>%s</td><td>%s</td><td>%d</td></tr>^n",
                      name, team, p_level[playerid], name)
