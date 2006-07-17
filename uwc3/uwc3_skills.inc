@@ -726,6 +726,13 @@ public unset_skill(id, key){
          return PLUGIN_HANDLED
       } 
 
+      // Fix Steel Skin Bug: do not drop vamp or leather below steel skin
+      // prerequisites. -Marticus, 19 Feb 2006
+      if ((p_skills[id][SKILLIDX_SSKIN] == 1) && (((skill_idx == SKILLIDX_LSKIN) && (p_skills[id][SKILLIDX_LSKIN] == 3)) || ((skill_idx == SKILLIDX_VAMPIRIC) && (p_skills[id][SKILLIDX_VAMPIRIC] == 1)))) {
+         client_print(id, print_chat, "[%s] You must first drop Steel Skin", MOD)
+         return PLUGIN_HANDLED
+      }
+
       // Do not drop below 0 in index skill_idx
       if ( p_skills[id][skill_idx] == 0 ) {
          client_print(id, print_chat, "[%s] You have no points in %s",
