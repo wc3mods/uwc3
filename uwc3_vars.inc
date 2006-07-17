@@ -46,7 +46,7 @@ new xpgiven                    // Used to store current level of XP given
 new Float:weaponxpmultiplier[31] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0}
 
 // UWC3 Rank titles
-new ranktitles[11][] = { "Orc Fodder", "Elf Acolyte", "Human Squire", "Undead Soldier", "Skilled Combatant", "Crypt Lord Zealot", "Arch Lich", "Blood Elf Champion", "Demon Hunter", "Emissary of Death", "Warchief" }
+new ranktitles[12][] = { "Orc Fodder", "Elf Acolyte", "Human Squire", "Undead Soldier", "Skilled Combatant", "Crypt Lord Zealot", "Arch Lich", "Blood Elf Champion", "Demon Hunter", "Emissary of Death", "Warchief", "World Destroyer" }
 
 
 // **************************************************************************
@@ -58,9 +58,9 @@ new sortedskills[MAX_SKILLS]                    // Contains re-indexing after so
 
 new skillset1[9][] = {"NOSKILL", "Vampiric Aura", "Levitation", "Devotion Aura", "Equipment Reincarnation", "Healing Wave", "Siphon Mana", "Impale", "Leather Skin"}
 new skillset2[9][] = {"NOSKILL", "Unholy Aura", "Bash", "Critical Strike", "Repair Armor", "Banish","Hex", "Spiked Carapace", "Mend Wounds"}
-new skillset3[9][] = {"NOSKILL", "Evasion", "Trueshot Aura", "Steel Skin", "Carrion Beetles", "Shadow Strike", "Entangle Roots", "Flame Strike", "Flash of Light"}
+new skillset3[9][] = {"NOSKILL", "Evasion", "Trueshot Aura", "Steel Skin", "Carrion Beetles", "Shadow Strike", "Entangle Roots", "Flame Strike", "Dispell Hex"}
 new skillset4[9][] = {"NOSKILL", "Critical Grenade", "Serpent Ward", "Thorns Aura", "Invisibility", "Teleport", "Big Bad Voodoo", "Fan of Knives", "Vengeance" }
-new skillset5[9][] = {"NOSKILL", "Locust Swarm", "Blink", "Phoenix", "Napalm Grenades", "Gate", "Suicide Bomber", "Chain Lightning", "Decoy" }
+new skillset5[9][] = {"NOSKILL", "Siphon Ammo", "Blink", "Phoenix", "Napalm Grenades", "Gate", "Suicide Bomber", "Chain Lightning", "Decoy" }
 
 new skill_minlev[MAX_SKILLS]                    // Minimum level to train skill
 new skill_limits[MAX_SKILLS]                    // Skill level limits for each skill
@@ -69,7 +69,7 @@ new skill_ultimates[MAX_SKILLS][32]             // Ultimate skill commands
 // All 5-lvl skills defined below
 new Float:p_blink[MAX_SKILL_LEVEL5] = {0.20, 0.40, 0.60, 0.80, 1.00}   // Blink
 new Float:p_phoenix[MAX_SKILL_LEVEL5] = {0.20, 0.40, 0.60, 0.80, 1.00} // Pheonix
-new Float:p_evasion[MAX_SKILL_LEVEL5] = {0.05, 0.08, 0.11, 0.14, 0.17} // Evasion
+new Float:p_evasion[MAX_SKILL_LEVEL5] = {0.03, 0.05, 0.07, 0.09, 0.11} // Evasion
 
 // All 3-lvl skills defined below
 new Float:p_ankh[MAX_SKILL_LEVEL3] = {0.333,0.666,1.0}     // Equipment reincarnation
@@ -98,6 +98,7 @@ new Float:p_hex[MAX_SKILL_LEVEL10]             // Hex
 new Float:p_impale[MAX_SKILL_LEVEL10]          // Impale
 new Float:p_spiked[MAX_SKILL_LEVEL10]          // Spiked Carapace
 new Float:p_carrion[MAX_SKILL_LEVEL10]         // Carrion Beetle
+new Float:p_ammo[MAX_SKILL_LEVEL10]            // Siphon Ammo
 
 // **************************************************************************
 // END skills related variables declarations
@@ -126,6 +127,10 @@ new HEALTHBONUS = HEALTHBONUS_DEF
 
 // [08-01-04] - Admin Mode specifies skills reserved for admin use only
 new bool:admin_only[MAX_SKILLS] = false
+
+// [04-07-05] - Invisibility Stacking array.. so lvl10 + cloak is good, not lvl1 + cloak :)
+
+new cloakstack[10] = {0,5,15,25,35,45,55,65,75}
 
 // **************************************************************************
 // END items related variables declarations
@@ -156,6 +161,7 @@ new MOLEspawnpts[MAX_PLAYERS]           // MOLE spawn pts (reset each round)
 new maxhealth[MAX_PLAYERS]              // Max. health for player
 new maxarmor[MAX_PLAYERS]               // Max. armor for player
 new damageto[MAX_PLAYERS][MAX_PLAYERS]  // Damage dealt table for added XP
+new p_spawnprotection[MAX_PLAYERS]      // Player has spawnprotection ( indexed by player id )
 
 // Player effects and gear variables
 new bool:spawnedfromitem[MAX_PLAYERS] = false   // Is player spawned from item
@@ -210,6 +216,7 @@ new hasblink[MAX_PLAYERS] = false               // Has blink skill?
 new isburning[MAX_PLAYERS]                      // Is player on fire?
 new isnburning[MAX_PLAYERS]                     // Is player on fire from napalm?
 new repairs[MAX_PLAYERS]                        // Number of repair clicks per round
+new dispells[MAX_PLAYERS]                       // Number of dispell hex clicks per round
 new mends[MAX_PLAYERS]                          // Number of mend clicks per round
 new healinghit[MAX_PLAYERS]                     // Healing event hit
 new flame_count[MAX_PLAYERS]                    // Number of flamethrowers fired this round
@@ -235,6 +242,11 @@ new numgates[MAX_PLAYERS] = 0                   // Number of Gates remaining thi
 new loadedlevel[MAX_PLAYERS] = 0                // Has saved xp-levels been loaded yet
 new vengeance_used[MAX_PLAYERS] = 0             // Has Vengeance been used this round
 new vengeance_state[MAX_PLAYERS] = 0            // Vengeance state for this round
+
+// set skillset console command vars
+
+new bool:set_skillset[MAX_PLAYERS]              // Is player waiting to set a skill set
+new str_skillset[MAX_PLAYERS][256]				// The string of the skillset to be set
 
 // **************************************************************************
 // END player variables
@@ -301,7 +313,7 @@ new g_menuPlayersNum[33]
 new g_menuOption[33]
 new g_menuSettings[33]
 
-new VER[12] = {"1.0.0-RC6j"}
+new VER[12] = {"1.6.1-RC1"}
 new MOD[32] = {"AMX"}
 new VIP_ESCAPE_BONUS
 new VIP_KILL_BONUS
@@ -315,6 +327,7 @@ new XPBONUS
 new HEADSHOT_BONUS
 new ROUNDXP
 new REPAIRXP
+new DISPELLXP
 new MENDXP
 new PHOENIXXP
 new USE_ENH = 0
@@ -328,7 +341,6 @@ new m_iSpriteTexture
 new lightning
 new flaresprite
 new shadow
-new snow
 new fire
 new burning
 new carrion
@@ -380,5 +392,3 @@ new bool:levelredirection = false
 // **************************************************************************
 // END Global Variable Declarations
 // **************************************************************************
-
-

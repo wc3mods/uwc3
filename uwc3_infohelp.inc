@@ -537,6 +537,7 @@ public uwc3_commands(id){
    pos += format(temp[pos], 2048-pos, "say /level - Displays your rank and level<br>" )
    pos += format(temp[pos], 2048-pos, "say /toggle_lowres - Toggles the position of ultimate/shopitems HUD messages<br>" )
    pos += format(temp[pos], 2048-pos, "In console: xp_table - Displays the XP/Level table for this server<br>" )
+   pos += format(temp[pos], 2048-pos, "In console: setskillset - Sets a skillset at the start of next round<br>" )
 
    pos += format(temp[pos], 2048-pos, "</font></td></tr></table></center>")
 
@@ -726,7 +727,6 @@ public uwc3_ultimates(id){
    pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Flame Strike</td><td><font color=#FFB000>bind key wcflame</td></tr>")
    pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Big Bad Voodoo</td><td><font color=#FFB000>bind key wcvoodoo</td></tr>")
    pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Vengeance</td><td><font color=#FFB000>Passive Ability</td></tr>")
-   pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Locust Swarm</td><td><font color=#FFB000>bind key wclocust</td></tr>")
    pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Flash of Light</td><td><font color=#FFB000>bind key wcflash</td></tr>")
    pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Decoy</td><td><font color=#FFB000>bind key wcdecoy</td></tr>")
    pos += format(temp[pos], 3072-pos, "<tr><td><font color=#FFB000>Gate</td><td><font color=#FFB000>bind key wcgate</td></tr>")
@@ -1126,7 +1126,9 @@ public set_rankstring(id){
    p_rank[id] = ""
 
    // Set the player's rank title
-   if ( p_level[id] >= RANK11_LEVEL )
+   if ( p_level[id] >= RANK12_LEVEL )
+      copy(p_rank[id], 18, ranktitles[11])
+   else if ( p_level[id] >= RANK11_LEVEL )
       copy(p_rank[id], 18, ranktitles[10])
    else if ( p_level[id] >= RANK10_LEVEL )
       copy(p_rank[id], 18, ranktitles[9])
@@ -1322,13 +1324,24 @@ public displaylevel(id,hide){
       set_user_gravity(id,1.0)
    }
 
-   if (p_skills[id][SKILLIDX_INVIS]){
+   if (p_skills[id][SKILLIDX_INVIS] && playeritem[id]==CLOAK){
       // Invisibility
+      new Float:tmpInvis = float(cloakstack[p_skills[id][SKILLIDX_INVIS]-1])
+      new Float:tmpCloak = float(CLOAKINVISIBILITY)
+      new tmpBoth = floatround(tmpCloak - tmpInvis)
       if (knifeselected[id]){
-         new invisibility = p_invisibility[p_skills[id][SKILLIDX_INVIS]-1]/2
+         new invisibility = tmpBoth/2
          set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,invisibility)
+         //client_print(id, print_chat, "[%s] New Invisibility Stacking Works! (infohelp)", MOD)
       }else
+         set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,tmpBoth+INVIS_STACK_OFFSET)
+   }else if (p_skills[id][SKILLIDX_INVIS]){
+      if (knifeselected[id]){
+         new invisibility = p_invisibility[p_skills[id][SKILLIDX_INVIS]-1]
+         set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,invisibility)
+      }else{
          set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,p_invisibility[p_skills[id][SKILLIDX_INVIS]-1])
+      }
    }else if (playeritem[id]==CLOAK){
       if (knifeselected[id]){
          new invisibility = CLOAKINVISIBILITY/2

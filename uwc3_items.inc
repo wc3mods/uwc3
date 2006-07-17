@@ -93,7 +93,7 @@ public items_info(id){
    pos += format(temp[pos], 1024-pos, "%sAnkh of Reincarnation: If you die you will retrieve your equipment the following round%s",theforward,backward)
    pos += format(temp[pos], 1024-pos, "%sBoots of Speed: Allows you to run faster%s",theforward,backward)
    pos += format(temp[pos], 1024-pos, "%sClaws of Attack +%d: An additional %d hp will be removed from the enemy on every hit%s",theforward,CLAWSOFATTACK,CLAWSOFATTACK,backward)
-   pos += format(temp[pos], 1024-pos, "%sCloak of Shadows: Makes you partially invisible, invisibility is increased when holding the knife%s",theforward,backward)
+   pos += format(temp[pos], 1024-pos, "%sCloak of Shadows: Makes you partially invisible, stacks with the invisibility skill, and invisibility is increased when holding the knife%s",theforward,backward)
    pos += format(temp[pos], 1024-pos, "%sMask of Death: You will receive health for every hit on the enemy%s",theforward,backward)
    pos += format(temp[pos], 1024-pos, "%sNecklace of Immunity: You will be immune to enemy ultimates",theforward,backward)
    pos += format(temp[pos], 1024-pos, "%sOrb of Frost: Slows your enemy down when you hit him%s",theforward,backward)
@@ -691,8 +691,8 @@ public weapon_controller( parm[2] ){
              weaponname="weapon_mp5navy"
              ammoname="ammo_9mm"
           }else if (weaponid==20){
-             weaponname="weapon_m249"
-             ammoname="ammo_556natobox"
+             weaponname=""
+             ammoname=""
           }else if (weaponid==21){
              weaponname="weapon_m3"
              ammoname="ammo_buckshot"
@@ -1121,7 +1121,19 @@ public change_weapon(id) {
    if ( !is_user_connected( id ) )
       return PLUGIN_CONTINUE
 
-   if (p_skills[id][SKILLIDX_INVIS]){
+   if (p_skills[id][SKILLIDX_INVIS] && playeritem[id]==CLOAK){
+      // Invisibility now uses the cloakstack array to get the ammount to remove from the cloak (obe)
+      new Float:tmpInvis = float(cloakstack[p_skills[id][SKILLIDX_INVIS]-1])
+      new Float:tmpCloak = float(CLOAKINVISIBILITY)
+      new tmpBoth = floatround(tmpCloak - tmpInvis)
+      if (weaponnum==29){
+         set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,tmpBoth/2)
+         knifeselected[id]=true
+      }else{
+         set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,tmpBoth+INVIS_STACK_OFFSET)
+         knifeselected[id]=false
+      }
+   }else if (p_skills[id][SKILLIDX_INVIS]){
       // Invisibility
       if (weaponnum==29){
          set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,p_invisibility[p_skills[id][SKILLIDX_INVIS]-1]/2)
@@ -1138,8 +1150,7 @@ public change_weapon(id) {
          set_user_rendering(id,kRenderFxNone, 0,0,0, kRenderTransTexture,CLOAKINVISIBILITY)
          knifeselected[id]=false
       }
-   }
-   else
+   }else
       set_user_rendering(id)
 
    #if STEAM_POWERED

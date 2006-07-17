@@ -36,7 +36,7 @@
 #define STEAM_POWERED 1         // Running CS1.6 required for this plugin
 
 #define MAX_PLAYERS 33          // Max number of players in the game
-#define MAX_LEVEL 35            // Max level a player can achieve
+#define MAX_LEVEL 41            // Max level a player can achieve
 #define MAX_ULTIMATES 3         // Max # of ultimates trainable by a player
 #define MAX_ATTRIBS 6           // Number of attributes is (this-1) (0 slot is unused)
 #define MAX_RESISTS 6           // Number of resists is (this-1) (0 slot is unused)
@@ -46,6 +46,7 @@
 #define MAX_SKILL_LEVEL3 3      // Maximum level this skill can be trained - 3
 #define MAX_SKILL_LEVEL1 1      // Maximum level this skill can be trained - 1
 #define MAX_SKILL_PAGES 5       // Number of pages of skill choices in select_skill()
+#define MAX_UDOG_XP 2500        // Maximum ammount of xp to be lost in a underdog bonus/penalty
 #define SKILLS_PER_SET 8        // Number of skills displayed per page of selectskill
 #define ATTRIB_BASE 10          // The base amount for each player attribute
 #define ATTRIB_MAX_VALUE 18     // The Maximum amount for each player attribute
@@ -68,6 +69,9 @@
 #define XP_BASE 60              // Base XP for xp gaining (xpgiven)
 #define XP_ADD_LEVEL 20         // Per level xp gain (xpgiven)
 
+// spawn protection defines
+#define S_PROTECT_TIME 4.0         // How long spawn protection lasts
+
 // Define the levels for achieving UWC3 Rank titles
 #define RANK2_LEVEL 5           // Level needed for 2nd rank
 #define RANK3_LEVEL 8           // Level needed for 3rd rank
@@ -79,6 +83,7 @@
 #define RANK9_LEVEL 30          // Level needed for 9th rank
 #define RANK10_LEVEL 32         // Level needed for 10th rank
 #define RANK11_LEVEL 34         // Level needed for 11th rank
+#define RANK12_LEVEL 38         // Level needed for 12th rank
 
 // Define the UWC3 p_attribs[] index for each attribute
 #define ATTRIBIDX_STR 1         // Strength Attribute
@@ -89,7 +94,7 @@
 
 #define STR_HEALTH_BONUS 5      // Bonus health for each str enhancement
 #define CON_HEAL_INTERVAL 5.0   // Task interval for Constitution health regen
-#define DEX_EVADE_BONUS 0.02    // Dexterity bonus to Evasion skill
+#define DEX_EVADE_BONUS 0.01    // Dexterity bonus to Evasion skill
 #define INT_IMPALE_LEVEL 11     // Intellect level needed for Impale bonus
 #define INT_IMPALE_BONUS 0.08   // Intellect bonus to hit for Impale
 #define INT_SIPHON_LEVEL 12     // Intellect level needed for Siphon Mana bonus
@@ -143,7 +148,7 @@
 #define SKILLIDX_SSTRIKE 21
 #define SKILLIDX_ENTANGLE 22
 #define SKILLIDX_FSTRIKE 23
-#define SKILLIDX_FLASH 24
+#define SKILLIDX_DISHEX 24
 #define SKILLIDX_CRITGREN 25
 #define SKILLIDX_SERPWARD 26
 #define SKILLIDX_THORNS 27
@@ -152,7 +157,7 @@
 #define SKILLIDX_VOODOO 30
 #define SKILLIDX_FAN 31
 #define SKILLIDX_VENGEANCE 32
-#define SKILLIDX_LOCUST 33
+#define SKILLIDX_SAMMO 33
 #define SKILLIDX_BLINK 34
 #define SKILLIDX_PHOENIX 35
 #define SKILLIDX_NAPALM 36
@@ -210,6 +215,7 @@
 #define MASKPERCENT_DEF 0.3
 #define FROSTSPEED_DEF 125.0
 #define HEALTHBONUS_DEF 15
+#define INVIS_STACK_OFFSET 70          // difference between stacked invisibility with knife out and not.. higher = more visible
 
 #define CBSPEED 215.0
 #define ARMORBONUS1 10
@@ -220,6 +226,11 @@
 #define SPEC 0
 #define TEAM_T 1
 #define TEAM_CT 2
+
+// Team Strings for gTeamString
+#define SPEC_STR "SPECTATOR"
+#define TEAM_T_STR "TERRORIST"
+#define TEAM_CT_STR "CT"
 
 // NEVER CHANGE THESE !!! DISASTEROUS RESULTS (Message Defines)
 #define TE_BEAMPOINTS 0
@@ -246,5 +257,4 @@
 // **************************************************************************
 // END Backwards-Compatible Defs from War3 and War3FT
 // **************************************************************************
-
 

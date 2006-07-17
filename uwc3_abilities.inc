@@ -304,6 +304,101 @@ public ability_wcrepair(id){
 // END ability_wcrepair and supporting routine
 // **************************************************************************
 
+// **************************************************************************
+// BEGIN ability_wcdispell and supporting routine
+// Special Ability: Dispell Hex - Remove Hex from a teammate
+// **************************************************************************
+public ability_wcdispell(id){
+
+   if (!warcraft3)
+      return PLUGIN_CONTINUE
+
+   if (!p_skills[id][SKILLIDX_DISHEX]){
+      client_print(id, print_chat, "You do not know the Dispell Hex ability yet")
+      return PLUGIN_HANDLED
+   }
+
+   if (freezetime==1){
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"You may not use this ability during freezetime")
+      return PLUGIN_HANDLED
+   }
+
+   if(u_delay){
+      set_hudmessage(178, 14, 41, -1.0, -0.4, 1, 0.5, 1.7, 0.2, 0.2,5)
+      show_hudmessage(id,"This ability is disabled for the^nfirst %d seconds of the round",get_cvar_num("FT_ultimatedelay"))
+      return PLUGIN_HANDLED
+   }
+
+   new friend, body
+   get_user_aiming(id, friend, body)
+
+   if ((0 < friend <= MAX_PLAYERS) && (friend != id) && (get_user_team(id) == get_user_team(friend)) &&
+       is_user_alive(id) && is_user_alive(friend))
+   {
+      // id has a friend to check for armor repairs
+      new max_dispells = 0
+
+      // Number of max repairs based on player level
+      if (p_level[id] >= 34) max_dispells = 5
+      else if (p_level[id] > 30) max_dispells = 4
+      else if (p_level[id] > 20) max_dispells = 3
+      else max_dispells = 2
+
+      if (dispells[id] >= max_dispells){
+         client_print(id, print_chat, "[%s] You have already performed the maximum number of dispells for this round", MOD)
+         return PLUGIN_HANDLED
+      }
+
+      // check their hexed
+      new tmpModel[48]
+      cs_get_user_model(friend,tmpModel,47)
+      
+      if (!equali(tmpModel,"zombie")){
+         client_print(id, print_chat, "[%s] Your teammate isnt hexed at the moment.", MOD)
+         return PLUGIN_HANDLED
+      }
+
+      // They are hexed, so remove the jumping task
+      if (task_exists(2000+friend))   // Removes hex jumping
+         remove_task(2000+friend)
+      
+      // Change their skin back to normal 
+      if(playeritem2[friend]!=CHAMELEON){
+         changeskin(friend,1)
+      } else {
+         changeskin(friend,0)
+      }
+
+      dispells[id] += 1
+
+      new xpbonus = 0
+
+      xpbonus = DISPELLXP + xpgiven_lev[p_level[id]]
+
+      // Extra incentive for long-term XP
+      if (get_cvar_num("mp_savexp"))
+         xpbonus += (DISPELLXP * p_level[id])
+
+      // Award the player XP for their service
+      playerxp[id] += xpbonus
+
+      new name[32]
+      get_user_name(id, name, 31)
+
+      client_print(id, print_chat, "[%s] You have dispelled your teammate's hex <%d XP>.", MOD, xpbonus)
+      client_print(friend, print_chat, "[%s] %s has dispelled your hex.", MOD, name)
+
+   } else if (!is_user_alive(id)){
+      client_print(id, print_chat, "[%s] Shhhh, you are dead, act like it.", MOD)
+   }
+
+   return PLUGIN_HANDLED
+}
+// **************************************************************************
+// END ability_wcdispell and supporting routine
+// **************************************************************************
+
 
 // **************************************************************************
 // BEGIN ability_wcmend and supporting routine

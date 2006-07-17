@@ -66,6 +66,7 @@ public set_shorttermxp(){
       VIP_ESCAPE_BONUS /= 3
       ROUNDXP /= 3
       REPAIRXP /= 1
+      DISPELLXP /= 1
       MENDXP /= 1
       PHOENIXXP /= 1
 
@@ -125,6 +126,7 @@ public set_longtermxp(){
       VIP_ESCAPE_BONUS /= 10
       ROUNDXP /= 10
       REPAIRXP /= 10
+      DISPELLXP /= 10
       MENDXP /= 10
       PHOENIXXP /= 10
 

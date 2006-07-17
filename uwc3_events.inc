@@ -69,7 +69,8 @@ public restart_round(){
       threwnapalm[id]=0
       flashg[id]=0
       diedlastround[id]=false
-
+      p_spawnprotection[id]=0
+      
       if (get_cvar_num("mp_savexp")==0){
          p_level[id]=0          // Set player to level 0
 
@@ -294,7 +295,7 @@ public new_round(id){
       set_task(1.0, "draw_medicspr", 357)
 
    // [09-24-04] - Added check for insane amounts of player health
-   set_task(1.0, "monitor_players", 358)
+   set_task(3.0, "monitor_players", 358)
 
    buytime=true
    checkmap()
@@ -323,14 +324,14 @@ public new_round(id){
 
    set_task(0.1, "weapon_controller", 10091, parm, 2) // Weapon Reincarnation
 
-   init_pdata( id, 1 )		// Perform a Limited init of player data
+   init_pdata( id, 1 )        // Perform a Limited init of player data
    
-   endround = false		// New round, reset endround state
-   hostagesaver = 0		// Reset hostagesaver state
+   endround = false        // New round, reset endround state
+   hostagesaver = 0        // Reset hostagesaver state
 
    // Checks skills
-   check_skills( id, true)	// Check skill affects, set user health
-   check_fan( id )		// Chec for Fan of Knives
+   check_skills( id, true)    // Check skill affects, set user health
+   check_fan( id )        // Chec for Fan of Knives
 
 
    if (get_cvar_num("FT_reset_skills")){
@@ -338,8 +339,150 @@ public new_round(id){
          for (new j=0; j<MAX_SKILLS; j++)
             p_skills[id][j] = 0 // Set all skills to 0
 
-         p_level[id] = 0
          ultlearned[id] = 0
+         
+         // [obe:2005] set skillset stuff (using xerobloods explode string stock (ty :D)) 
+         if(set_skillset[id]){
+            new tempSkillArray[MAX_SKILLS][8], tempSetSkill[3][8], setskillID, setskillLevel, totalCount = 0
+            new bool:canHaveSkill
+            
+            ExplodeString( tempSkillArray, MAX_SKILLS, 7, str_skillset[id], '#' )
+
+            for(new j=0; j<MAX_SKILLS; j++){
+               if(!equali(tempSkillArray[j],"")){
+                  if(contain(tempSkillArray[j],"-")){
+                     // skill isnt an ultimate
+                     ExplodeString( tempSetSkill, 3, 7, tempSkillArray[j], '-' )
+                    
+                     // check to make sure player can actually level this skill up
+                     setskillID = str_to_num(tempSetSkill[0])
+                     setskillLevel = str_to_num(tempSetSkill[1])
+                     canHaveSkill = true
+                     
+                     // Check if player has min. level
+                     if (p_level[id] < skill_minlev[setskillID]){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on player min level check")
+                     }
+                
+                     // Check if player isnt trying to add skills beyond their current level
+                     if (totalCount + setskillLevel > p_level[id]){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed by trying to add more levels than current player level")
+                     }
+                
+                     // Check if player is already trained in this skill
+                     if ( p_skills[id][setskillID] ){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on player is already trained in this skill")
+                     }                
+
+                     // Check if player is trying to train a skill above its max (if so, set it to the right max)
+                     if ( p_skills[id][setskillID] >= skill_limits[setskillID] ){
+                        setskillLevel = skill_limits[setskillID]
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on player is trying to train a skill above its max (if so, set it to the right max)")
+                     }
+                
+                     // Check so players can only put 1 skill pt into a skill for each level over (or equal) to the min. level to train it
+                     new allowed_pts = (p_level[id] - skill_minlev[setskillID] + 1)
+                     if ((skill_limits[setskillID] > 1) && (p_skills[id][setskillID] >= allowed_pts)){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on players can only put 1 skill pt into a skill for each level over (or equal) to the min. level to train it")
+                     }
+                
+                     // Specific skill-restrictions follow (some skills dont work with others)
+                
+                     // Only allow Steel Skin if Vampiric and Leather Skin trained
+                     if (setskillID == SKILLIDX_SSKIN && ((p_skills[id][SKILLIDX_LSKIN] < 3) || !(p_skills[id][SKILLIDX_VAMPIRIC]))){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Only allow Steel Skin if Vampiric and Leather Skin trained")
+                     }
+                
+                     // Allow only one siphon skill
+                     if ((setskillID == SKILLIDX_SIPHON) && (p_skills[id][SKILLIDX_SAMMO])){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Allow only one siphon skill (got cash)")
+                     } else if ((setskillID == SKILLIDX_SAMMO) && (p_skills[id][SKILLIDX_SIPHON])){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Allow only one siphon skill (got ammo)")
+                     }
+                     
+                     // Allow only one damage shield skill
+                     if ((setskillID == SKILLIDX_CARAPACE) && (p_skills[id][SKILLIDX_THORNS])){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Allow only one damage shield skill (got carapace)")
+                     } else if ((setskillID == SKILLIDX_THORNS) && (p_skills[id][SKILLIDX_CARAPACE])){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Allow only one damage shield skill (got thorns)")
+                     }
+
+                     // Allow only one of Shadow Strike / Carrion Beetles
+                     if ((setskillID == SKILLIDX_SSTRIKE) && (p_skills[id][SKILLIDX_CARRION])){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Allow only one Shadow Strike / Carrion Beetles (got sstrike)")
+                     } else if ((setskillID == SKILLIDX_CARRION) && (p_skills[id][SKILLIDX_SSTRIKE])){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on Allow only one Shadow Strike / Carrion Beetles (got beetles)")
+                     }
+
+                     if(canHaveSkill){
+                        p_skills[id][setskillID] = setskillLevel
+                        totalCount += setskillLevel
+                     }
+                    
+                  } else if(contain(tempSkillArray[j],"+")){
+                     // Skill is an ultimate
+                     ExplodeString( tempSetSkill, 3, 7, tempSkillArray[j], '+' )
+
+                     // Check to make sure player can actually level this skill up
+                     setskillID = str_to_num(tempSetSkill[0])
+                     setskillLevel = str_to_num(tempSetSkill[1])
+                     canHaveSkill = true
+
+                     // Check if player has min. level
+                     if (p_level[id] < skill_minlev[setskillID]){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on player min level check")
+                     }
+                
+                     // Check if player isnt trying to add skills beyond their current level
+                     if (totalCount + setskillLevel > p_level[id]){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed by trying to add more levels than current player level")
+                     }
+                
+                     // Check if player is already trained in this skill
+                     if ( p_skills[id][setskillID] ){
+                        canHaveSkill = false
+                        client_print(id, print_console, "[UWC3 Skillset Loader Error] Failed on player is already trained in this skill")
+                     }
+ 
+                     // Allow only one of Vengeance / Suicide Bomber
+                     if ((setskillID == SKILLIDX_VENGEANCE) && (p_skills[id][SKILLIDX_SUICIDE])){
+                        canHaveSkill = false
+                     } else if ((setskillID == SKILLIDX_SUICIDE) && (p_skills[id][SKILLIDX_VENGEANCE])){
+                        canHaveSkill = false
+                     }
+
+                     // Player has trained maximum # of ultimate skills
+                     if ((ultlearned[id] >= MAX_ULTIMATES) && (skill_ultimates[setskillID][0])){
+                        canHaveSkill = false
+                     }
+
+                     if(canHaveSkill){
+                        p_skills[id][setskillID] = setskillLevel
+                        totalCount += setskillLevel
+                        ultimateused[id] = false
+                        ultlearned[id]++
+                     }
+                   
+                  }                  
+               }   
+            }
+
+            set_skillset[id] = false
+         }
+         //p_level[id] = 0
          resetskill[id] = false
          displaylevel(id, 3)
       }
@@ -434,6 +577,9 @@ public end_round(){
 
       if (task_exists(9000+id))   // Removes undead flashing process
          remove_task(9000+id)
+
+      if (task_exists(2000+id))   // Removes hex jumping [obe:2005 fix]
+         remove_task(2000+id)
 
       if (task_exists(50+id))     // Remove any current cooldowns
          remove_task(50+id)

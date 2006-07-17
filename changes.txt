@@ -1,0 +1,33 @@
+The following changes have been made since uwc3 1.0.0-RC6j:
+-----------------------------------------------------------
+
+Added Server Max Level + Low Level Redirection system
+
+Rewrite of the XP saving routines (SGR)
+
+Added Psychostats support by outputting UWC3 skill deaths to the main log. All UWC3 skills have different outputs to WC3x.
+
+Made max level 40 & Added new rank for lvl38 and above (World Destroyer)
+
+Made Cloak of Invisibility and the Invisibility skill stack to make u more invisible (added defines for this in uwc3_defs.inc)
+
+Reduced evasion effectiveness to a maximum of 18%
+
+Increased the respawn protection godmode length to 4 seconds. (added defines for this in uwc3_defs.inc)
+
+Made equipment regen/anhk no longer respawn para, as it led quickly to whole server running round with em.
+
+Fixed Pheonix bug
+Fixed Underdog XP bug
+Fixed Ability/Resist bug
+
+Replaced Locust Swarm with Siphon Ammo
+Replaced Flash of Light with Dispell Hex (works like mend/repair, has bind wcdispell)
+
+[BETA] Added console command setskillset and included .fla/.swf for Ultimate Skillset Configurator.
+
+Using the shockwave (drag and drop it into a web browser) file u can pick a skill set, and have a line of text to paste with the command.  This then resets ur skills at the start of the next round, and applies the new skills.  There are a lot of checks to make sure this cant be abused :)  If u cant apply the skill it tells you so, and leaves skill points to be added.
+
+Obes [DumB] UWC3 plugin changes 21.06.05
+Fixed Vamp Aura hp bug
+Fixed Ultimate Freezetime bug

@@ -74,6 +74,7 @@ public init_pdata(id, limited){
       isdiseasedcb[id] = 0	// Init isdiseased from carion status
       repairs[id] = 0		// Init # of repairs performed for round
       mends[id] = 0		// Init # of mends performed for round
+      dispells[id] = 0		// Init # of dispells performed for round
       he[id] = 0		// Init player he-grenade status
       threwnapalm[id] = 0	// Init player has thrown a napalm nade status
       vengeance_used[id] = 0	// Init player's Vengeance used status
@@ -1149,6 +1150,21 @@ stock user_spawn(index)
 // END stock user_spawn 
 // **************************************************************************
 
+// **************************************************************************
+// BEGIN stock ExplodeString 
+// like PHP Explode function.. returns an array of strings split on delimiter
+// **************************************************************************
+stock ExplodeString( p_szOutput[][], p_nMax, p_nSize, p_szInput[], p_szDelimiter )
+{
+    new nIdx = 0, l = strlen(p_szInput)
+    new nLen = (1 + copyc( p_szOutput[nIdx], p_nSize, p_szInput, p_szDelimiter ))
+    while( (nLen < l) && (++nIdx < p_nMax) )
+        nLen += (1 + copyc( p_szOutput[nIdx], p_nSize, p_szInput[nLen], p_szDelimiter ))
+    return
+}
+// **************************************************************************
+// END stock ExplodeString 
+// **************************************************************************
 
 // **************************************************************************
 // END Utility Subroutine Declarations

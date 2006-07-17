@@ -37,56 +37,55 @@ public get_deathbystr(deathby, string[], len){
 
    switch (deathby){
       case 1:
-         format(string, len, "%s", "Carrion Beetles")     // Carrion Beetles
+         format(string, len, "%s", "UWC3 Carrion Beetles")     // Carrion Beetles
       case 2:
-         format(string, len, "%s", "Thorns Aura")         // Thorns Aura
+         format(string, len, "%s", "UWC3 Thorns Aura")         // Thorns Aura
       case 3:
-         format(string, len, "%s", "Trueshot Aura")       // Trueshot Aura
+         format(string, len, "%s", "UWC3 Trueshot Aura")       // Trueshot Aura
       case 4:
-         format(string, len, "%s", "Spiked Carapace")     // Spiked Carapace
+         format(string, len, "%s", "UWC3 Spiked Carapace")     // Spiked Carapace
       case 5:
-         format(string, len, "%s", "Banish")              // Banish
+         format(string, len, "%s", "UWC3 Banish")              // Banish
       case 6:
-         format(string, len, "%s", "Critical Strike")     // Critical Strike
+         format(string, len, "%s", "UWC3 Critical Strike")     // Critical Strike
       case 7:
-         format(string, len, "%s", "Critical Grenade")    // Critical Grenade
+         format(string, len, "%s", "UWC3 Critical Grenade")    // Critical Grenade
       case 8:
-         format(string, len, "%s", "Claws of Attack")     // Claws of Attack
+         format(string, len, "%s", "UWC3 Claws of Attack")     // Claws of Attack
       case 9:
-         format(string, len, "%s", "Shadow Strike")       // Shadow Strike
+         format(string, len, "%s", "UWC3 Shadow Strike")       // Shadow Strike
       case 10:
-         format(string, len, "%s", "Blink")               // Blink > Big Bad Voodoo
+         format(string, len, "%s", "UWC3 Blink")               // Blink > Big Bad Voodoo
       case 11:
-         format(string, len, "%s", "Chain Lightning")     // Chain Lightning Kill
+         format(string, len, "%s", "UWC3 Chain Lightning")     // Chain Lightning Kill
       case 12:
-         format(string, len, "%s", "Suicide Bomber")      // Suicide Bomber Kill
+         format(string, len, "%s", "UWC3 Suicide Bomber")      // Suicide Bomber Kill
       case 13:
-         format(string, len,"%s",  "Flame Strike")        // Flame Strike Kill
+         format(string, len,"%s",  "UWC3 Flame Strike")        // Flame Strike Kill
       case 14:
-         format(string, len,"%s",  "Serpant Ward")        // Serpant Ward Kill
+         format(string, len,"%s",  "UWC3 Serpant Ward")        // Serpant Ward Kill
       case 15:
-         format(string, len,"%s",  "Locust Swarm")        // Locust Kill
+         format(string, len,"%s",  "UWC3 Locust Swarm")        // Locust Kill
       case 16:
-         format(string, len,"%s",  "Necklace of Immunity")// Necklace of Immunity
+         format(string, len,"%s",  "UWC3 Necklace of Immunity")// Necklace of Immunity
       case 17:
-         format(string, len,"%s",  "Napalm Grenade")      // Napalm Grenade
+         format(string, len,"%s",  "UWC3 Napalm Grenade")      // Napalm Grenade
       case 18:
-         format(string, len,"%s",  "Poison")              // S. Strike Poison
+         format(string, len,"%s",  "UWC3 Poison")              // S. Strike Poison
       case 19:
-         format(string, len,"%s",  "Disease")             // C. Beetles Disease
+         format(string, len,"%s",  "UWC3 Disease")             // C. Beetles Disease
       case 20:
-         format(string, len,"%s",  "Beginner's Luck")     // Beginner's Luck
+         format(string, len,"%s",  "UWC3 Beginner's Luck")     // Beginner's Luck
       case 21:
-         format(string, len,"%s",  "Critical Backfire")   // Critical Backfire
+         format(string, len,"%s",  "UWC3 Critical Backfire")   // Critical Backfire
       case 22:
-         format(string, len,"%s",  "Magic Resistance")    // Magic Resistance
+         format(string, len,"%s",  "UWC3 Magic Resistance")    // Magic Resistance
    }
 
 }
 // **************************************************************************
 // END get_deathbystr subroutine
 // **************************************************************************
-
 
 // **************************************************************************
 // BEGIN do_damage subroutine
@@ -121,7 +120,6 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
       log_amx( "DEBUG: In do_damage() <%s => %s> dmg=(%d) deathby=(%s)", 
                ename, idname, damage, string )
    }
-
 
    if(userdead || !is_user_alive(id)){
       return PLUGIN_HANDLED
@@ -176,8 +174,9 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
       get_deathbystr(deathby, string, 47)	// Get the string form of deathby
 
 
-   new name[32]
+   new name[32], e_name[32]
    get_user_name(id,name,31)
+   get_user_name(enemy,e_name,31)
 
    xpgiven = xpgiven_lev[p_level[enemy]]
 
@@ -201,6 +200,25 @@ public do_damage(id,enemy, damage,deathby, victim_or_enemy, weapon, bodypart, us
                   "[%s] You just gained %d XP for killing %s with %s",
                   MOD, xpgiven, name, string)
             }
+
+            new e_steamid[32], i_steamid[32], e_team[16], i_team[16] 
+            get_user_authid( enemy, e_steamid, 31 )
+            get_user_authid( id, i_steamid, 31 )
+            if ( cs_get_user_team(id) == CS_TEAM_T ){
+               format(i_team, 15, "TERRORIST")
+            }else if ( cs_get_user_team(id) == CS_TEAM_CT ){
+               format(i_team, 15, "CT")
+            }else{
+               format(i_team, 15, "SPECTATOR")
+            }
+            if ( cs_get_user_team(enemy) == CS_TEAM_T ){
+               format(e_team, 15, "TERRORIST")
+            }else if ( cs_get_user_team(enemy) == CS_TEAM_CT ){
+               format(e_team, 15, "CT")
+            }else{
+               format(e_team, 15, "SPECTATOR")
+            }			
+            log_message( "^"%s<%d><%s><%s>^" killed ^"%s<%d><%s><%s>^" with ^"%s^"", e_name, get_user_userid( enemy ), e_steamid, e_team, name, get_user_userid( id ), i_steamid, i_team, string );
             displaylevel(id, 1)
          }
       }
@@ -341,6 +359,22 @@ public damage_event(id){
    get_user_name(id, name1, 31)
    get_user_name(enemy, name2, 31)
 
+   if(p_spawnprotection[id]==1){
+      client_print(enemy, print_chat, "[%s] You have been impaled for trying to kill respawner %s", MOD, name1)
+
+      //impale
+      if (file_exists("sound/warcraft3/impalehit.wav")==1){
+        emit_sound(enemy,CHAN_ITEM, "warcraft3/impalehit.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
+      }
+
+      message_begin(MSG_ONE,gmsgShake,{0,0,0},enemy)
+      write_short(255<< 14 ) //ammount
+      write_short(10 << 14) //lasts this long
+      write_short(255<< 14) //frequency
+      message_end()
+
+      return PLUGIN_HANDLED
+   }
 
    if (get_cvar_num("UW_medicalerts") && !medicalert[id]){
       // Send out medic alert calls to all medics on the team
@@ -414,6 +448,7 @@ public damage_event(id){
    if(hasgodmode[id]){
       // Godmode handler, check for necklace which will counter w/ extra dmg
       damage = read_data(2)
+
       if(hasblink[enemy] || playeritem[enemy]==IMMUNITY){
          godshealth[id] = godshealth[id] - damage
          if(godshealth[id]<0){
@@ -1106,6 +1141,60 @@ public damage_event(id){
          message_end()
       }
       // End of Banish
+   }
+
+   // Evasion protects against Siphon Ammo
+   if (p_skills[enemy][SKILLIDX_SAMMO] && !p_evadethisshot[id] ) {
+      // Siphon Ammo
+      new i_ammo, e_ammo, i_clip, e_clip
+      new idgun = get_user_weapon(id, i_clip, i_ammo)
+      new enemygun = get_user_weapon(enemy, e_clip, e_ammo)
+      	  
+      // [08-07-04] - Money modified by high intellect bonus
+      new Float:ammo_percent = p_ammo[p_skills[enemy][SKILLIDX_SAMMO]-1]
+
+      new x_ammo = floatround(ammo_percent * i_ammo)
+
+      if ( !is_user_connected( id ) || !is_user_connected( enemy ) )
+         return PLUGIN_CONTINUE
+
+      if ( x_ammo < 1 )
+         return PLUGIN_CONTINUE
+
+      cs_set_user_bpammo(enemy, enemygun, e_ammo+x_ammo)
+      cs_set_user_bpammo(id, idgun, i_ammo-x_ammo)
+
+      new idname[32], ename[32]
+      get_user_name(id, idname, 31)
+      get_user_name(enemy, ename, 31)
+
+      client_print(enemy, print_chat, "[%s] You siphoned %d rounds from %s", MOD, x_ammo, idname)
+      client_print(id, print_chat, "[%s] %d rounds were siphoned by %s", MOD, x_ammo, ename)
+	  
+      if (iglow[enemy][1] < 1){
+         new parm[2]
+         parm[0] = enemy
+         set_task(0.01,"glow_change",9,parm,2)
+      }
+
+      iglow[enemy][1] += damage
+      iglow[enemy][0] = 0
+      iglow[enemy][2] = 0
+      iglow[enemy][3] = 0
+
+      if (iglow[enemy][1]>MAXGLOW)
+         iglow[enemy][1]=MAXGLOW
+
+      message_begin(MSG_ONE,gmsgFade,{0,0,0},enemy)
+      write_short( 1<<10 ) // fade lasts this long duration
+      write_short( 1<<10 ) // fade lasts this long hold time
+      write_short( 1<<12 ) // fade type (in / out)
+      write_byte( 50 ) // fade red
+      write_byte( 50 ) // fade green
+      write_byte( 50 ) // fade blue
+      write_byte( iglow[enemy][1] ) // fade alpha
+      message_end()
+      // End of Siphon Armor
    }
 
    // [08-10-04] - Evasion now protects against Siphon Mana - K2mia
@@ -1870,13 +1959,13 @@ public death(){
             udogpenalty += floatround(1.75 * xpgiven_lev[p_level[killer_id]])
          }
 
-         playerxp[killer_id] += udogxp
-         playerxp[victim_id] -= udogpenalty
+         if(udogxp < MAX_UDOG_XP && udogpenalty < MAX_UDOG_XP){
+            playerxp[killer_id] += udogxp
+            playerxp[victim_id] -= udogpenalty
 
-         client_print(killer_id, print_chat,
-            "[%s] You receive an Underdog XP bonus of %d for killing %s", MOD, udogxp, name)
-         client_print(victim_id, print_chat,
-            "[%s] You lose an Underdog XP penalty of %d for being killed by %s", MOD, udogpenalty, kname)
+            client_print(killer_id, print_chat,"[%s] You receive an Underdog XP bonus of %d for killing %s", MOD, udogxp, name)
+            client_print(victim_id, print_chat,"[%s] You lose an Underdog XP penalty of %d for being killed by %s", MOD, udogpenalty, kname)
+         }
       }
 
       displaylevel(killer_id, 1)

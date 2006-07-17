@@ -67,12 +67,12 @@ public set_skill_limits(){
    skill_minlev[SKILLIDX_SUICIDE] = 17
    skill_minlev[SKILLIDX_ENTANGLE] = 16
    skill_minlev[SKILLIDX_FSTRIKE] = 16
-   skill_minlev[SKILLIDX_LOCUST] = 14
+   skill_minlev[SKILLIDX_SAMMO] = 14
    skill_minlev[SKILLIDX_TELEPORT] = 8
    skill_minlev[SKILLIDX_LIGHTNING] = 15
    skill_minlev[SKILLIDX_VOODOO] = 12
    skill_minlev[SKILLIDX_VENGEANCE] = 15
-   skill_minlev[SKILLIDX_FLASH] = 9
+   skill_minlev[SKILLIDX_DISHEX] = 9
    skill_minlev[SKILLIDX_LSKIN] = 2
    skill_minlev[SKILLIDX_SSKIN] = 11
    skill_minlev[SKILLIDX_NAPALM] = 13
@@ -112,6 +112,7 @@ public set_skill_limits(){
    skill_limits[SKILLIDX_EVASION] = MAX_SKILL_LEVEL5
 
    // These skills have 10 trainable levels
+   skill_limits[SKILLIDX_SAMMO] = MAX_SKILL_LEVEL10
    skill_limits[SKILLIDX_VAMPIRIC] = MAX_SKILL_LEVEL10
    skill_limits[SKILLIDX_LEVITATION] = MAX_SKILL_LEVEL10
    skill_limits[SKILLIDX_DEVOTION] = MAX_SKILL_LEVEL10
@@ -135,28 +136,26 @@ public set_skill_limits(){
    skill_limits[SKILLIDX_SUICIDE] = MAX_SKILL_LEVEL1    // Ult. Ability: wcsuicide
    skill_limits[SKILLIDX_ENTANGLE] = MAX_SKILL_LEVEL1   // Ult. Ability: wcentangle
    skill_limits[SKILLIDX_FSTRIKE] = MAX_SKILL_LEVEL1    // Ult. Ability: wcflame
-   skill_limits[SKILLIDX_LOCUST] = MAX_SKILL_LEVEL1     // Ult. Ability: wclocust
    skill_limits[SKILLIDX_TELEPORT] = MAX_SKILL_LEVEL1   // Ult. Ability: wcteleport
    skill_limits[SKILLIDX_LIGHTNING] = MAX_SKILL_LEVEL1  // Ult. Ability: wclightning
    skill_limits[SKILLIDX_VOODOO] = MAX_SKILL_LEVEL1     // Ult. Ability: wcvoodoo
    skill_limits[SKILLIDX_VENGEANCE] = MAX_SKILL_LEVEL1  // Ult. Passive Ability
-   skill_limits[SKILLIDX_FLASH] = MAX_SKILL_LEVEL1      // Ult. Ability: wcflash
+   skill_limits[SKILLIDX_DISHEX] = MAX_SKILL_LEVEL1      // Ult. Ability: wcdispell
    skill_limits[SKILLIDX_DECOY] = MAX_SKILL_LEVEL1      // Ult. Ability: wcdecoy
    skill_limits[SKILLIDX_GATE] = MAX_SKILL_LEVEL1       // Ult. Ability: wcgate
    skill_limits[SKILLIDX_SSKIN] = MAX_SKILL_LEVEL1      // Ability: Upgrade to Leather Skin
    skill_limits[SKILLIDX_NAPALM] = MAX_SKILL_LEVEL1     // Ability: 1st HE = Napalm Grenade
    skill_limits[SKILLIDX_REPAIR] = MAX_SKILL_LEVEL1     // Ability: Repair Teammate Armor
+   skill_limits[SKILLIDX_DISHEX] = MAX_SKILL_LEVEL1     // Ability: Dispell Hex
 
    // Now set the skill_ultimates list for the ultimate indices
    copy(skill_ultimates[SKILLIDX_SUICIDE], 32, "wcsuicide")
    copy(skill_ultimates[SKILLIDX_ENTANGLE], 32, "wcentangle")
    copy(skill_ultimates[SKILLIDX_FSTRIKE], 32, "wcflame")
-   copy(skill_ultimates[SKILLIDX_LOCUST], 32, "wclocust")
    copy(skill_ultimates[SKILLIDX_TELEPORT], 32, "wcteleport")
    copy(skill_ultimates[SKILLIDX_LIGHTNING], 32, "wclightning")
    copy(skill_ultimates[SKILLIDX_VOODOO], 32, "wcvoodoo")
    copy(skill_ultimates[SKILLIDX_VENGEANCE], 32, "Passive Ability")
-   copy(skill_ultimates[SKILLIDX_FLASH], 32, "wcflash")
    copy(skill_ultimates[SKILLIDX_DECOY], 32, "wcdecoy")
    copy(skill_ultimates[SKILLIDX_GATE], 32, "wcgate")
 
@@ -179,7 +178,7 @@ public set_skill_limits(){
 
       p_banish[i] = (0.06 + (i*0.02))      // Banish {0.06,0.08,..,0.24}
       p_mana[i] = (0.05 + (i*0.01))        // Siphon Mana {0.05,0.06,..,0.14}
-
+      p_ammo[i] = (0.035 + (i*0.005))      // Siphon Ammo {0.035,0.04,..,0.08}
       p_heal[i] = (6.0 - (i*0.5))          // Healing Wave {6.0,5.5,..,1.5}
       p_lskin[i] = (6.0 - (i*0.5))         // Leather Skin {6.0,5.5,..,1.5}
       p_hex[i] = (0.05 + (i*0.02))         // Hex {0.05,0.07,..,0.23}
@@ -483,6 +482,17 @@ public set_skill(id, key){
          return PLUGIN_HANDLED
       }
 
+      // [06-09-2004] Obe - Allow only one siphon skill
+      if ((skill_idx == SKILLIDX_SIPHON) && (p_skills[id][SKILLIDX_SAMMO])){
+         client_print(id, print_chat, "[%s] Only one siphon skill is allowed, you would have to give up your Siphon Ammo", MOD)
+         client_print(id, print_center, "[%s] Only one siphon skill is allowed, you would have to give up your Siphon Ammo", MOD)
+         return PLUGIN_HANDLED
+      }else if ((skill_idx == SKILLIDX_SAMMO) && (p_skills[id][SKILLIDX_SIPHON])){
+         client_print(id, print_chat, "[%s] Only one siphon skill is allowed, you would have to give up your Siphon Mana", MOD)
+         client_print(id, print_center, "[%s] Only one siphon skill is allowed, you would have to give up your Siphon Mana", MOD)
+         return PLUGIN_HANDLED
+      }
+
       // [06-09-2004] K2mia - Allow only one damage shield skill
       if ((skill_idx == SKILLIDX_CARAPACE) && (p_skills[id][SKILLIDX_THORNS])){
          client_print(id, print_chat, "[%s] Only one damage shield skill is allowed, you would have to give up your Thorns Aura", MOD)
@@ -566,7 +576,7 @@ public set_skill(id, key){
 
          if ( skill_idx == SKILLIDX_VENGEANCE ){
             format(utext, 128, "Ultimate ability Vengeance trained, no bind required" )
-         }else{
+         } else {
             format(utext, 128, "Ultimate ability trained, in console: bind key %s",
                skill_ultimates[skill_idx])
          }
@@ -637,6 +647,32 @@ public get_availskillpts(id){
 // **************************************************************************
 // END get_availskillpts subroutine
 // **************************************************************************
+
+// **************************************************************************
+// BEGIN setskillset subroutine
+// Sets a flag to reset all skill values to 0 
+// **************************************************************************
+public setskillset(id){
+   if (!warcraft3)
+     return PLUGIN_CONTINUE
+
+   read_argv(1,str_skillset[id], 255)
+
+   if(!contain(str_skillset[id],"#")){
+     client_print(id, print_console, "Your skillset doesnt appear to be right. Please check it and try again")
+   } else if(!contain(str_skillset[id],"-")){
+     client_print(id, print_console, "Your skillset doesnt appear to be right. Please check it and try again^n")
+   } else {         
+     client_print(id, print_console, "Your skillset will be set next round")
+     resetskill[id] = true
+     set_skillset[id] = true
+   }
+         
+   return PLUGIN_HANDLED
+}
+// **************************************************************************
+// END setskillset subroutine
+// **************************************************************************  
 
 
 // **************************************************************************
@@ -959,13 +995,13 @@ public check_skills(id, sethealth){
    new parm[2]
    parm[0]=id
 
-   set_maxhealth( id, sethealth )	// Set user id's maxhealth[] for the round
-   check_conregen( id )	 		// Check if constitution regen should be started
-   check_skinbonus( id )		// Set user id's maxarmor[] for the round 
-   check_blink( id )	 		// Check if user id gets blink active this round
-   check_tasks (id )	 		// Check for task cleanup/restarts
-   check_serpwards( id ) 		// Give serpant wards if necessary
-   phoenix_count( id )	 		// Count phoenixes for each team
+   set_maxhealth( id, sethealth )    // Set user id's maxhealth[] for the round
+   check_conregen( id )             // Check if constitution regen should be started
+   check_skinbonus( id )        // Set user id's maxarmor[] for the round 
+   check_blink( id )             // Check if user id gets blink active this round
+   check_tasks (id )             // Check for task cleanup/restarts
+   check_serpwards( id )         // Give serpant wards if necessary
+   phoenix_count( id )             // Count phoenixes for each team
    
       
    if (p_skills[id][SKILLIDX_GATE]){
@@ -1038,6 +1074,8 @@ public skills_info(id, tier){
             pos+= format(temp[pos],2048-pos,"<li>Banish: You have a (6%% to 24%%) chance of slapping your enemy. High intellect may help your chance to banish an enemy.<p>" )
          case SKILLIDX_HEX:
             pos+= format(temp[pos],2048-pos,"<li>Hex: You have a (5%% to 23%%) chance of morphing your enemy into a less than desirable form. Enhancements made to your intellect may help your Hex attacks.<p>" )
+        case SKILLIDX_SAMMO:
+            pos+= format(temp[pos],2048-pos,"<li>Siphon Ammo: Allows you to steal opponents ammo when doing damage (between 3.5%% and 8%% percent.<p>")
          case SKILLIDX_CARAPACE:
             pos+= format(temp[pos],2048-pos,"<li>Spiked Carapace: Does (5%% to 23%%) mirror damage to the person who shot you and you gain armor<p>" )
          case SKILLIDX_MEND:
@@ -1056,8 +1094,8 @@ public skills_info(id, tier){
             pos+= format(temp[pos],2048-pos,"<li>Entangle Roots (Ultimate Ability): Allows you to prevent an enemy player from moving for 10 seconds<p>")
          case SKILLIDX_FSTRIKE:
             pos+= format(temp[pos],2048-pos,"<li>Flame Strike (Ultimate Ability): You receive a flame throwers (1 uses every 20 seconds)<p>")
-         case SKILLIDX_FLASH:
-            pos+= format(temp[pos],2048-pos,"<li>Flash of Light (Ultimate Ability): This ultimate ablity temporarily blinds your enemy (the duration improves as you gain levels)<p>" )
+         case SKILLIDX_DISHEX:
+            pos+= format(temp[pos],2048-pos,"<li>Dispell Hex (Special Ability: bind wcdispell): Works like mend/repair and will remove hex from targeted team mate.  Will receive XP for dispelling.<p>" )
          case SKILLIDX_CRITGREN:
             pos+= format(temp[pos],2048-pos,"<li>Critical Grenade: Your HE grenades do (1.5 to 7.8) times normal damage<p>" )
          case SKILLIDX_SERPWARD:
@@ -1065,7 +1103,7 @@ public skills_info(id, tier){
          case SKILLIDX_THORNS:
             pos+= format(temp[pos],2048-pos,"<li>Thorns Aura: Does (10%% to 37%%) mirror damage to the person who shot you<p>" ) 
          case SKILLIDX_INVIS:
-            pos+= format(temp[pos],2048-pos,"<li>Invisibility: Makes you partially invisible, you will be harder to see<p>" )
+            pos+= format(temp[pos],2048-pos,"<li>Invisibility: Makes you partially invisible, you will be harder to see (Use cloak for disappear more!)<p>" )
          case SKILLIDX_TELEPORT:
             pos+= format(temp[pos],2048-pos,"<li>Teleport (Ultimate Ability): Allows you to teleport to where you aim (avoid ceilings).<p>")
          case SKILLIDX_VOODOO:
@@ -1074,8 +1112,6 @@ public skills_info(id, tier){
             pos+= format(temp[pos],2048-pos,"<li>Fan of Knives: You have a (%d%%, %d%% or %d%%) chance of becoming a mole<p>",floatround(p_fan[0]*100),floatround(p_fan[1]*100),floatround(p_fan[2]*100) )
          case SKILLIDX_VENGEANCE:
             pos+= format(temp[pos],2048-pos,"<li>Vengeance (Ultimate Ability): Respawn once with 50 health<p>" )
-         case SKILLIDX_LOCUST:
-            pos+= format(temp[pos],2048-pos,"<li>Locust Swarm (Ultimate Ability): A Swarm of Green Locusts attacks the enemy<p>") 
          case SKILLIDX_BLINK:
             pos+= format(temp[pos],2048-pos,"<li>Blink: Chance to disables ALL enemy ultimates (20%% to 100%%)<p>" ) 
          case SKILLIDX_PHOENIX:
@@ -1427,4 +1463,3 @@ public check_blink(id){
 // **************************************************************************
 // END General Skills Related Subroutines
 // **************************************************************************
-

@@ -36,7 +36,7 @@ public check_for_reviving(victim_id){
    if(get_user_team(victim_id)==TEAM_T && pheonixexistsT>0){
       for (y = 0; y < numberofplayers; ++y){
          new id = players[y]
-         if (phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && (get_user_team(id)==get_user_team(victim_id)) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPEC)
+         if (!get_availskillpts(id) && phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && (get_user_team(id)==get_user_team(victim_id)) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPEC)
          {
             phoenix[id]=false
             new parm[2], name[32]
@@ -68,7 +68,7 @@ public check_for_reviving(victim_id){
    }else if(get_user_team(victim_id)==TEAM_CT && pheonixexistsCT>0){
       for (y = 0; y < numberofplayers; ++y){
          new id = players[y]
-         if (phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && get_user_team(id)==get_user_team(victim_id) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPEC)
+         if (!get_availskillpts(id) && phoenix[id] && !to_be_revived[victim_id] && !endround && id!=victim_id && !changingteam[victim_id] && is_user_alive(id) && get_user_team(id)==get_user_team(victim_id) && !is_user_alive(victim_id) && get_user_team(victim_id)!=SPEC)
          {
             phoenix[id]=false
             new parm[2], name[32]
@@ -182,7 +182,12 @@ public spawn_player(parm[2]){
    // [08-19-04] Give player 2 seconds Godmode after respawn
    set_user_godmode(id, 1)
 
-   set_task(2.0, "reset_respawngod", 2, parm, 2)
+   // [05-23-05] Set Player p_spawnprotection to 1
+   p_spawnprotection[id] = 1
+
+   hasgodmode[id] = true
+
+   set_task(S_PROTECT_TIME, "reset_respawngod", 2, parm, 2)
 
    return PLUGIN_CONTINUE
 }
@@ -202,6 +207,10 @@ public reset_respawngod(args[]){
       return PLUGIN_CONTINUE
 
    set_user_godmode( id, 0 )
+
+   p_spawnprotection[id] = 0
+   
+   hasgodmode[id] = false
 
    client_print(id, print_chat, "[%s] Your Respawn grace period has ended, Beware!", MOD)
 

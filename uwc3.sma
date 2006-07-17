@@ -212,13 +212,12 @@ public plugin_init(){
    register_clcmd("wcentangle", "ultimate_wcentangle", -1, "-Entangle Ultimate")
    register_clcmd("wcflame", "ultimate_wcflame", -1, "-Flame Strike Ultimate Skill")
    register_clcmd("wcvoodoo", "ultimate_wcvoodoo", -1, "-Big Bad Voodoo Ultimate Skill")
-   register_clcmd("wclocust", "ultimate_wclocust", -1, "-Locust Swarm Ultimate Skill")
-   register_clcmd("wcflash", "ultimate_wcflash", -1, "-Flash of Light Ultimate Skill")
    register_clcmd("wcdecoy", "ultimate_wcdecoy", -1, 
       "-Decoy Ultimate Skill, spawns a decoy to briefly fool your enemies")
    register_clcmd("wcgate", "ultimate_wcgate", -1,
       "-Gate Ultimate Skill, Opens a gateway back to your spawn")
 
+   register_clcmd("wcdispell", "ability_wcdispell", -1, "-Special Ability: Dispell Hex (aim at teammate and trigger the wcdispell cmd)")
    register_clcmd("wcward", "ability_wcward", -1, "-Serpant Ward Ultimate Skill")
    register_clcmd("wcrepair", "ability_wcrepair", -1, 
       "-Special Ability: Repair Armor (aim at teammate and trigger the wcrepair cmd)")
@@ -230,8 +229,8 @@ public plugin_init(){
    register_concmd("amx_givexp", "amx_givexp", -1,"-Console command used to give XP")
    register_concmd("amx_givemole", "amx_givemole", -1, "-Admin make a mole command")
    register_concmd("playerskills", "player_skills", -1, "-Displays the players rank and skills")
-
-
+   register_concmd("setskillset", "setskillset", -1, "-Displays the players rank and skills")
+   
    // Menu related entries follow
    register_menucmd(register_menuid("\yUWC3: Main Menu"), 1023, "do_wc3menu") 
    register_menucmd(register_menuid("\ySelect an Attribute"), 1023, "do_attribmenu")
@@ -482,7 +481,6 @@ public plugin_precache() {
    //shadow = precache_model("sprites/animglow01.spr")
    shadow = precache_model("sprites/xspark3.spr")
    carrion = precache_model("sprites/carrion.spr")
-   snow = precache_model("sprites/snow.spr")
    fire = precache_model("sprites/explode1.spr")
    burning = precache_model("sprites/xfire.spr")
 
