@@ -751,6 +751,10 @@ public unset_skill(id, key){
          else
             write_skills_id( id, 1 )
 
+         // if its an ultimate we are dropping - Lantz69, 22 Feb 2006
+         if (skill_ultimates[skill_idx][0])
+            ultlearned[id]--; 
+
          if ( p_skills[id][skill_idx] == 0 )
             client_print(id, print_chat, "[%s] You are no longer trained in %s",
                MOD, skillname)
