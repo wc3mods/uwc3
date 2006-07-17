@@ -1312,15 +1312,15 @@ public checkmap(){
 // **************************************************************************
 
 // Used for immunity to headshots!
-#define HITGROUP_HEAD			(1 << 1)
+#define HITGROUP_HEAD (1 << 1)
 
 public traceline(Float:v1[3], Float:v2[3], noMonsters, pentToSkip)
 {
-    new iAttacker = pentToSkip;
-    new iVictim = get_tr(TR_pHit);
-    new iHitZone = (1 << get_tr(TR_iHitgroup));
+	new iAttacker = pentToSkip;
+	new iVictim = get_tr(TR_pHit);
+	new iHitZone = (1 << get_tr(TR_iHitgroup));
 
-	if ( iVictim >= 1 && iVictim <= get_maxplayers() && bImmuneHeadshots[iVictim] )
+	if ( iVictim >= 1 && iVictim <= get_maxplayers() && bImmuneHeadshots[iVictim] && iAttacker >= 1 && iAttacker <= get_maxplayers())
 	{
 		// If so, then we want to block the shot
 		if ( iHitZone & HITGROUP_HEAD )

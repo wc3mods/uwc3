@@ -63,6 +63,13 @@
 ****************************************************************************/
 
 /*
+	Following Updates by Geesu
+	
+	1.6.2-unofficial
+	 - Added STEAM_ID_PENDING bug fix (thanks Marticus)
+	 - moved VER variable to top of this file, sick of going to another file to update the version number
+	 - Dropskill command added - thanks Marticus for the code
+
 	1.6.1-unofficial
 	 - Updated some DBI code b/c it was giving me errors (on dbi_free_result)
 	 - Used fakemeta with Helm instead of set_user_hitzones (screen will now flash orange when a user evades a HS)
@@ -81,6 +88,8 @@
 #include <fun>
 #include <dbi>
 
+new VER[32] = {"1.6.2-unofficial"}
+
 #include "uwc3/uwc3_defs.inc"		// Include the UWC3 #defines file
 #include "uwc3/uwc3_vars.inc"		// Include the UWC3 global variables file
 #include "uwc3/uwc3_ultimates.inc"	// Include the UWC3 ultimate subroutines file
@@ -97,8 +106,8 @@
 #include "uwc3/uwc3_xp.inc"			// Include the UWC3 xp subroutines file
 #include "uwc3/uwc3_events.inc"		// Include the UWC3 events subroutines file
 
-
 #pragma dynamic 65536 		// Give the plugin some extra memory to use
+
 
 // **************************************************************************
 // END Global variable Declarations
@@ -211,6 +220,8 @@ public plugin_init(){
    register_clcmd("/selectskill", "select_skill", -1, "-Displays the skills menu")
    register_clcmd("selectattrib", "select_attrib", -1, "-Displays the attributes menu")
    register_clcmd("/selectattrib", "select_attrib", -1, "-Displays the attributes menu")
+   register_clcmd("dropskill", "drop_skill", -1, "-Displays the drop skills menu")
+   register_clcmd("/dropskill", "drop_skill", -1, "-Displays the drop skills menu")
    register_clcmd("selectresist", "select_resist", -1, "-Displays the resistances menu")
    register_clcmd("/selectresist", "select_resist", -1, "-Displays the resistances menu")
 
@@ -262,6 +273,7 @@ public plugin_init(){
    register_menucmd(register_menuid("\yGive Players XP"), 1023,"do_playerxpmenu")
    register_menucmd(register_menuid("\yTeam XP Menu"), 1023, "do_teamxpmenu")
    register_menucmd(register_menuid("Select Skill: "), (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9), "set_skill")
+   register_menucmd(register_menuid("Drop Skill: "), (1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9), "unset_skill")
    register_menucmd(register_menuid("\yBuy An Item"), 1023, "buy_item2")
    register_menucmd(register_menuid("\yBuy Item"), 1023, "buy_item")
    register_menucmd(register_menuid("BuyItem"),(1<<2),"flashbuy")
@@ -299,11 +311,6 @@ public plugin_init(){
    register_logevent("event_player_action", 3, "1=triggered")
    register_logevent("freezetimedone", 2, "0=World triggered", "1=Round_Start")
    register_logevent("end_round", 2, "0=World triggered", "1=Round_End")
-
-   // Next 3 register commands copied from Warcraft3 for STEAM (unsure why)
-   //register_menucmd(register_menuid("Team_Select",1),(1<<0)|(1<<1)|(1<<4),"teamselect")
-   //register_event("ShowMenu","teamselect","b","4&CT_Select","4&Terrorist_Select")
-   //register_clcmd("jointeam","teamselect")
 
    register_cvar("amx_uwc3", VER, FCVAR_SERVER)
    register_cvar("FT_objectives", "1")
@@ -754,6 +761,31 @@ public set_variables(){
 // END set_variables subroutine
 // **************************************************************************
 
+// **************************************************************************
+// BEGIN client_authorized subroutine
+// A connected client has been steam authenticated
+// **************************************************************************
+public client_authorized(id)
+{
+	new auth[32];
+	get_user_authid( id, auth, 31 );
+	
+	// Then the player doesn't have a steam id, lets make them reconnect
+	if ( equal(auth, "STEAM_ID_PENDING") )
+	{
+		client_cmd(id, "reconnect");
+	}
+	// Otherwise we're ready to go
+	else if ( get_cvar_num("mp_savexp") )
+	{
+		xpreadytoload[id] = 1;
+	}
+
+	return PLUGIN_CONTINUE
+}
+// **************************************************************************
+// END client_authorized subroutine
+// ************************************************************************** 
 
 // **************************************************************************
 // BEGIN client_connect subroutine
@@ -776,8 +808,11 @@ public client_connect(id){
          p_resists[id][j] = RESIST_MAX_VALUE
    }
 
+/* Removed to support fix players losing xp to
+      STEAM_ID_PENDING -Marticus 11/15/05
    if (get_cvar_num("mp_savexp"))
       xpreadytoload[id] = 1
+    */ 
 
    client_cmd(id, "echo ")
    client_cmd(id, "echo ^" *=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=* ^" ")
