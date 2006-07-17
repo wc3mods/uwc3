@@ -761,31 +761,25 @@ public set_variables(){
 // END set_variables subroutine
 // **************************************************************************
 
+
 // **************************************************************************
 // BEGIN client_authorized subroutine
-// A connected client has been steam authenticated
+// A connected client has been steam authenticated - Marticus 11/15/05
 // **************************************************************************
-public client_authorized(id)
-{
-	new auth[32];
-	get_user_authid( id, auth, 31 );
-	
-	// Then the player doesn't have a steam id, lets make them reconnect
-	if ( equal(auth, "STEAM_ID_PENDING") )
-	{
-		client_cmd(id, "reconnect");
-	}
-	// Otherwise we're ready to go
-	else if ( get_cvar_num("mp_savexp") )
-	{
-		xpreadytoload[id] = 1;
-	}
 
+/* Added support to fix players losing XP to 
+   STEAM_ID_PENDING -Marticus 11/15/05 */
+
+public client_authorized(id){
+   if (get_cvar_num("mp_savexp")){
+      xpreadytoload[id] = 1
+   }
 	return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END client_authorized subroutine
 // ************************************************************************** 
+
 
 // **************************************************************************
 // BEGIN client_connect subroutine
@@ -810,6 +804,7 @@ public client_connect(id){
 
 /* Removed to support fix players losing xp to
       STEAM_ID_PENDING -Marticus 11/15/05
+      Moved this to client_authorized
    if (get_cvar_num("mp_savexp"))
       xpreadytoload[id] = 1
     */ 
