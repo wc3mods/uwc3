@@ -1,0 +1,12 @@
+Change Log:
+
+1.6.2+idlenexus - 5:03 PM 7/17/2006 - Marticus
+Note: bug fixes by various community members, see source code for details.
+
+-BugFix-001: HP above maximum Vampiric Aura
+-BugFix-002: Check freezetime to prevent mid-round ultimate delay
+-BugFix-003: Steel Skin without vamp and/or leather [Dropskill]
+-BugFix-004: Unable to select new ultimates after dropping [Dropskill]
+-BugFix-005: XP reset with STEAM_ID_PENDING (no reconnect method)
+-Update-001: Added Percentage-based resistance points
+-Update-002: Added xp and level to "Adding player:" log message
