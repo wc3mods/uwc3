@@ -774,7 +774,6 @@ public client_authorized(id){
    if (get_cvar_num("mp_savexp")){
       xpreadytoload[id] = 1
    }
-	return PLUGIN_CONTINUE
 }
 // **************************************************************************
 // END client_authorized subroutine
