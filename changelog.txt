@@ -1,8 +1,17 @@
 Change Log:
 
-1.6.3 beta - 8:12 PM 7/22/2006 - Marticus
+1.6.3 beta:
+*10:31 AM 7/23/2006 - Marticus
+-Finished renaming scheme (forgot to remove the uwc3_).
+-Bugs in Update-001, reverted.
+-Fixed client_authorized, no return needed.
+-Merged teame06 code structure changes, consisting of: Moving braces to next 
+ line, converting spaces to tabs, and Removing copywrite information from 
+ include files
 
--Renamed include files to match unofficial 1.6.2 scheme, updated uwc3.sma accordingly
+*8:12 PM 7/22/2006 - Marticus
+-Renamed include files to match unofficial 1.6.2 scheme, updated uwc3.sma 
+ accordingly
 
 1.6.2+idlenexus - 5:03 PM 7/17/2006 - Marticus
 Note: bug fixes by various community members, see source code for details.
