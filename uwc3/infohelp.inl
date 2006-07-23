@@ -908,19 +908,19 @@ public character_sheet(id){
    add( message, 2047, "<center><b>Resistances</b></center><p>" )
 
    format( stemp, 1024, "Poison Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_POISON], 100 )
+      p_resists[id][RESISTIDX_POISON], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Disease Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_DISEASE], 100 )
+      p_resists[id][RESISTIDX_DISEASE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Electricity Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_ELECTRIC], 100 )
+      p_resists[id][RESISTIDX_ELECTRIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Fire Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_FIRE], 100 )
+      p_resists[id][RESISTIDX_FIRE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Magic Resistance: %d / %d <br>",
-      p_resists[id][RESISTIDX_MAGIC], 100 )
+      p_resists[id][RESISTIDX_MAGIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
 
 
@@ -1061,19 +1061,19 @@ public cmd_whois(id, arg[]){
    add( message, 2047, "<center><b>Resistances</b></center><p>" )
 
    format( stemp, 1024, "Poison Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_POISON], 100 )
+      p_resists[pid][RESISTIDX_POISON], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Disease Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_DISEASE], 100 )
+      p_resists[pid][RESISTIDX_DISEASE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Electricity Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_ELECTRIC], 100 )
+      p_resists[pid][RESISTIDX_ELECTRIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Fire Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_FIRE], 100 )
+      p_resists[pid][RESISTIDX_FIRE], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
    format( stemp, 1024, "Magic Resistance: %d / %d <br>",
-      p_resists[pid][RESISTIDX_MAGIC], 100 )
+      p_resists[pid][RESISTIDX_MAGIC], RESIST_MAX_VALUE )
    add( message, 2047, stemp )
 
    add( message, 2047, "</td></tr><tr><td colspan=2 valign=top><font color=#FFB000>" )
