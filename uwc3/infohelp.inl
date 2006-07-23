@@ -1275,7 +1275,6 @@ public cmd_who(id)
 	
 		get_user_name(playerid, name, 31)
 	
-#elog_amx("Adding player: %s", name)
 		// Added level and xp to this log message, Marticus, 28 Feb 2006
 		log_amx( "Adding player: [%d:%d] %s", p_level[playerid], playerxp[playerid], name )
 
