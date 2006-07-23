@@ -90,21 +90,21 @@
 
 new VER[32] = {"1.6.2-unofficial"}
 
-#include "uwc3/uwc3_defs.inc"		// Include the UWC3 #defines file
-#include "uwc3/uwc3_vars.inc"		// Include the UWC3 global variables file
-#include "uwc3/uwc3_ultimates.inc"	// Include the UWC3 ultimate subroutines file
-#include "uwc3/uwc3_abilities.inc"	// Include the UWC3 abilities subroutines file
-#include "uwc3/uwc3_enh.inc"		// Include the UWC3 enhancements subroutines file
-#include "uwc3/uwc3_utility.inc"	// Include the UWC3 utilities subroutines file
-#include "uwc3/uwc3_storage.inc"	// Include the UWC3 storage subroutines file
-#include "uwc3/uwc3_infohelp.inc"	// Include the UWC3 help/info subroutines file
-#include "uwc3/uwc3_dmgevents.inc"	// Include the UWC3 damage events subroutines file
-#include "uwc3/uwc3_mole.inc"		// Include the UWC3 mole subroutines file
-#include "uwc3/uwc3_respawn.inc"	// Include the UWC3 respawn subroutines file
-#include "uwc3/uwc3_items.inc"		// Include the UWC3 items subroutines file
-#include "uwc3/uwc3_skills.inc"		// Include the UWC3 skills subroutines file
-#include "uwc3/uwc3_xp.inc"			// Include the UWC3 xp subroutines file
-#include "uwc3/uwc3_events.inc"		// Include the UWC3 events subroutines file
+#include "uwc3/defs.inl"		// Include the UWC3 #defines file
+#include "uwc3/vars.inl"		// Include the UWC3 global variables file
+#include "uwc3/ultimates.inl"	// Include the UWC3 ultimate subroutines file
+#include "uwc3/abilities.inl"	// Include the UWC3 abilities subroutines file
+#include "uwc3/enh.inl"		// Include the UWC3 enhancements subroutines file
+#include "uwc3/utility.inl"	// Include the UWC3 utilities subroutines file
+#include "uwc3/storage.inl"	// Include the UWC3 storage subroutines file
+#include "uwc3/infohelp.inl"	// Include the UWC3 help/info subroutines file
+#include "uwc3/dmgevents.inl"	// Include the UWC3 damage events subroutines file
+#include "uwc3/mole.inl"		// Include the UWC3 mole subroutines file
+#include "uwc3/respawn.inl"	// Include the UWC3 respawn subroutines file
+#include "uwc3/items.inl"		// Include the UWC3 items subroutines file
+#include "uwc3/skills.inl"		// Include the UWC3 skills subroutines file
+#include "uwc3/xp.inl"			// Include the UWC3 xp subroutines file
+#include "uwc3/events.inl"		// Include the UWC3 events subroutines file
 
 #pragma dynamic 65536 		// Give the plugin some extra memory to use
 
