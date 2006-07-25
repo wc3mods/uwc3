@@ -1,25 +1,27 @@
 Change Log:
 
 1.6.3 beta:
+*12:07 PM 7/25/2006 - Marticus/Teame06
+-BugFix:SVN-110: Freeze time bug, requiring weapon change to move, teame06
+-BugFix:SVN-111: Index out of bounds in damage_event, teame06
+
+-ToDo: Change 100% immunities to a cvar, 97% default, thanks teame06
+
 *10:31 AM 7/23/2006 - Marticus
--Finished renaming scheme (forgot to remove the uwc3_).
--Bugs in Update-001, reverted.
--Fixed client_authorized, no return needed.
--Merged teame06 code structure changes, consisting of: Moving braces to next 
- line, converting spaces to tabs, and Removing copywrite information from 
- include files
+-Update:SVN-109: Removed copyright header from include files.
+-BugFix:SVN-105: Fixed client_authorized, no return needed.
+-Update:SVN-104: Bugs in Update:SVN-95, percentage based resistance points, reverted.
+-Update:SVN-103: Finished renaming scheme (forgot to remove the uwc3_).
 
 *8:12 PM 7/22/2006 - Marticus
--Renamed include files to match unofficial 1.6.2 scheme, updated uwc3.sma 
+-Update:SVN-102: Renamed include files to match unofficial 1.6.2 scheme, updated uwc3.sma 
  accordingly
 
-1.6.2+idlenexus - 5:03 PM 7/17/2006 - Marticus
-Note: bug fixes by various community members, see source code for details.
-
--BugFix-001: HP above maximum Vampiric Aura
--BugFix-002: Check freezetime to prevent mid-round ultimate delay
--BugFix-003: Steel Skin without vamp and/or leather [Dropskill]
--BugFix-004: Unable to select new ultimates after dropping [Dropskill]
--BugFix-005: XP reset with STEAM_ID_PENDING (no reconnect method)
--Update-001: Added Percentage-based resistance points
--Update-002: Added xp and level to "Adding player:" log message
+*5:03 PM 7/17/2006 - Marticus
+-Update:SVN-95: Added Percentage-based resistance points
+-Update:SVN-96: Added xp and level to "Adding player:" log message
+-BugFix:SVN-94: XP reset with STEAM_ID_PENDING (no reconnect method)
+-BugFix:SVN-93: Unable to select new ultimates after dropping [Dropskill]
+-BugFix:SVN-92: Steel Skin without vamp and/or leather [Dropskill]
+-BugFix:SVN-91: Check freezetime to prevent mid-round ultimate delay
+-BugFix:SVN-90: HP above maximum Vampiric Aura
