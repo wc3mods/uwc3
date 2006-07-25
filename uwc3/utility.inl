@@ -872,7 +872,7 @@ public freezetimedone() {
       id = players[i]
 
       if ( !is_user_connected(id) )
-         return PLUGIN_CONTINUE
+         continue
 
       parm[0]=id
       set_user_maxspeed(id,240.0)

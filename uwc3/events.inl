@@ -83,7 +83,7 @@ public new_round(id){
       return PLUGIN_CONTINUE
 
    if ( !is_user_connected( id ) )
-      return PLUGIN_CONTINUE
+      continue
 
    bombstate = BOMB_NOTPLANTED
 
@@ -314,11 +314,8 @@ public new_round(id){
    if (get_cvar_num("FT_warn_suicide"))
       suicideAttempt[id] = 0
 
-   if ( is_user_connected( id ) ){
-      set_user_maxspeed(id, 1.0)
-
-      if ( playeritem2[id]==HELM)
-		  bImmuneHeadshots[id] = true;
+   if ( is_user_connected( id ) && playeritem2[id]==HELM )
+      bImmuneHeadshots[id] = true;
    }
 
    set_task(0.1, "weapon_controller", 10091, parm, 2) // Weapon Reincarnation
