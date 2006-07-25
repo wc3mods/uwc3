@@ -307,8 +307,14 @@ public damage_event(id){
    if (!warcraft3)
       return PLUGIN_CONTINUE
 
+   if(id < 1 || id > g_MAXPLAYERS)
+      return PLUGIN_CONTINUE
+
    new weapon = 0, bodypart = 0, enemy = get_user_attacker(id,weapon,bodypart)
    new damage = read_data(2)
+
+   if(enemy < 1 || enemy > g_MAXPLAYERS)
+      return PLUGIN_CONTINUE
 
    new name1[32], name2[32]
    get_user_name(id, name1, 31)
