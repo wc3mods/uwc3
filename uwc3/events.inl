@@ -315,8 +315,7 @@ public new_round(id){
       suicideAttempt[id] = 0
 
    if ( is_user_connected( id ) && playeritem2[id]==HELM )
-      bImmuneHeadshots[id] = true;
-   }
+      bImmuneHeadshots[id] = true
 
    set_task(0.1, "weapon_controller", 10091, parm, 2) // Weapon Reincarnation
 
