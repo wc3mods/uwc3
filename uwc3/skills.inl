@@ -631,7 +631,7 @@ public drop_skill(id, page){
 
          if (get_cvar_num("UW_admin_mode"))
             format(sLevelText, 32, "[ Lvl %d ]", skill_minlev[idx])
-        else
+         else
             format(sLevelText, 32, "[Lvl %d required]", skill_minlev[idx])
 
          if (equali(skillname,"NOSKILL"))
