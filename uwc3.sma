@@ -88,7 +88,7 @@
 #include <fun>
 #include <dbi>
 
-new VER[32] = {"1.6.2-unofficial"}
+new VER[32] = {"1.6.3-beta"}
 
 #include "uwc3/defs.inl"		// Include the UWC3 #defines file
 #include "uwc3/vars.inl"		// Include the UWC3 global variables file
