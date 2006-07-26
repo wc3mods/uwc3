@@ -83,7 +83,7 @@ public new_round(id){
       return PLUGIN_CONTINUE
 
    if ( !is_user_connected( id ) )
-      continue
+      return PLUGIN_CONTINUE
 
    bombstate = BOMB_NOTPLANTED
 
