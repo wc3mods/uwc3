@@ -12,26 +12,52 @@ public sql_init()
 			server_cmd("exec %s", sql_cfgfile)
 			server_exec();
 
-			_sql_init_conn();
+			new tuple = _sql_init_conn();
 			_sql_create_table();
+
+			if(tuple)
+				set_task(150, "saveall", 93847, _, _, "b");
 		}
 		else
 		{
-			log_amx("UWC3 SQL :: Configuration File NOT FOUND, Switching to Fast XP Mode")
 			set_cvar_num("mp_savexp", 0)
 			set_cvar_num("mp_sql", 0)
+			log_amx("UWC3 SQL :: Configuration File NOT FOUND, Switching to Fast XP Mode")
 		}
 	}
 }
 
+public saveall()
+{
+	if(!warcraft3)
+		return;
+
+	static players[32], num, index;
+	get_players(players, num, "ch");
+
+	for(new i = 0; i < num; i++)
+	{
+		index = players[i];
+
+		if(get_cvar_num("mp_sql"))
+		{
+			sqlwrite_xp(index, 1);
+			sqlwrite_skills_id(index, -1, 1)
+			sqlwrite_enh_id(index, 1)
+		}
+	}
+
+}
+
 public _sql_init_conn()
 {
-	get_cvar_string("UW_sql_host", sqlhost, 63)
-	get_cvar_string("UW_sql_user", sqluser, 31)
-	get_cvar_string("UW_sql_pass", sqlpass, 31)
-	get_cvar_string("UW_sql_db", sqldb, 1023)
+	get_cvar_string("UW_sql_host", sqlhost, 63);
+	get_cvar_string("UW_sql_user", sqluser, 31);
+	get_cvar_string("UW_sql_pass", sqlpass, 31);
+	get_cvar_string("UW_sql_db", sqldb, 1023);
 
 	Tuple = SQL_MakeDbTuple(sqlhost, sqluser, sqlpass, sqldb);
+	return Tuple;
 }
 
 public _sql_create_table()
@@ -139,7 +165,7 @@ public write_to_sql(failstate, Handle:query, error[], errnum, data[], size)
 		} else if (failstate == TQUERY_QUERY_FAILED) {
 			server_print("Query failed!")
 		}
-		log_amx("Error code: %d (Message: ^"%s^")", errnum, error)
+		//log_amx("Error code: %d (Message: ^"%s^")", errnum, error)
 		return;
 	}
 }
@@ -257,7 +283,6 @@ public read_from_sql_xp(failstate, Handle:query, error[], errnum, data[], size)
 		log_amx("Error code: %d (Message: ^"%s^")", errnum, error)
 		return;
 	}
-
 
 	if(SQL_NumResults(query) > 0)
 	{

@@ -221,40 +221,43 @@ public admin_showxp(id, level)
 // Resets all skills and sets your XP to 0
 public amx_deletexp(id)
 {
-	p_level[id] = 0
-	playerxp[id] = 0
-
-	for(new j = 0; j<MAX_SKILLS; j++)
-		p_skills[id][j] = 0 // Set all skills to 0
-
-	// Set all attributes for this player slot to the base amount
-	for(new j = 0; j < MAX_ATTRIBS; j++)
-		p_attribs[id][j] = ATTRIB_BASE
-
-	// Set all resistances for this player slot to 0
-	for(new j = 0; j < MAX_RESISTS; j++)
-		p_resists[id][j] = 0
-
-	resetskill[id] = true
-	resetattrib[id] = true
-	resetresist[id] = true
-
-	displaylevel(id, 1)
-
-	if(get_cvar_num("mp_sql"))
+	if(p_level[id] || playerxp[id])
 	{
-		sqlwrite_xp(id, 1);
-		sqlwrite_skills_id(id, -1, 1)
-		sqlwrite_enh_id(id, 1)
-	}
-	else
-	{
-		write_xp_id(id)
-		write_skills_id(id, 1)
-		write_enh_id(id)
-	}
+		p_level[id] = 0
+		playerxp[id] = 0
 
-	client_print(id, print_chat, "[%s] Your skills/attributes/resistances and XP have been reset to 0.", MOD)
+		for(new j = 0; j<MAX_SKILLS; j++)
+			p_skills[id][j] = 0 // Set all skills to 0
+
+		// Set all attributes for this player slot to the base amount
+		for(new j = 0; j < MAX_ATTRIBS; j++)
+			p_attribs[id][j] = ATTRIB_BASE
+
+		// Set all resistances for this player slot to 0
+		for(new j = 0; j < MAX_RESISTS; j++)
+			p_resists[id][j] = 0
+
+		resetskill[id] = true
+		resetattrib[id] = true
+		resetresist[id] = true
+
+		displaylevel(id, 1)
+
+		if(get_cvar_num("mp_sql"))
+		{
+			sqlwrite_xp(id, 1);
+			sqlwrite_skills_id(id, -1, 1)
+			sqlwrite_enh_id(id, 1)
+		}
+		else
+		{
+			write_xp_id(id)
+			write_skills_id(id, 1)
+			write_enh_id(id)
+		}
+
+		client_print(id, print_chat, "[%s] Your skills/attributes/resistances and XP have been reset to 0.", MOD)
+	}
 }
 
 // Server command for issuing xp to a team or person

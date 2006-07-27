@@ -98,14 +98,14 @@
 #include <dbi>
 
 #if AMXX_VERSION_NUM >= 175
-	#define CSDM // Enable support for CSDM 2.0
-	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
+	#define CSDM // Enable support for CSDM 2.1
 
 	#include <sqlx>
 #endif
 
 #if defined CSDM
 	#include <csdm>
+	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
 #else
 	#include <fun>
 #endif
@@ -121,6 +121,7 @@ new VER[] = "1.6.3-beta"
 #include "uwc3/utility.inl"	// Include the UWC3 utilities subroutines file
 #include "uwc3/storage.inl"	// Include the UWC3 storage subroutines file
 #include "uwc3/mysqlx.inl"
+#include "uwc3/vault.inl"
 #include "uwc3/infohelp.inl"	// Include the UWC3 help/info subroutines file
 #include "uwc3/dmgevents.inl"	// Include the UWC3 damage events subroutines file
 #include "uwc3/mole.inl"		// Include the UWC3 mole subroutines file
@@ -1064,7 +1065,8 @@ public plugin_end()
 	if(!warcraft3)
 		return
 
-	if(get_cvar_num("mp_savexp"))
+	// Does this really need to be here? when saving is done at client_disconnect to?
+	/*if(get_cvar_num("mp_savexp"))
 	{
 		// Make sure to sync any remaining data before plugin ends!
 		if(task_exists(TASKID_SYNCSQL))
@@ -1073,7 +1075,7 @@ public plugin_end()
 			//sync_sql()
 		}
 		//write_all()
-	}
+	}*/
 
 	if(Tuple)
 		SQL_FreeHandle(Tuple);
@@ -1196,3 +1198,15 @@ Float:get_user_maxspeed(id)
 	return speed
 }
 #endif
+
+// Taken GabenMod by Basic-Master. Good function to.
+stock register_clientcmd(command[], function[], flags, info[])
+{
+	new temp[64];
+	format(temp, 63, "say /%s", saycommand);
+	register_clcmd(temp, function, flags, info);
+	format(temp, 63, "say_team /%s", saycommand);
+	register_clcmd(temp, function, flags, info);
+	format(temp, 63, "/%s", saycommand);
+	register_clcmd(temp, function, flags, info);
+}
