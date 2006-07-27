@@ -248,20 +248,13 @@ new sqlhost[64]
 new sqluser[32]
 new sqlpass[32]
 new sqldb[1024]
-new sqlerror[128]
 new sqltable_xp[32] = "uwc3_xp"
-//new sqltable_skills[32] = "uwc3_skills"
 new sqltable_enh[32] = "uwc3_enh"
 new sqltable_skills1[32] = "uwc3_skills1"
 new sqltable_skills2[32] = "uwc3_skills2"
 new sqltable_skills3[32] = "uwc3_skills3"
 new sqltable_skills4[32] = "uwc3_skills4"
-new bool:g_sqlite         				// added by JGHG
 new g_MAXPLAYERS 						// added by JGHG
-new g_pendingXP[32][1024]				// added by JGHG
-new g_pendingSkills[32][4][1024]       	     // added by JGHG
-new g_pendingEnh[32][1024]				// added by JGHG
-new bool:g_purgeMe[32]                       // added by JGHG
 new g_roundCounter   					// added by JGHG
 // [9-08-2004] End of Added SQL variables - K2mia
 
@@ -344,8 +337,10 @@ new Float:fLastShotFired[33];
 new bool:silentfeet[MAX_PLAYERS]
 
 
-new Sql:sql
-new sql_count
+new Handle:Tuple;
+new Handle:Conn;
+new Error[255];
+new ErrorCode;
 
 /*
 new const ultimate_hud[3][] =

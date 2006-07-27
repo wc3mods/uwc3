@@ -81,13 +81,13 @@
 */
 
 
-//#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
-#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
-#define CONNECT_MESSAGE // Enabled connecting message
+#define REDUCE_SKILL // For my personal sever. Few skills has been reduced.
+//#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
+//#define CONNECT_MESSAGE // Enabled connecting message
 //#define DEBUG // Enable Debug
 
 
-#define UWC3_ORIGINAL // Something
+//#define UWC3_ORIGINAL // Something
 
 #include <amxmodx>
 #include <amxmisc>
@@ -98,8 +98,8 @@
 #include <dbi>
 
 #if AMXX_VERSION_NUM >= 175
-	//#define CSDM // Enable support for CSDM 2.0
-	//#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
+	#define CSDM // Enable support for CSDM 2.0
+	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
 
 	#include <sqlx>
 #endif
@@ -120,6 +120,7 @@ new VER[] = "1.6.3-beta"
 #include "uwc3/enh.inl"		// Include the UWC3 enhancements subroutines file
 #include "uwc3/utility.inl"	// Include the UWC3 utilities subroutines file
 #include "uwc3/storage.inl"	// Include the UWC3 storage subroutines file
+#include "uwc3/mysqlx.inl"
 #include "uwc3/infohelp.inl"	// Include the UWC3 help/info subroutines file
 #include "uwc3/dmgevents.inl"	// Include the UWC3 damage events subroutines file
 #include "uwc3/mole.inl"		// Include the UWC3 mole subroutines file
@@ -135,15 +136,6 @@ new VER[] = "1.6.3-beta"
 public plugin_init()
 {
 	register_plugin("UWC3", VER, "K2mia")
-
-	// Added by JGHG: Check if we're using Sqlite
-	new dbitype[16]
-	dbi_type(dbitype, 15)
-	server_print("[UWC3] Using database type %s.", dbitype)
-	if(equal(dbitype, "sqlite"))
-		g_sqlite = true
-	else
-		g_sqlite = false
 
 	g_MAXPLAYERS = get_maxplayers() // Added by JGHG(instead of doing this in EACH iteration in the 0.1 looping set task, we retrieve the value here; it won't change..!)
 
@@ -439,6 +431,7 @@ public plugin_cfg()
 	{
 		log_amx("UWC3 Startup :: Loading Configuration File [ UWC3.cfg ]...")
 		server_cmd("exec %s", cfgfile)
+		server_exec();
 		log_amx("UWC3 Startup :: Configuration File Loaded [OK]")
 	}
 	else
@@ -447,15 +440,17 @@ public plugin_cfg()
 	}
 
 	// set_task calls for functions needed by init or to run continuously
-	set_task(10.0, "check_war3", 456, "", 0, "b")
-	set_task(1.0, "check_war3", 457)
-	set_task(3.0, "set_xpfrontend", 458)
-	set_task(0.6, "set_variables", 822)
+	set_task(10.0, "check_war3", 456, "", 0, "b") // really why does this need to be running continously.
+	//set_task(1.0, "check_war3", 457)
+	//set_task(3.0, "set_xpfrontend", 458)
+	//set_task(0.6, "set_variables", 822)
 
+	check_war3();
+	set_xpfrontend();
+	set_variables();
 	set_xpmultiplier()	// Set weapon xp modifiers
 	set_skill_limits()	// Set skills-based tables(skill levels, effects, etc)
-
-	set_task(0.6, "check_sql", 823)
+	sql_init();
 }
 
 // Specify resources to be precached on client side
@@ -892,10 +887,7 @@ public client_disconnect(id)
 	if(get_cvar_num("mp_savexp") && !is_user_bot(id) && auth[9] != 'P' && playerxp[id])
 	{
 		if(get_cvar_num("mp_sql"))
-		{
 			sqlwrite_xp_id(id)
-			purge(id)
-		}
 		else
 			write_xp_id(id)
 
@@ -1078,13 +1070,13 @@ public plugin_end()
 		if(task_exists(TASKID_SYNCSQL))
 		{
 			remove_task(TASKID_SYNCSQL)
-			sync_sql()
+			//sync_sql()
 		}
 		//write_all()
 	}
 
-	if(sql)
-		dbi_close(sql)
+	if(Tuple)
+		SQL_FreeHandle(Tuple);
 }
 
 #if defined CSDM

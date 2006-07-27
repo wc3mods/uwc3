@@ -303,6 +303,8 @@ public get_availattribpts(id)
 	new max_attribs = get_cvar_num("UW_max_attribpts")
 
 	//new apts = (total_attrib > ATTRIB_MAX_PTS) ? (ATTRIB_MAX_PTS - acount) : (total_attrib - acount)
+
+	// Think the problem lies below on this line
 	new apts = (total_attrib > max_attribs) ? (max_attribs - acount) : (total_attrib - acount)
 
 	// Prevent players from getting attrib points beyond their max allowed

@@ -243,7 +243,7 @@ public amx_deletexp(id)
 
 	if(get_cvar_num("mp_sql"))
 	{
-		sqlwrite_xp_id(id)
+		sqlwrite_xp(id, 1);
 		sqlwrite_skills_id(id, -1, 1)
 		sqlwrite_enh_id(id, 1)
 	}
