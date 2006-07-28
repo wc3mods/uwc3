@@ -537,8 +537,9 @@ public end_round()
 
 	if(g_roundCounter % SAVEFREQUENCY == 0 && get_cvar_num("mp_savexp"))
 	{
-		set_task(2.5, "write_all")
-		client_print(0, print_console, "write_all(%s)^n", get_cvar_num("usenewway") ? "new" : "old")
+		//set_task(2.5, "write_all")
+		//client_print(0, print_console, "write_all(%s)^n", get_cvar_num("usenewway") ? "new" : "old")
+		saveall
 	}
 
 	return PLUGIN_CONTINUE

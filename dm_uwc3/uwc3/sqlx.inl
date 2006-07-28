@@ -1,7 +1,8 @@
 // Check if mp_sqp is set and load sql config file if so
 public sql_init()
 {
-	if(get_cvar_num("mp_sql") == 1)
+	new type = get_cvar_num("mp_sql")
+	if(type)
 	{
 		new sql_cfgfile[64]
 		get_configsdir(sql_cfgfile, 63)
@@ -11,6 +12,30 @@ public sql_init()
 		{
 			server_cmd("exec %s", sql_cfgfile)
 			server_exec();
+
+			#if defined SQLITEX
+			if(type == 2)
+			{
+				if(LibraryExists("sqlite", LibType_Library))
+				{
+					new get_type[12], set_type[12];
+					set_type = "sqlite";
+
+					SQL_GetAffinity(get_type, 12);
+
+					if(!equali(get_type, set_type))
+					{
+						if (!SQL_SetAffinity(set_type))
+						{
+							log_amx("Failed to set affinity from %s to %s.", get_type, set_type)
+						}
+					}
+				}
+				else
+					// Has to think of an better line.
+					log_amx("[%s] You have it currently set to sqlite but sqlite module isn't loaded", MOD)
+			}
+			#endif
 
 			Tuple = _sql_init_conn();
 			_sql_create_table();
@@ -68,7 +93,7 @@ Handle:_sql_create_conn() // To make another connection if lost connection durin
 	if(!Connection)
 	{
 		log_amx("[SQLX] Database Connection Failed: [%d] %s", ErrorCode, Error)
-		return Handle:0;
+		return Empty_Handle;
 	}
 	return Connection;
 }
@@ -80,6 +105,25 @@ public _sql_create_table()
 	if(!Conn)
 		return;
 
+	#if defined SQLITEX
+	if(!sqlite_TableExists(Conn, sqltable_xp))
+		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(steamid))", sqltable_xp)
+
+	if(!sqlite_TableExists(Conn, sqltable_skills1))
+		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills1)
+
+	if(!sqlite_TableExists(Conn, sqltable_skills2))
+		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills2)
+
+	if(!sqlite_TableExists(Conn, sqltable_skills3))
+		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills3)
+
+	if(!sqlite_TableExists(Conn, sqltable_skills4))
+		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills4)
+
+	if(!sqlite_TableExists(Conn, sqltable_enh))
+		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(steamid, nset)) ", sqltable_enh)
+	#else
 	new SAVEBY[8]
 	format(SAVEBY, 7, "%s", (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME) ? "name" : "steamid")
 
@@ -98,6 +142,8 @@ public _sql_create_table()
 	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills3, SAVEBY) // NON SQLITE COMPLIANT
 	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills4, SAVEBY) // NON SQLITE COMPLIANT
 	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_enh, SAVEBY) // NON SQLITE COMPLIANT
+
+	#endif
 
 	//SQL_FreeHandle(Conn); // Free Connection.
 	// Keep connection open for saving at when plugin shutdown.

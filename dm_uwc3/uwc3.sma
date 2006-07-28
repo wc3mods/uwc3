@@ -85,9 +85,9 @@
 //#define SKILL_PRINT_MESSAGE // Enable the print message for wcmend, wcrepair, throne, resistance, evade, etc...
 //#define CONNECT_MESSAGE // Enabled connecting message
 //#define DEBUG // Enable Debug
-
-
 //#define UWC3_ORIGINAL // Something
+
+//#define AMXMODX_NOAUTOLOAD // Will disable auto loading of modules.
 
 #include <amxmodx>
 #include <amxmisc>
@@ -95,10 +95,17 @@
 #include <engine>
 #include <fakemeta>
 #include <uwc3>
-#include <dbi>
 
 #if AMXX_VERSION_NUM >= 175
+
 	#define CSDM // Enable support for CSDM 2.1
+	//#define SQLITEX // Enable support for sqlite
+
+	#if defined SQLITEX
+		#if !defined AMXMODX_NOAUTOLOAD
+			#pragma loadlib sqlite
+		#endif
+	#endif
 
 	#include <sqlx>
 #endif
@@ -120,8 +127,8 @@ new VER[] = "1.6.3-beta"
 #include "uwc3/enh.inl"		// Include the UWC3 enhancements subroutines file
 #include "uwc3/utility.inl"	// Include the UWC3 utilities subroutines file
 #include "uwc3/storage.inl"	// Include the UWC3 storage subroutines file
-#include "uwc3/mysqlx.inl"
-#include "uwc3/vault.inl"
+#include "uwc3/sqlx.inl" // mysql & sqlite saving
+#include "uwc3/vault.inl" // Vault saving
 #include "uwc3/infohelp.inl"	// Include the UWC3 help/info subroutines file
 #include "uwc3/dmgevents.inl"	// Include the UWC3 damage events subroutines file
 #include "uwc3/mole.inl"		// Include the UWC3 mole subroutines file
@@ -347,10 +354,12 @@ public plugin_init()
 	register_cvar("amx_vote_time","10")
 	register_cvar("amx_vote_answers","1")
 	register_cvar("amx_votewar3_ratio","0.70")
+
 	register_cvar("UW_sql_host","127.0.0.1")
 	register_cvar("UW_sql_user","root")
 	register_cvar("UW_sql_pass","")
 	register_cvar("UW_sql_db","uwc3")
+
 	register_cvar("UW_normalspeed","250.0")
 	register_cvar("UW_underdog_kills","1")
 	register_cvar("UW_dmgxpbonus","1")
