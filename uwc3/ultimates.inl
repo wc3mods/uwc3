@@ -1537,7 +1537,7 @@ public searchtarget(parm[2]){
    new enemy, body
    get_user_aiming(id,enemy,body)
 
-   if ( (0<enemy<=32) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+   if ( (0<enemy<=g_MAXPLAYERS) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
         (!temp_immunity[enemy] && magic_saving_throw(enemy)) )
    {
       temp_immunity[enemy] = true
