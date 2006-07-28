@@ -1,6 +1,22 @@
 Change Log:
 
 1.6.3 beta:
+*2:56 PM 7/28/2006
+-BugFix:SVN-125: Fixed compile errors from SVN-124.
+-BugFix:SVN-124: Fix status color bug, rewrote showStatus function.
+-Update:SVN-121: Test fix for index out of bounds in searchtarget function.
+
+-ToDo: Rename g_friend to g_friendorfoe
+-ToDo: Rename cvar FT_show_player to wc3_show_player_status or something
+-ToDo: Rename FT_* to wc3_*
+-ToDo: Remove useless showRank and associated register_event
+
+*11:41 AM 7/26/2006 - Marticus
+-BugFix:SVN-116: Fixed loose indentation.
+-Update:SVN-115: Changed the version to 1.6.3-beta
+-BugFix:SVN-114: Removed residual brace left from SVN-110.
+-BugFix:SVN-113: Fixed contextual error introduced in SVN-110.
+
 *12:07 PM 7/25/2006 - Marticus/Teame06
 -BugFix:SVN-110: Freeze time bug, requiring weapon change to move, teame06
 -BugFix:SVN-111: Index out of bounds in damage_event, teame06
