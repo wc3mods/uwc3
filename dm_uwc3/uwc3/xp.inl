@@ -81,30 +81,12 @@ public set_longtermxp()
 		VIP_ESCAPE_BONUS /= 10
 		#endif
 
-		log_amx("BEFORE")
-		log_amx("HEADSHOT_BONUS %i", HEADSHOT_BONUS)
-		log_amx("XPBONUS %i", XPBONUS)
-		log_amx("ROUNDXP %i", ROUNDXP)
-		log_amx("REPAIRXP %i", REPAIRXP)
-		log_amx("MENDXP %i", MENDXP)
-		log_amx("PHOENIXXP %i", PHOENIXXP)
-		log_amx("BEFORE")
-
 		HEADSHOT_BONUS /= 10
 		XPBONUS /= 10
 		ROUNDXP /= 10
 		REPAIRXP /= 10
 		MENDXP /= 10
 		PHOENIXXP /= 10
-
-		log_amx("AFTER")
-		log_amx("HEADSHOT_BONUS %i", HEADSHOT_BONUS)
-		log_amx("XPBONUS %i", XPBONUS)
-		log_amx("ROUNDXP %i", ROUNDXP)
-		log_amx("REPAIRXP %i", REPAIRXP)
-		log_amx("MENDXP %i", MENDXP)
-		log_amx("PHOENIXXP %i", PHOENIXXP)
-		log_amx("AFTER")
 
 		for(new j = 0; j < MAX_LEVEL; j++)
 		{

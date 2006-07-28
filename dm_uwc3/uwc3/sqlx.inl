@@ -31,8 +31,19 @@ public sql_init()
 					}
 				}
 				else
+				{
 					// A better message need to made here
 					log_amx("[%s] You have it currently set to sqlite but sqlite module isn't loaded", MOD)
+					return;
+				}
+			}
+			else
+			{
+				if(!LibraryExists("mysql", LibType_Library))
+				{
+					// Make a message here
+					return;
+				}
 			}
 
 			Tuple = _sql_init_conn();

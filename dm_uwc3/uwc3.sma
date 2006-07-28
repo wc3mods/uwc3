@@ -444,13 +444,10 @@ public plugin_cfg()
 
 	// set_task calls for functions needed by init or to run continuously
 	set_task(10.0, "check_war3", 456, "", 0, "b") // really why does this need to be running continously.
-	//set_task(1.0, "check_war3", 457)
-	//set_task(3.0, "set_xpfrontend", 458)
-	//set_task(0.6, "set_variables", 822)
 
 	check_war3();
-	set_xpfrontend();
 	set_variables();
+	set_xpfrontend();
 	set_xpmultiplier()	// Set weapon xp modifiers
 	set_skill_limits()	// Set skills-based tables(skill levels, effects, etc)
 	sql_init();
