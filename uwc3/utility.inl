@@ -712,43 +712,68 @@ public hideStatus(id){
 public set_buytime()
    buytime=false
 
-public showStatus(id){
-   new pid = read_data(2)
+public showStatus(id)
+{
+   new target = read_data(2)
 
-   if (get_user_team(id)==get_user_team(pid) &&
-       (playeritem2[pid]==CHAMELEON || skinchanged[pid]) && is_user_alive(pid))
+   /* targetted player is on same team and is mole/chameleon */
+   if (g_friend[target] == 1 && (playeritem2[target] == CHAMELEON || skinchanged[target]) && is_user_alive(target))
    {
-      client_print(id,print_center,"He's on your team, DON'T SHOOT")
-      if (file_exists("sound/warcraft3/antend.wav")==1)
-         emit_sound(id,CHAN_ITEM, "warcraft3/antend.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
+      client_print(id, print_center, "Friend spotted. Save your ammo!")
+      if (file_exists("sound/warcraft3/antend.wav") == 1)
+         emit_sound(id, CHAN_ITEM, "warcraft3/antend.wav", 1.0, ATTN_NORM, 0, PITCH_NORM)
    }
 
-   if(get_cvar_num("FT_show_player") && !freezetime){
+   /* do not show status during freezetime */
+   if (get_cvar_num("FT_show_player") && !freezetime)
+   {
       new name[32]
-      get_user_name(pid,name,31)
-      new color1 = 0,color2 = 0
-      if ( get_user_team(pid)==1 )
-         color1 = 255
-      else
-         color2 = 255
-      if (g_friend[id]==1){ // friend
-         /*new clip = 0, ammo = 0, wpnid = 0
-         wpnid = get_user_weapon(pid,clip,ammo)
-         new wpnname[32]
-         get_weaponname(wpnid,wpnname,31)*/
-         set_hudmessage(color1,50,color2,-1.0,0.60,1, 0.01, 3.0, 0.01, 0.01, 4)
-         new health = get_user_health(pid)
+      get_user_name(target, name, 31)
+
+      /* target info is red by default, RGB in decimal format */
+      new red = 255, blue = 0
+
+      /* target is on enemy team and is mole or chameleon */
+      if (g_friend[target] == 2 && (playeritem2[target] == CHAMELEON || (skinchanged[target]))
+      {
+         /* player is CT, change target info to blue to confuse player */
+         if (currentteam[id] == 2)
+         {
+			red = 0
+         	blue = 255
+         }
+
+      /* target is on same team or on enemy team with normal skin */
+      } else {
+
+         /* target is CT, change info to blue as it should be */
+         if (currentteam[target] = 2)
+         {
+            red = 0
+            blue = 255
+         }
+      }
+
+      set_hudmessage(red, 50, blue, -1.0, 0.60, 1, 0.01, 3.0, 0.01, 0.01, 4)
+
+      /* target is friend or chameleon or mole, let us confuse player */
+      if (g_friend[id] == 1 || playeritem2[target] == CHAMELEON || skinchanged[target] && is_user_alive(target))
+      {
+         new health = get_user_health(target)
+
+         /* target is using evasion, show correct health */
          if(health>1500)
             health=health-2048
          else if (health>500)
             health = health-1024
-         show_hudmessage(id,"%s -- %d HP / %d AP", name, health, get_user_armor(pid))
-      }else{
-         set_hudmessage(color1,50,color2,-1.0,0.60,1, 0.01, 3.0, 0.01, 0.01, 4)
-         show_hudmessage(id,name)
+
+         show_hudmessage(id, "%s -- %d HP / %d AP", name, health, get_user_armor(target))
+
+      /* target is an enemy with normal skin, show only their name */
+      } else {
+         show_hudmessage(id, name)
       }
    }
-
 }
 // **************************************************************************
 // END hideStatus and showStatus subroutines
