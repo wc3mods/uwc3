@@ -734,20 +734,20 @@ public showStatus(id)
       new red = 255, blue = 0
 
       /* target is on enemy team and is mole or chameleon */
-      if (g_friend[target] == 2 && (playeritem2[target] == CHAMELEON || (skinchanged[target]))
+      if (g_friend[target] == 2 && (playeritem2[target] == CHAMELEON || skinchanged[target]))
       {
          /* player is CT, change target info to blue to confuse player */
          if (currentteam[id] == 2)
          {
-			red = 0
-         	blue = 255
+            red = 0
+            blue = 255
          }
 
       /* target is on same team or on enemy team with normal skin */
       } else {
 
          /* target is CT, change info to blue as it should be */
-         if (currentteam[target] = 2)
+         if (currentteam[target] == 2)
          {
             red = 0
             blue = 255
