@@ -12,11 +12,11 @@ public sql_init()
 			server_cmd("exec %s", sql_cfgfile)
 			server_exec();
 
-			new tuple = _sql_init_conn();
+			Tuple = _sql_init_conn();
 			_sql_create_table();
 
-			if(tuple)
-				set_task(150, "saveall", 93847, _, _, "b");
+			if(Tuple)
+				set_task(165.0, "saveall", 93847, _, _, "b");
 		}
 		else
 		{
@@ -27,9 +27,12 @@ public sql_init()
 	}
 }
 
-public saveall()
+public saveall() // Auto save does not have support for vault.
 {
 	if(!warcraft3)
+		return;
+
+	if(!get_cvar_num("mp_sql") || get_cvar_num("mp_sql_saveoncmdonly"))
 		return;
 
 	static players[32], num, index;
@@ -39,72 +42,80 @@ public saveall()
 	{
 		index = players[i];
 
-		if(get_cvar_num("mp_sql"))
+		if(playerxp[index] > 150)
 		{
-			sqlwrite_xp(index, 1);
+			sqlwrite_xp(index);
 			sqlwrite_skills_id(index, -1, 1)
 			sqlwrite_enh_id(index, 1)
 		}
 	}
-
 }
 
-public _sql_init_conn()
+Handle:_sql_init_conn()
 {
 	get_cvar_string("UW_sql_host", sqlhost, 63);
 	get_cvar_string("UW_sql_user", sqluser, 31);
 	get_cvar_string("UW_sql_pass", sqlpass, 31);
 	get_cvar_string("UW_sql_db", sqldb, 1023);
 
-	Tuple = SQL_MakeDbTuple(sqlhost, sqluser, sqlpass, sqldb);
-	return Tuple;
+	return SQL_MakeDbTuple(sqlhost, sqluser, sqlpass, sqldb);
+}
+
+Handle:_sql_create_conn() // To make another connection if lost connection during query.
+{
+	new Handle:Connection = SQL_Connect(Tuple, ErrorCode, Error, 255);
+
+	if(!Connection)
+	{
+		log_amx("[SQLX] Database Connection Failed: [%d] %s", ErrorCode, Error)
+		return Handle:0;
+	}
+	return Connection;
 }
 
 public _sql_create_table()
 {
-	// This need to be made into a function that can be called. Just TOOOO MANY DAMN TABLES
-	Conn = SQL_Connect(Tuple, ErrorCode, Error, 255);
+	Conn = _sql_create_conn();
 
 	if(!Conn)
-	{
-		log_amx("[SQLX] Database Connection Failed: [%d] %s", ErrorCode, Error)
-		return
-	}
+		return;
 
 	new SAVEBY[8]
 	format(SAVEBY, 7, "%s", (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME) ? "name" : "steamid")
 
 	// Create the uwc3_xp table if necessary
-	create_table(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(steamid))", sqltable_xp)
-	create_table(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills1)
-	create_table(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills2)
-	create_table(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills3)
-	create_table(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills4)
-	create_table(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(steamid, nset)) ", sqltable_enh)
+	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(%s))", sqltable_xp, SAVEBY)
+	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills1, SAVEBY)
+	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills2, SAVEBY)
+	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills3, SAVEBY)
+	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills4, SAVEBY)
+	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(%s, nset)) ", sqltable_enh, SAVEBY)
 
 	// Set Key
-	create_table(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s)", sqltable_xp, SAVEBY);
-	create_table(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills1, SAVEBY) // NON SQLITE COMPLIANT
-	create_table(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills2, SAVEBY) // NON SQLITE COMPLIANT
-	create_table(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills3, SAVEBY) // NON SQLITE COMPLIANT
-	create_table(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills4, SAVEBY) // NON SQLITE COMPLIANT
-	create_table(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_enh, SAVEBY) // NON SQLITE COMPLIANT
-	SQL_FreeHandle(Conn);
+	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s)", sqltable_xp, SAVEBY);
+	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills1, SAVEBY) // NON SQLITE COMPLIANT
+	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills2, SAVEBY) // NON SQLITE COMPLIANT
+	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills3, SAVEBY) // NON SQLITE COMPLIANT
+	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills4, SAVEBY) // NON SQLITE COMPLIANT
+	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_enh, SAVEBY) // NON SQLITE COMPLIANT
+
+	//SQL_FreeHandle(Conn); // Free Connection.
+	// Keep connection open for saving at when plugin shutdown.
 }
 
-create_table(Handle:Connection, message[], {Float,Sql,Result,_}:...)
+execute_query(Handle:Connection, message[], {Float,Sql,Result,_}:...)
 {
-	static msg[1024];
-	vformat(msg, 1023, message, 2);
+	static query[1024];
+	vformat(query, sizeof(query)-1, message, 3);
 
 	new Handle:_query
 
-	_query = SQL_PrepareQuery(Connection, msg)
+	_query = SQL_PrepareQuery(Connection, query)
 
 	if(!SQL_Execute(_query))
 	{
 		ErrorCode = SQL_QueryError(_query, Error, 254);
-		server_print("Query failure: [%d] %s", ErrorCode, Error);
+		log_amx("Query failure: [%d] %s", ErrorCode, Error);
 		SQL_FreeHandle(_query);
 
 		return;
@@ -152,7 +163,12 @@ sqlwrite_xp(id, delete = 0)
 	static data[1]
 	data[0] = id
 
-	SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+	if(PluginEnding)
+		execute_query(Conn, query);
+	else
+		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+
+
 }
 
 public write_to_sql(failstate, Handle:query, error[], errnum, data[], size)
@@ -165,7 +181,7 @@ public write_to_sql(failstate, Handle:query, error[], errnum, data[], size)
 		} else if (failstate == TQUERY_QUERY_FAILED) {
 			server_print("Query failed!")
 		}
-		//log_amx("Error code: %d (Message: ^"%s^")", errnum, error)
+		log_amx("Error code: %d (Message: ^"%s^")", errnum, error)
 		return;
 	}
 }
@@ -199,7 +215,10 @@ public sqlwrite_enh_id(id, nset)
 	static data[1]
 	data[0] = id
 
-	SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+	if(PluginEnding)
+		execute_query(Conn, query);
+	else
+		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
 
 	return PLUGIN_CONTINUE
 }
@@ -229,16 +248,32 @@ public sqlwrite_skills_id(id, sidx, nset)
 	data[0] = id
 
 	format(query, 1023, "REPLACE INTO %s (name, steamid, nset, skill1, skill2, skill3, skill4, skill5, skill6, skill7, skill8, skill9, skill10) VALUES('%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d');", sqltable_skills1, playername, playerid, nset, p_skills[id][1],  p_skills[id][2],  p_skills[id][3],  p_skills[id][4],  p_skills[id][5],  p_skills[id][6],  p_skills[id][7],  p_skills[id][8],  p_skills[id][9],  p_skills[id][10]);
-	SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+
+	if(PluginEnding)
+		execute_query(Conn, query);
+	else
+		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
 
 	format(query, 1023, "REPLACE INTO %s (name, steamid, nset, skill11, skill12, skill13, skill14, skill15, skill16, skill17, skill18, skill19, skill20) VALUES('%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d');", sqltable_skills2, playername, playerid, nset, p_skills[id][11],  p_skills[id][12],  p_skills[id][13],  p_skills[id][14],  p_skills[id][15],  p_skills[id][16],  p_skills[id][17],  p_skills[id][18],  p_skills[id][19],  p_skills[id][20]);
-	SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+
+	if(PluginEnding)
+		execute_query(Conn, query);
+	else
+		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
 
 	format(query, 1023, "REPLACE INTO %s (name, steamid, nset, skill21, skill22, skill23, skill24, skill25, skill26, skill27, skill28, skill29, skill30) VALUES('%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d');", sqltable_skills3, playername, playerid, nset, p_skills[id][21],  p_skills[id][22],  p_skills[id][23],  p_skills[id][24],  p_skills[id][25],  p_skills[id][26],  p_skills[id][27],  p_skills[id][28],  p_skills[id][29],  p_skills[id][30]);
-	SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+
+	if(PluginEnding)
+		execute_query(Conn, query);
+	else
+		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
 
 	format(query, 1023, "REPLACE INTO %s (name, steamid, nset, skill31, skill32, skill33, skill34, skill35, skill36, skill37, skill38, skill39, skill40) VALUES('%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d');", sqltable_skills4, playername, playerid, nset, p_skills[id][31],  p_skills[id][32],  p_skills[id][33],  p_skills[id][34],  p_skills[id][35],  p_skills[id][36],  p_skills[id][37],  p_skills[id][38],  p_skills[id][39],  p_skills[id][40]);
-	SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
+
+	if(PluginEnding)
+		execute_query(Conn, query);
+	else
+		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
 
 	return PLUGIN_CONTINUE
 }

@@ -107,7 +107,7 @@ public check_say(id)
 	else if(equali(said, "^"/selectrace^"") || equali(said, "^"selectrace^""))
 		change_race(id)
 	else if(equali(said,"^"/level^"") || equali(said,"^"level^""))
-		displaylevel(id,0)
+		displaylevel(id, 0)
 	else if(equali(said,"^"/character^"") || equali(said,"^"character^"") || equali(said,"^"/charactersheet^"") || equali(said,"^"charactersheet^"") || equali(said,"^"/charsheet^"") || equali(said,"^"charsheet^""))
 		character_sheet(id)
 	else if(equali(said, "^"/whois", 7) || equali(said, "^"whois", 6))
@@ -891,26 +891,5 @@ public monitor_players()
 stock user_spawn(index)
 {
 	return spawn(index)
-}
-#endif
-
-#if !defined sqlite_table_exists
-stock bool:sqlite_table_exists(Sql:sql, table[])
-{
-	new bool:exists
-	new query[128]
-	format(query, 127, "SELECT name FROM sqlite_master WHERE type='table' AND name='%s' LIMIT 1;", table)
-
-	new Result:result = dbi_query(sql, query)
-
-	if(dbi_nextrow(result))
-		exists = true
-	else
-		exists = false
-
-	if(result >= RESULT_OK)
-		dbi_free_result(result)
-
-	return exists
 }
 #endif

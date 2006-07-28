@@ -1065,17 +1065,16 @@ public plugin_end()
 	if(!warcraft3)
 		return
 
-	// Does this really need to be here? when saving is done at client_disconnect to?
-	/*if(get_cvar_num("mp_savexp"))
+	PluginEnding = true;
+
+	if(get_cvar_num("mp_savexp"))
 	{
-		// Make sure to sync any remaining data before plugin ends!
-		if(task_exists(TASKID_SYNCSQL))
-		{
-			remove_task(TASKID_SYNCSQL)
-			//sync_sql()
-		}
-		//write_all()
-	}*/
+		remove_task(93847);
+		saveall();
+	}
+
+	if(Conn)
+		SQL_FreeHandle(Conn);
 
 	if(Tuple)
 		SQL_FreeHandle(Tuple);

@@ -336,6 +336,7 @@ new bool:bImmuneHeadshots[33];
 new Float:fLastShotFired[33];
 new bool:silentfeet[MAX_PLAYERS]
 
+new bool:PluginEnding;
 
 new Handle:Tuple;
 new Handle:Conn;
