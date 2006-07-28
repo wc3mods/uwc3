@@ -86,8 +86,7 @@
 //#define CONNECT_MESSAGE // Enabled connecting message
 //#define DEBUG // Enable Debug
 //#define UWC3_ORIGINAL // Something
-
-//#define AMXMODX_NOAUTOLOAD // Will disable auto loading of modules.
+#define CSDM // Enable support for CSDM 2.1
 
 #include <amxmodx>
 #include <amxmisc>
@@ -96,25 +95,19 @@
 #include <fakemeta>
 #include <uwc3>
 
-#if AMXX_VERSION_NUM >= 175
-
-	#define CSDM // Enable support for CSDM 2.1
-	//#define SQLITEX // Enable support for sqlite
-
-	#if defined SQLITEX
-		#if !defined AMXMODX_NOAUTOLOAD
-			#pragma loadlib sqlite
-		#endif
-	#endif
-
-	#include <sqlx>
-#endif
-
 #if defined CSDM
 	#include <csdm>
 	#define CSDM_NO_OBJECTIVES // Disable checking for objectives if CSDM 2 take out objectives
 #else
 	#include <fun>
+#endif
+
+#if AMXX_VERSION_NUM >= 175
+	// Will disable auto loading of mysql module.
+	// Server Admins will have to manually load there
+	// own sql module that they want to use.
+	#define AMXMODX_NOAUTOLOAD
+	#include <sqlx>
 #endif
 
 

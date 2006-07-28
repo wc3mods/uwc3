@@ -236,3 +236,7 @@
 #define UTLIMATE_DELAY 12385
 
 #define MAX_ATTEMPT_CONNECTION 5
+
+#define VAULT 0
+#define MYSQL 1
+#define SQLITE 2

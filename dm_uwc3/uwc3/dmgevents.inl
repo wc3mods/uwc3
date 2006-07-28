@@ -1679,6 +1679,7 @@ public csdm_PostDeath(killer_id, victim_id, headshot, const weapon_name[])
 			// Handler for underdog kill XP bonuses
 			new lev_diff = (p_level[victim_id] - p_level[killer_id])
 			new udogxp = (lev_diff * XPBONUS)
+
 			//new udogpenalty = udogxp
 
 			if(lev_diff >= 30)

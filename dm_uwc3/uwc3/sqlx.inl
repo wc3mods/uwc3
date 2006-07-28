@@ -13,8 +13,7 @@ public sql_init()
 			server_cmd("exec %s", sql_cfgfile)
 			server_exec();
 
-			#if defined SQLITEX
-			if(type == 2)
+			if(type == SQLITE)
 			{
 				if(LibraryExists("sqlite", LibType_Library))
 				{
@@ -32,10 +31,9 @@ public sql_init()
 					}
 				}
 				else
-					// Has to think of an better line.
+					// A better message need to made here
 					log_amx("[%s] You have it currently set to sqlite but sqlite module isn't loaded", MOD)
 			}
-			#endif
 
 			Tuple = _sql_init_conn();
 			_sql_create_table();
@@ -105,45 +103,47 @@ public _sql_create_table()
 	if(!Conn)
 		return;
 
-	#if defined SQLITEX
-	if(!sqlite_TableExists(Conn, sqltable_xp))
-		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(steamid))", sqltable_xp)
+	if(get_cvar_num("mp_sql") == SQLITE)
+	{
+		if(!sqlite_TableExists(Conn, sqltable_xp))
+			execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(steamid))", sqltable_xp)
 
-	if(!sqlite_TableExists(Conn, sqltable_skills1))
-		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills1)
+		if(!sqlite_TableExists(Conn, sqltable_skills1))
+			execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills1)
 
-	if(!sqlite_TableExists(Conn, sqltable_skills2))
-		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills2)
+		if(!sqlite_TableExists(Conn, sqltable_skills2))
+			execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills2)
 
-	if(!sqlite_TableExists(Conn, sqltable_skills3))
-		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills3)
+		if(!sqlite_TableExists(Conn, sqltable_skills3))
+			execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills3)
 
-	if(!sqlite_TableExists(Conn, sqltable_skills4))
-		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills4)
+		if(!sqlite_TableExists(Conn, sqltable_skills4))
+			execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(steamid, nset))", sqltable_skills4)
 
-	if(!sqlite_TableExists(Conn, sqltable_enh))
-		execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(steamid, nset)) ", sqltable_enh)
-	#else
-	new SAVEBY[8]
-	format(SAVEBY, 7, "%s", (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME) ? "name" : "steamid")
+		if(!sqlite_TableExists(Conn, sqltable_enh))
+			execute_query(Conn, "CREATE TABLE %s (name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(steamid, nset)) ", sqltable_enh)
+	}
+	else
+	{
+		new SAVEBY[8]
+		format(SAVEBY, 7, "%s", (get_cvar_num("mp_sql_saveby") == SQL_SAVEBY_NAME) ? "name" : "steamid")
 
-	// Create the uwc3_xp table if necessary
-	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(%s))", sqltable_xp, SAVEBY)
-	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills1, SAVEBY)
-	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills2, SAVEBY)
-	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills3, SAVEBY)
-	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills4, SAVEBY)
-	execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(%s, nset)) ", sqltable_enh, SAVEBY)
+		// Create the uwc3_xp table if necessary
+		execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, xp INT, ip VARCHAR(32), mtime VARCHAR(32), PRIMARY KEY(%s))", sqltable_xp, SAVEBY)
+		execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill1 SMALLINT, skill2 SMALLINT, skill3 SMALLINT, skill4 SMALLINT, skill5 SMALLINT, skill6 SMALLINT, skill7 SMALLINT, skill8 SMALLINT, skill9 SMALLINT, skill10 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills1, SAVEBY)
+		execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill11 SMALLINT, skill12 SMALLINT, skill13 SMALLINT, skill14 SMALLINT, skill15 SMALLINT, skill16 SMALLINT, skill17 SMALLINT, skill18 SMALLINT, skill19 SMALLINT, skill20 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills2, SAVEBY)
+		execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill21 SMALLINT, skill22 SMALLINT, skill23 SMALLINT, skill24 SMALLINT, skill25 SMALLINT, skill26 SMALLINT, skill27 SMALLINT, skill28 SMALLINT, skill29 SMALLINT, skill30 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills3, SAVEBY)
+		execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, skill31 SMALLINT, skill32 SMALLINT, skill33 SMALLINT, skill34 SMALLINT, skill35 SMALLINT, skill36 SMALLINT, skill37 SMALLINT, skill38 SMALLINT, skill39 SMALLINT, skill40 SMALLINT, PRIMARY KEY(%s, nset))", sqltable_skills4, SAVEBY)
+		execute_query(Conn, "CREATE TABLE IF NOT EXISTS %s(name VARCHAR(32) NOT NULL, steamid VARCHAR(32) NOT NULL, nset TINYINT NOT NULL, att1 SMALLINT, att2 SMALLINT, att3 SMALLINT, att4 SMALLINT, att5 SMALLINT, res1 SMALLINT, res2 SMALLINT, res3 SMALLINT, res4 SMALLINT, res5 SMALLINT, PRIMARY KEY(%s, nset)) ", sqltable_enh, SAVEBY)
 
-	// Set Key
-	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s)", sqltable_xp, SAVEBY);
-	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills1, SAVEBY) // NON SQLITE COMPLIANT
-	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills2, SAVEBY) // NON SQLITE COMPLIANT
-	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills3, SAVEBY) // NON SQLITE COMPLIANT
-	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills4, SAVEBY) // NON SQLITE COMPLIANT
-	execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_enh, SAVEBY) // NON SQLITE COMPLIANT
-
-	#endif
+		// Set Key
+		execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s)", sqltable_xp, SAVEBY);
+		execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills1, SAVEBY) // NON SQLITE COMPLIANT
+		execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills2, SAVEBY) // NON SQLITE COMPLIANT
+		execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills3, SAVEBY) // NON SQLITE COMPLIANT
+		execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_skills4, SAVEBY) // NON SQLITE COMPLIANT
+		execute_query(Conn, "ALTER TABLE %s DROP PRIMARY KEY, ADD PRIMARY KEY(%s, nset)", sqltable_enh, SAVEBY) // NON SQLITE COMPLIANT
+	}
 
 	//SQL_FreeHandle(Conn); // Free Connection.
 	// Keep connection open for saving at when plugin shutdown.
@@ -213,8 +213,6 @@ sqlwrite_xp(id, delete = 0)
 		execute_query(Conn, query);
 	else
 		SQL_ThreadQuery(Tuple, "write_to_sql", query, data, 1);
-
-
 }
 
 public write_to_sql(failstate, Handle:query, error[], errnum, data[], size)
