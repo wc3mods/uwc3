@@ -1,6 +1,12 @@
 Change Log:
 
 1.6.3 beta:
+*3:28 PM 7/29/2006
+-Update:SVN-131: Changed UW_admin_flag to a letter value, as in users.ini
+
+-ToDo: Move UW_admin_flag checking to function called IsPlayerAdmin
+-ToDo: Remove Adding Player log messages for /who
+
 *2:56 PM 7/28/2006
 -BugFix:SVN-125: Fixed compile errors from SVN-124.
 -BugFix:SVN-124: Fix status color bug, rewrote showStatus function.
