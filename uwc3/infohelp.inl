@@ -76,8 +76,10 @@ public main_menu(id){
 
    pos += format(menu_body[pos], 511-pos, "\yUWC3: Main Menu [ http://www.mudconnect.com/uwc3/ ]^n^n")
 
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
    if ( !get_cvar_num("UW_disable_adminmenu") &&
-        (get_user_flags(id) & get_cvar_num("UW_admin_flag")) )
+        (get_user_flags(id) & read_flags(admin_flag)) )
    {
       nLoop = 7
    }else{
@@ -222,7 +224,9 @@ public do_helpmenu(id,key){
 // **************************************************************************
 admin_menu(id){
 
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag"))) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_center,"You have no access to that command")
          return PLUGIN_HANDLED

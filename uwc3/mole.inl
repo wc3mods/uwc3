@@ -3,7 +3,9 @@
 // Routine for making a mole
 // **************************************************************************
 public amx_givemole(id, level, cid){
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag"))) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_console,"[%s] You have no access to that command", MOD)
          return PLUGIN_HANDLED

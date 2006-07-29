@@ -846,7 +846,9 @@ public admin_loadskills(id){
    if (!warcraft3)
      return PLUGIN_CONTINUE
 
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag")) ) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_center,"You have no access to that command")
          return PLUGIN_HANDLED

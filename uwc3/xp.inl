@@ -232,7 +232,9 @@ public xp_table(id){
 // Admin Cmd - Show a Player's XP
 // **************************************************************************
 public admin_showxp(id, level){
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag")) ) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_console,"[%s] You have no access to that command", MOD)
          return PLUGIN_HANDLED
@@ -307,7 +309,9 @@ public amx_deletexp(id){
 // Server command for issuing xp to a team or person
 // **************************************************************************
 public amx_givexp(id, level ){
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag")) ) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_console,"[%s] You have no access to that command", MOD)
          return PLUGIN_HANDLED
