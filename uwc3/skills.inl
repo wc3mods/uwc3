@@ -1,31 +1,3 @@
-
-/** *************************************************************************
-*** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
-*** Plugin Author: K2mia
-*** UWC3 Module:   Skills (General Routines)
-*** Date:          May 25, 2004
-*** Last Update:   September 23, 2004
-*
-*  Module: Skills Handler
-*  All skill handler routines not covered by more specific modules (such as
-*  damage modules, ultimates, mole, etc ...
-*----------------------------------------------------------------------------
-*
-*  UWC3 is written exclusively for AMX Mod X
-*
-*  Ultimate Warcraft3 Dev. Team
-*  ------------------------------
-*   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
-*   Graphics:         steve french < garbageweed@hotmail.com >
-*   Website Design:   Jim Rhoades < jim@radzone.org >
-*
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
-*  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
-*    some decoy concepts from AMXX forums posts by jjkiller
-*
-****************************************************************************/
-
-
 // **************************************************************************
 // BEGIN General Skills Related Subroutines
 // **************************************************************************
@@ -659,7 +631,7 @@ public drop_skill(id, page){
 
          if (get_cvar_num("UW_admin_mode"))
             format(sLevelText, 32, "[ Lvl %d ]", skill_minlev[idx])
-        else
+         else
             format(sLevelText, 32, "[Lvl %d required]", skill_minlev[idx])
 
          if (equali(skillname,"NOSKILL"))
@@ -726,6 +698,13 @@ public unset_skill(id, key){
          return PLUGIN_HANDLED
       } 
 
+      // Fix Steel Skin Bug: do not drop vamp or leather below steel skin
+      // prerequisites. -Marticus, 19 Feb 2006
+      if ((p_skills[id][SKILLIDX_SSKIN] == 1) && (((skill_idx == SKILLIDX_LSKIN) && (p_skills[id][SKILLIDX_LSKIN] == 3)) || ((skill_idx == SKILLIDX_VAMPIRIC) && (p_skills[id][SKILLIDX_VAMPIRIC] == 1)))) {
+         client_print(id, print_chat, "[%s] You must first drop Steel Skin", MOD)
+         return PLUGIN_HANDLED
+      }
+
       // Do not drop below 0 in index skill_idx
       if ( p_skills[id][skill_idx] == 0 ) {
          client_print(id, print_chat, "[%s] You have no points in %s",
@@ -743,6 +722,10 @@ public unset_skill(id, key){
             sqlwrite_skills_id( id, skill_idx, 1)
          else
             write_skills_id( id, 1 )
+
+         // if its an ultimate we are dropping - Lantz69, 22 Feb 2006
+         if (skill_ultimates[skill_idx][0])
+            ultlearned[id]--; 
 
          if ( p_skills[id][skill_idx] == 0 )
             client_print(id, print_chat, "[%s] You are no longer trained in %s",
@@ -863,7 +846,9 @@ public admin_loadskills(id){
    if (!warcraft3)
      return PLUGIN_CONTINUE
 
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag")) ) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_center,"You have no access to that command")
          return PLUGIN_HANDLED

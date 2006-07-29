@@ -1,30 +1,3 @@
-
-
-/** *************************************************************************
-*** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
-*** Plugin Author: K2mia
-*** UWC3 Module:   Ultimate Abilities and Support Routines
-*** Date:          May 25, 2004
-*** Last Update:   September 23, 2004
-*
-*  Module: Ultimate Abilities and Support Routines
-*  All ultimates and their supporting routines are defined in this file.
-*----------------------------------------------------------------------------
-*
-*  UWC3 is written exclusively for AMX Mod X
-*
-*  Ultimate Warcraft3 Dev. Team
-*  ------------------------------
-*   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
-*   Graphics:         steve french < garbageweed@hotmail.com >
-*   Website Design:   Jim Rhoades < jim@radzone.org >
-*
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
-*  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
-*    some decoy concepts from AMXX forums posts by jjkiller
-*
-****************************************************************************/
-
 // **************************************************************************
 // BEGIN Ultimate Skill Routines
 // Each ultimate has its own routine now
@@ -1564,7 +1537,7 @@ public searchtarget(parm[2]){
    new enemy, body
    get_user_aiming(id,enemy,body)
 
-   if ( (0<enemy<=32) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
+   if ( (0<enemy<=g_MAXPLAYERS) && (p_resists[enemy][RESISTIDX_MAGIC] >= RESIST_MAX_VALUE) ||
         (!temp_immunity[enemy] && magic_saving_throw(enemy)) )
    {
       temp_immunity[enemy] = true

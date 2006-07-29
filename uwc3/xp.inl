@@ -1,29 +1,3 @@
-
-/** *************************************************************************
-*** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
-*** Plugin Author: K2mia
-*** UWC3 Module:   XP 
-*** Date:          May 25, 2004
-*** Last Update:   September 28, 2004
-*
-*  Module: XP 
-*  Some general routines for configuring XP
-*----------------------------------------------------------------------------
-*
-*  UWC3 is written exclusively for AMX Mod X
-*
-*  Ultimate Warcraft3 Dev. Team
-*  ------------------------------
-*   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
-*   Graphics:         steve french < garbageweed@hotmail.com >
-*   Website Design:   Jim Rhoades < jim@radzone.org >
-*
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
-*  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
-*    some decoy concepts from AMXX forums posts by jjkiller
-*
-****************************************************************************/
-
 // **************************************************************************
 // BEGIN XP Subroutine Declarations 
 // **************************************************************************
@@ -258,7 +232,9 @@ public xp_table(id){
 // Admin Cmd - Show a Player's XP
 // **************************************************************************
 public admin_showxp(id, level){
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag")) ) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_console,"[%s] You have no access to that command", MOD)
          return PLUGIN_HANDLED
@@ -333,7 +309,9 @@ public amx_deletexp(id){
 // Server command for issuing xp to a team or person
 // **************************************************************************
 public amx_givexp(id, level ){
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag")) ) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_console,"[%s] You have no access to that command", MOD)
          return PLUGIN_HANDLED

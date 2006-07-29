@@ -1,30 +1,3 @@
-
-/** *************************************************************************
-*** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
-*** Plugin Author: K2mia
-*** UWC3 Module:   Damage and Damage Events
-*** Date:          May 25, 2004
-*** Last Update:   September 27, 2004
-*
-*  Module: Damage and Damage Events
-*  Subroutines for handling damage, death, and uwc3-skills related damage
-*----------------------------------------------------------------------------
-*
-*  UWC3 is written exclusively for AMX Mod X
-*
-*  Ultimate Warcraft3 Dev. Team
-*  ------------------------------
-*   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
-*   Graphics:         steve french < garbageweed@hotmail.com >
-*   Website Design:   Jim Rhoades < jim@radzone.org >
-*
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
-*  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
-*    some decoy concepts from AMXX forums posts by jjkiller
-*
-****************************************************************************/
-
-
 // **************************************************************************
 // BEGIN Damage/Events Subroutine Declarations
 // **************************************************************************
@@ -334,8 +307,14 @@ public damage_event(id){
    if (!warcraft3)
       return PLUGIN_CONTINUE
 
+   if(id < 1 || id > g_MAXPLAYERS)
+      return PLUGIN_CONTINUE
+
    new weapon = 0, bodypart = 0, enemy = get_user_attacker(id,weapon,bodypart)
    new damage = read_data(2)
+
+   if(enemy < 1 || enemy > g_MAXPLAYERS)
+      return PLUGIN_CONTINUE
 
    new name1[32], name2[32]
    get_user_name(id, name1, 31)
@@ -1183,6 +1162,10 @@ public damage_event(id){
       if ( playeritem[enemy]==HEALTH )
          max_health += HEALTHBONUS
 
+      // [05-13-05] Added check to see if enemy health above Vampiric maximum - Roland of Gilead
+      if ( get_user_health(enemy) < max_health )
+      {
+
       new new_health = ( get_user_health(enemy) + damage )
 
       if ( new_health > max_health )
@@ -1190,6 +1173,8 @@ public damage_event(id){
 
       set_user_health_log(enemy, new_health, true, "damage_event() VAMPIRIC")
 
+      }
+ 
       if (p_skills[enemy][SKILLIDX_SSKIN]){
          // Steel Skin, give armor to the enemy
          set_user_armor_log(enemy, (get_user_armor(enemy)+damage), true, "sskin-1")

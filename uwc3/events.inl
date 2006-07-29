@@ -1,30 +1,3 @@
-
-/** *************************************************************************
-*** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
-*** Plugin Author: K2mia
-*** UWC3 Module:   Event Handlers
-*** Date:          May 25, 2004
-*** Last Update:   September 28, 2004
-*
-*  Module: Event Handlers
-*  Subroutines for handling events not handled in more specific modules
-*----------------------------------------------------------------------------
-*
-*  UWC3 is written exclusively for AMX Mod X
-*
-*  Ultimate Warcraft3 Dev. Team
-*  ------------------------------
-*   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
-*   Graphics:         steve french < garbageweed@hotmail.com >
-*   Website Design:   Jim Rhoades < jim@radzone.org >
-*
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
-*  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
-*    some decoy concepts from AMXX forums posts by jjkiller
-*
-****************************************************************************/
-
-
 // **************************************************************************
 // BEGIN Event Handler Subroutine Declarations
 // **************************************************************************
@@ -290,7 +263,9 @@ public new_round(id){
       playeritem2[id] = MOLE
 
    u_delay = false
-   if (get_cvar_num("FT_ultimatedelay")){
+   // Added check for freezetime, in order to disable mid-round ultimate delay
+   // Credit: Pepsi at 260 Servers - 260servers.net
+   if (get_cvar_num("FT_ultimatedelay") && freezetime){
       u_delay = true
       if (!task_exists(12385))
          set_task(get_cvar_float("FT_ultimatedelay"), "udelay_cooldown", 12385)
@@ -339,12 +314,8 @@ public new_round(id){
    if (get_cvar_num("FT_warn_suicide"))
       suicideAttempt[id] = 0
 
-   if ( is_user_connected( id ) ){
-      set_user_maxspeed(id, 1.0)
-
-      if ( playeritem2[id]==HELM)
-		  bImmuneHeadshots[id] = true;
-   }
+   if ( is_user_connected( id ) && playeritem2[id]==HELM )
+      bImmuneHeadshots[id] = true
 
    set_task(0.1, "weapon_controller", 10091, parm, 2) // Weapon Reincarnation
 
@@ -390,10 +361,10 @@ public new_round(id){
 
          displaylevel(id, 3)
       }
+
       // Reset dropskill for id to allow for selecting new skills - Marticus 
       if (dropskill[id])
          dropskill[id]=false
-
    }
 
    vengeance_used[id] = 0

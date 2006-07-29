@@ -1,30 +1,3 @@
-
-/** *************************************************************************
-*** AMXX Plugin:   Ultimate Warcraft3 (UWC3)
-*** Plugin Author: K2mia
-*** UWC3 Module:   Enhancements (Attributes / Resistances)
-*** Date:          May 25, 2004
-*** Last Update:   September 23, 2004
-*
-*  Module: Help and Info / Menu Subroutines
-*  Subroutines for help and info text and menus
-*----------------------------------------------------------------------------
-*
-*  UWC3 is written exclusively for AMX Mod X
-*
-*  Ultimate Warcraft3 Dev. Team
-*  ------------------------------
-*   Small scripting:  K2mia ( Andrew Cowan ) < admin@mudconnect.com >
-*   Graphics:         steve french < garbageweed@hotmail.com >
-*   Website Design:   Jim Rhoades < jim@radzone.org >
-*
-*  str_break() routine provided by BAILOPAN from AMXX0.20 to replace parse()
-*  ultimate_decoy() code derived from code for Beyonder superhero (Freecode/Asskicr)
-*    some decoy concepts from AMXX forums posts by jjkiller
-*
-****************************************************************************/
-
-
 // **************************************************************************
 // BEGIN Help and Info Menus and Menu Handler Subroutines
 // **************************************************************************
@@ -103,8 +76,10 @@ public main_menu(id){
 
    pos += format(menu_body[pos], 511-pos, "\yUWC3: Main Menu [ http://www.mudconnect.com/uwc3/ ]^n^n")
 
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
    if ( !get_cvar_num("UW_disable_adminmenu") &&
-        (get_user_flags(id) & get_cvar_num("UW_admin_flag")) )
+        (get_user_flags(id) & read_flags(admin_flag)) )
    {
       nLoop = 7
    }else{
@@ -249,7 +224,9 @@ public do_helpmenu(id,key){
 // **************************************************************************
 admin_menu(id){
 
-   if (!(get_user_flags(id) & get_cvar_num("UW_admin_flag"))) {
+   new admin_flag[2]
+   get_cvar_string("UW_admin_flag", admin_flag, 1)
+   if ( !(get_user_flags(id) & read_flags(admin_flag)) ) {
       if(id != 0){
          client_print(id,print_center,"You have no access to that command")
          return PLUGIN_HANDLED
@@ -1430,7 +1407,9 @@ public cmd_who(id){
 
       get_user_name( playerid, name, 31 )
 
-      log_amx( "Adding player: %s", name )
+      // Added level and xp to this log message, Marticus, 28 Feb 2006
+      log_amx( "Adding player: [%d:%d] %s", p_level[playerid], 
+	      playerxp[playerid], name )
 
       pos += format( message[pos], 4096-pos, "<tr><td>%s</td><td>%s</td><td>%d</td></tr>^n",
                      name, team, p_level[playerid], name)
