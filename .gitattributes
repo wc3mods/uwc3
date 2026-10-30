@@ -1,0 +1,4 @@
+# AMX Mod X plugin source is Pawn (GitHub would otherwise read .inl as C++)
+*.sma linguist-language=Pawn
+*.inc linguist-language=Pawn
+*.inl linguist-language=Pawn
